@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hx.concurrent;
+package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
 
-import hx.concurrent.Schedule.ScheduleTools;
-
-
 /**
+ * A scheduler/work manager that executes submitted tasks asynchronously or concurrently
+ * based on a given schedule.
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class TaskExecutor {
+class Executor {
 
     static var NOW_ONCE = Schedule.ONCE(0);
 
@@ -35,15 +36,15 @@ class TaskExecutor {
      *
      * @param maxConcurrent maximum number of concurrently executed tasks. Has no effect on targets without thread support.
      */
-    public static function create(maxConcurrent:Int = 1):TaskExecutor {
+    public static function create(maxConcurrent:Int = 1):Executor {
         #if (cpp||cs||java||neko||python)
-            return new ThreadBasedTaskExecutor(maxConcurrent);
+            return new ThreadBasedExecutor(maxConcurrent);
         #else
-            return new TimerBasedTaskExecutor();
+            return new TimerBasedExecutor();
         #end
     }
 
-    public var state(default, null):TaskExecutorState = RUNNING;
+    public var state(default, null):ExecutorState = RUNNING;
     var _stateLock:RLock = new RLock();
 
     /**
@@ -63,14 +64,14 @@ class TaskExecutor {
      */
     public function stop() {
         _stateLock.execute(function() {
-            if (state == TaskExecutorState.RUNNING)
-                state = TaskExecutorState.STOPPING;
+            if (state == ExecutorState.RUNNING)
+                state = ExecutorState.STOPPING;
         });
     }
 }
 
 
-enum TaskExecutorState {
+enum ExecutorState {
     RUNNING;
     STOPPING;
     STOPPED;
@@ -104,9 +105,8 @@ interface TaskFuture<T> extends Future<T> {
     #end
 }
 
-
 #if (cpp||cs||java||neko||python)
-private class ThreadBasedTaskExecutor extends TaskExecutor {
+private class ThreadBasedExecutor extends Executor {
 
     public inline static var SCHEDULER_RESOLUTION_MS = 5;
     public inline static var SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
@@ -216,7 +216,7 @@ private class ThreadBasedTaskExecutor extends TaskExecutor {
             if (state != RUNNING)
                 throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
 
-            var future = new ThreadBasedTaskFuture<T>(task, schedule == null ? TaskExecutor.NOW_ONCE : schedule);
+            var future = new ThreadBasedTaskFuture<T>(task, schedule == null ? Executor.NOW_ONCE : schedule);
 
             // skip round-trip via scheduler for one-shot tasks that should be executed immediately
             switch(schedule) {
@@ -323,14 +323,14 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
                 case NONE(_): false;
                 default: true;
             };
-        }, timeoutMS, ThreadBasedTaskExecutor.SCHEDULER_RESOLUTION_SEC);
+        }, timeoutMS, ThreadBasedExecutor.SCHEDULER_RESOLUTION_SEC);
 
         return this.result;
     }
 }
 
 #else
-private class TimerBasedTaskExecutor extends TaskExecutor {
+private class TimerBasedExecutor extends Executor {
 
     var _scheduledTasks = new Array<TimerBasedTaskFuture<Dynamic>>();
 
@@ -350,7 +350,7 @@ private class TimerBasedTaskExecutor extends TaskExecutor {
             var i = _scheduledTasks.length;
             while (i-- > 0) if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
 
-            var future = new TimerBasedTaskFuture<T>(task, schedule == null ? TaskExecutor.NOW_ONCE : schedule);
+            var future = new TimerBasedTaskFuture<T>(task, schedule == null ? Executor.NOW_ONCE : schedule);
             switch(schedule) {
                 case ONCE(0):
                 default: _scheduledTasks.push(future);
@@ -363,13 +363,13 @@ private class TimerBasedTaskExecutor extends TaskExecutor {
     override
     public function stop() {
         _stateLock.execute(function() {
-            if (state == TaskExecutorState.RUNNING) {
-                state = TaskExecutorState.STOPPING;
+            if (state == ExecutorState.RUNNING) {
+                state = ExecutorState.STOPPING;
 
                 for (t in _scheduledTasks)
                     t.cancel();
 
-                state = TaskExecutorState.STOPPED;
+                state = ExecutorState.STOPPED;
             }
         });
     }
