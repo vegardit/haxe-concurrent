@@ -1,7 +1,7 @@
 # haxe-concurrent - cross platform concurrency support
 
 1. [What is it?](#what-is-it)
-1. [The `TaskExecutor` class](#taskExecutor-class)
+1. [The `Executor` class](#executor-class)
 1. [`hx.concurrent.atomic` package](#atomic-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
@@ -18,21 +18,21 @@ The library has been tested with Haxe 3.2, 3.4 and 4.0 nightly on targets C++, C
 PHP 5, PHP 7, Python 3.
 
 
-## <a name="taskExecutor-class"></a>The `TaskExecutor` class
+## <a name="executor-class"></a>The `Executor` class
 
-The [hx.concurrent.TaskExecutor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/TaskExecutor.hx) allows you execute code
+The [hx.concurrent.executor.Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) allows you execute code
 concurrently and to schedule tasks for later execution.
 
 On platform with the thread support (C++, C#, Neko, Python, Java) threads are used to realize true concurrent execution on
 other platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
-import hx.concurrent.TaskExecutor;
+import hx.concurrent.executor.Executor;
 
 class Test {
 
     static function main() {
-        var executor = TaskExecutor.create(3);  // <- 3 means to use a thread pool of 3 threads on platforms that support threads
+        var executor = Executor.create(3);  // <- 3 means to use a thread pool of 3 threads on platforms that support threads
         // depending on the platform either a thread-based or timer-based implementation is returned
 
         // define a task to be executed concurrently/async/scheduled
