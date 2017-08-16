@@ -23,7 +23,7 @@ PHP 5, PHP 7, Python 3.
 The [hx.concurrent.TaskExecutor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/TaskExecutor.hx) allows you execute code
 concurrently and to schedule tasks for later execution.
 
-On platform with the thread support (C++, CS, Neko, Python, Java) threads are used to realize true concurrent execution on
+On platform with the thread support (C++, C#, Neko, Python, Java) threads are used to realize true concurrent execution on
 other platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
