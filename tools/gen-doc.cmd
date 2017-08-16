@@ -1,32 +1,37 @@
 @echo off
 set CDP=%~dp0
-set PWD
+
+pushd .
+cd "%CDP%..\target"
+set TARGET=%CD%
+popd
+
 setlocal
 
 set TOP_LEVEL_PACKAGE=hx.concurrent
 set OWNER=http://vegardit.com
 
 REM extract GIT URL from haxelib.json
-for /f "tokens=*" %%a in ( 'findstr url "%CDP%haxelib.json"' ) do (set textLine=%%a)
+for /f "tokens=*" %%a in ( 'findstr url "%CDP%..\haxelib.json"' ) do (set textLine=%%a)
 set REPO_URL=%textLine:"url": "=%
 set REPO_URL=%REPO_URL:",=%
 set REPO_URL=%REPO_URL:"=%
 echo REPO_URL=%REPO_URL%
 
 REM extract project version from haxelib.json
-for /f "tokens=*" %%a in ( 'findstr version "%CDP%haxelib.json"' ) do (set textLine=%%a)
+for /f "tokens=*" %%a in ( 'findstr version "%CDP%..\haxelib.json"' ) do (set textLine=%%a)
 set PROJECT_VERSION=%textLine:"version": "=%
 set PROJECT_VERSION=%PROJECT_VERSION:",=%
 set PROJECT_VERSION=%PROJECT_VERSION:"=%
 
 REM extract project name from haxelib.json
-for /f "tokens=*" %%a in ( 'findstr name "%CDP%haxelib.json"' ) do (set textLine=%%a)
+for /f "tokens=*" %%a in ( 'findstr name "%CDP%..\haxelib.json"' ) do (set textLine=%%a)
 set PROJECT_NAME=%textLine:"name": "=%
 set PROJECT_NAME=%PROJECT_NAME:",=%
 set PROJECT_NAME=%PROJECT_NAME:"=%
 
 REM extract project description from haxelib.json
-for /f "tokens=*" %%a in ( 'findstr description "%CDP%haxelib.json"' ) do (set textLine=%%a)
+for /f "tokens=*" %%a in ( 'findstr description "%CDP%..\haxelib.json"' ) do (set textLine=%%a)
 set PROJECT_DESCRIPTION=%textLine:"description": "=%
 set PROJECT_DESCRIPTION=%PROJECT_DESCRIPTION:",=%
 set PROJECT_DESCRIPTION=%PROJECT_DESCRIPTION:"=%
@@ -37,16 +42,13 @@ if %errorlevel% neq 0 (
     haxelib install dox
 )
 
-if exist "%CDP%target\site" (
-    echo Cleaning %CDP%target\site...
-    rd /s /q "%CDP%target\site"
+if exist "%TARGET%\site" (
+    echo Cleaning %TARGET%\site...
+    rd /s /q "%TARGET%\site"
 )
 
 echo Analyzing source code...
-set PWD=%CD%
-cd %CDP%
-haxe -cp "src" --no-output -D doc-gen -xml "%CDP%target/doc.xml" --macro include('%TOP_LEVEL_PACKAGE%')
-cd %PWD%
+haxe -cp "%CDP%..\src" --no-output -D doc-gen -xml "%TARGET%\doc.xml" --macro include('%TOP_LEVEL_PACKAGE%')
 
 REM https://github.com/HaxeFoundation/dox/wiki/Commandline-arguments-overview
 echo Generating HTML files...
@@ -59,11 +61,10 @@ haxelib run dox ^
  -D version "%PROJECT_VERSION%" ^
  -D website "%OWNER%" ^
  -ex "^%OWNER:.=\.%\.internal" ^
- -i "%CDP%target\doc.xml" ^
- -o "%CDP%target\site"
+ -i "%TARGET%\doc.xml" ^
+ -o "%TARGET%\site"
 
-set pwd=%~dp0
 echo.
-echo Documentation generated at [file:///%pwd:\=/%target/site/index.html]...
+echo Documentation generated at [file:///%TARGET:\=/%/site/index.html]...
 
 endlocal
