@@ -14,7 +14,8 @@ A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides conc
 
 All classes are under the package `hx.concurrent` or below.
 
-The library has been tested with Haxe 3.2, 3.4 and 4.0 nightly.
+The library has been tested with Haxe 3.2, 3.4 and 4.0 nightly on targets C++, C#, Flash, Java, JavaScript (node.js and phantom.js),
+PHP 5, PHP 7, Python 3.
 
 
 ## <a name="taskExecutor-class"></a>The `TaskExecutor` class
@@ -40,7 +41,11 @@ class Test {
             return Date.now();
         }
 
-        executor.submit(myTask);                       // async one-time execution as soon as possible
+        // submit 10 tasks each to be executed once asynchronously/concurrently as soon as possible
+        for(i in 0...10) {
+            executor.submit(myTask);
+        }
+
         executor.submit(myTask, ONCE(2000));           // async one-time execution with a delay of 2 seconds
         executor.submit(myTask, FIXED_RATE(200));      // repeated async execution every 200ms
         executor.submit(myTask, FIXED_DELAY(200));     // repeated async execution 200ms after the last execution
