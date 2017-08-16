@@ -1,6 +1,5 @@
 /.project
 /.settings
 /.svn
-/dump
 /target
-/test/dump
+/tools/dump
