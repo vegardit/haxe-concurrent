@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\python rd /s /q dump\python
-if exist target\python rd /s /q target\python
+if exist "%CDP%dump\neko" rd /s /q "%CDP%dump\neko"
+if exist "%CDP%..\target\neko" rd /s /q "%CDP%..\target\neko"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -12,12 +14,12 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--python target\python\TestRunner.py || goto :eof
+-neko "%CDP%..\target/neko/TestRunner.n" || goto :eof
 
 echo Testing...
-python target\python\TestRunner.py
+neko "%CDP%..\target/neko/TestRunner.n"

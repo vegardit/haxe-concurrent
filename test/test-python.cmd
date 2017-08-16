@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\php rd /s /q dump\php
-if exist target\php7 rd /s /q target\php7
+if exist "%CDP%dump\python" rd /s /q "%CDP%dump\python"
+if exist "%CDP%..\target\python" rd /s /q "%CDP%..\target\python"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -12,13 +14,12 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--D php7 ^
--php target\php7 || goto :eof
+-python "%CDP%..\target\python\TestRunner.py" || goto :eof
 
 echo Testing...
-%PHP7_HOME%\php target\php7\index.php
+python "%CDP%..\target\python\TestRunner.py"

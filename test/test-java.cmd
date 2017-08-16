@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\java rd /s /q dump\java
-if exist target\java rd /s /q target\java
+if exist "%CDP%dump\java" rd /s /q "%CDP%dump\java"
+if exist "%CDP%..\target\java" rd /s /q "%CDP%..\target\java"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -18,12 +20,12 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--java target/java || goto :eof
+-java "%CDP%..\target\java" || goto :eof
 
 echo Testing...
-java -jar target/java/TestRunner-Debug.jar
+java -jar "%CDP%..\target\java\TestRunner-Debug.jar"

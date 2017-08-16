@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\cs rd /s /q dump\cs
-if exist target\cs rd /s /q target\cs
+if exist "%CDP%dump\cpp" rd /s /q "%CDP%dump\cpp"
+if exist "%CDP%..\target\cs" rd /s /q "%CDP%..\target\cs"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -18,12 +20,12 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--cs target\cs || goto :eof
+-cs "%CDP%..\target\cs" || goto :eof
 
 echo Testing...
-mono target\cs\bin\TestRunner-Debug.exe
+mono "%CDP%..\target\cs\bin\TestRunner-Debug.exe"

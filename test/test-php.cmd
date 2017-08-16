@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\flash rd /s /q dump\flash
-if exist target\flash rd /s /q target\flash
+if exist "%CDP%dump\php" rd /s /q "%CDP%dump\php"
+if exist "%CDP%..\target\php" rd /s /q "%CDP%..\target\php"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -11,14 +13,13 @@ if errorlevel 1 (
 
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
--swf-version 11.5 ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--swf target/flash/TestRunner.swf || goto :eof
+-php "%CDP%..\target\php" || goto :eof
 
 echo Testing...
-flashplayer_24_sa_debug target/flash/TestRunner.swf
+%PHP5_HOME%\php "%CDP%..\target\php\index.php"

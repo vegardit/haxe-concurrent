@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\neko rd /s /q dump\neko
-if exist target\neko rd /s /q target\neko
+if exist "%CDP%dump\lua" rd /s /q "%CDP%dump\lua"
+if exist "%CDP%..\target\lua" rd /s /q "%CDP%..\target\lua"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -12,12 +14,13 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--neko target/neko/TestRunner.n || goto :eof
+-D luajit ^
+-lua "%CDP%..\target\lua\TestRunner.lua" || goto :eof
 
 echo Testing...
-neko target/neko/TestRunner.n
+lua "%CDP%..\target\lua\TestRunner.lua"

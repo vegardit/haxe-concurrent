@@ -1,7 +1,9 @@
 @echo off
+set CDP=%~dp0
+
 echo Cleaning...
-if exist dump\php rd /s /q dump\php
-if exist target\php rd /s /q target\php
+if exist "%CDP%dump\js" rd /s /q "%CDP%dump\js"
+if exist "%CDP%..\target\js" rd /s /q "%CDP%..\target\js"
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -12,12 +14,13 @@ if errorlevel 1 (
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
--cp src ^
--cp test ^
+-cp "%CDP%..\src" ^
+-cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
--php target\php || goto :eof
+-D nodejs ^
+-js "%CDP%..\target\js\TestRunner.js" || goto :eof
 
 echo Testing...
-%PHP5_HOME%\php target\php\index.php
+node "%CDP%..\target\js\TestRunner.js"
