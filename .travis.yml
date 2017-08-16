@@ -1,0 +1,35 @@
+sudo: required
+dist: trusty
+
+language: haxe
+
+os:
+  - linux
+  - osx
+
+haxe:
+  - "3.2.1"
+  - "3.4.2"
+  - development
+
+matrix:
+  allow_failures:
+    - haxe: development
+
+install:
+  - haxelib install travix
+  - haxelib install haxe-doctest
+  - haxelib run travix install
+
+script:
+  - haxelib run travix interp
+  - haxelib run travix neko
+  - haxelib run travix python
+  - haxelib run travix node
+  - haxelib run travix js
+  - haxelib run travix flash
+  - haxelib run travix java
+  - haxelib run travix cpp
+  - haxelib run travix cs
+  - haxelib run travix php
+  - haxelib run travix lua
