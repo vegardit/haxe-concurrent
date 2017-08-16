@@ -66,8 +66,10 @@ abstract AtomicBool(AB) from AB to AB {
 
 
     /**
+     * <pre><code>
      * >>> new AtomicBool(true).getAndSet(false) == true
      * >>> new AtomicBool(false).getAndSet(true) == false
+     * </code></pre>
      */
     inline
     public function getAndSet(value:Bool):Bool {
@@ -75,8 +77,10 @@ abstract AtomicBool(AB) from AB to AB {
     }
 
     /**
+     * <pre><code>
      * >>> new AtomicBool(true).negate()  == false
      * >>> new AtomicBool(false).negate() == true
+     * </code></pre>
      */
     #if !java inline #end
     public function negate():Bool {
@@ -92,8 +96,10 @@ abstract AtomicBool(AB) from AB to AB {
     }
 
     /**
+     * <pre><code>
      * >>> new AtomicBool(true).getAndNegate()  == true
      * >>> new AtomicBool(false).getAndNegate() == false
+     * </code></pre>
      */
     #if !java inline #end
     public function getAndNegate():Bool {
@@ -109,8 +115,10 @@ abstract AtomicBool(AB) from AB to AB {
     }
 
     /**
+     * <pre><code>
      * >>> new AtomicBool(true).toString()  == "true"
      * >>> new AtomicBool(false).toString() == "false"
+     * </code></pre>
      */
     inline public function toString():String {
         return this.toString();

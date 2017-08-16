@@ -25,9 +25,11 @@ class AtomicValue<T> {
     var _lock:RLock;
 
     /**
+     * <pre><code>
      * >>> new AtomicValue(null).value   == null
      * >>> new AtomicValue(true).value   == true
      * >>> new AtomicValue("cat").value  == "cat"
+     * </code></pre>
      */
     public var value(get, never):T;
     var _value:T;
@@ -46,7 +48,9 @@ class AtomicValue<T> {
 
 
     /**
+     * <pre><code>
      * >>> new AtomicValue("cat").getAndSet("dog") == "cat"
+     * </code></pre>
      */
     public function getAndSet(value:T):T {
         _lock.acquire();
@@ -65,8 +69,10 @@ class AtomicValue<T> {
 
 
     /**
+     * <pre><code>
      * >>> new AtomicValue(true).toString()  == "true"
      * >>> new AtomicValue(false).toString() == "false"
+     * </code></pre>
      */
     inline
     public function toString() {

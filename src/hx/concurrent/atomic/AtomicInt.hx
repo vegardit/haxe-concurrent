@@ -78,7 +78,9 @@ abstract AtomicInt(AtomicIntImpl) from AtomicIntImpl to AtomicIntImpl {
     inline public function getAndDecrement(amount:Int=1):Int return this.getAndIncrement(-amount);
 
     /**
+     * <pre><code>
      * >>> new AtomicInt(3).toString() == "3"
+     * </code></pre>
      */
     inline public function toString():String return Std.string(this.value);
 }
@@ -86,7 +88,9 @@ abstract AtomicInt(AtomicIntImpl) from AtomicIntImpl to AtomicIntImpl {
 private class AtomicIntImpl {
 
     /**
+     * <pre><code>
      * >>> new AtomicInt(4).value == 4
+     * </code></pre>
      */
     public var value(get, set):Int;
 
@@ -137,8 +141,10 @@ private class AtomicIntImpl {
 
 
     /**
+     * <pre><code>
      * >>> new AtomicInt(1).getAndIncrement()  == 1
      * >>> new AtomicInt(1).getAndIncrement(2) == 1
+     * </code></pre>
      */
     public function getAndIncrement(amount:Int=1):Int {
         lock.acquire();
@@ -150,8 +156,10 @@ private class AtomicIntImpl {
 
 
     /**
+     * <pre><code>
      * >>> new AtomicInt(1).incrementAndGet()  == 2
      * >>> new AtomicInt(1).incrementAndGet(2) == 3
+     * </code></pre>
      */
     public function incrementAndGet(amount:Int=1):Int {
         lock.acquire();
