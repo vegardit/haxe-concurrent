@@ -30,7 +30,7 @@ cd %~dp0
 REM extract GIT URL from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr url haxelib.json' ) do (set textLine=%%a)
 set REPO_URL=%textLine:"url": "=%
-set REPO_URL=%REPO_URL:",=%
+set REPO_URL=%REPO_URL:"=%
 echo REPO_URL=%REPO_URL%
 
 REM extract repo name from haxelib.json
@@ -40,13 +40,13 @@ echo REPO_NAME=%REPO_NAME%
 REM extract project version from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr version haxelib.json' ) do (set textLine=%%a)
 set PROJECT_VERSION=%textLine:"version": "=%
-set PROJECT_VERSION=%PROJECT_VERSION:",=%
-echo PROJECT_VERSION=%PROJECT_VERSION%
+set PROJECT_VERSION=%PROJECT_VERSION:"=%
 
+exit /b
 REM extract release note from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr releasenote haxelib.json' ) do (set textLine=%%a)
 set RELEASE_NOTE=%textLine:"releasenote": "=%
-set RELEASE_NOTE=%RELEASE_NOTE:",=%
+set RELEASE_NOTE=%RELEASE_NOTE:"=%
 echo RELEASE_NOTE=%RELEASE_NOTE%
 
 if not exist target mkdir target
