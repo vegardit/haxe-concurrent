@@ -18,6 +18,8 @@ package hx.concurrent;
 import hx.concurrent.atomic.AtomicBool;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.executor.Executor;
+import hx.concurrent.executor.Executor.ExecutorState;
 import hx.concurrent.internal.Dates;
 
 /**
@@ -196,17 +198,17 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
     function testTaskExecutor_shutdown() {
-        var executor = TaskExecutor.create(2);
-        assertEquals(executor.state, TaskExecutor.TaskExecutorState.RUNNING);
+        var executor = Executor.create(2);
+        assertEquals(executor.state, ExecutorState.RUNNING);
         executor.stop();
         _later(200, function() {
-            assertEquals(executor.state, TaskExecutor.TaskExecutorState.STOPPED);
+            assertEquals(executor.state, ExecutorState.STOPPED);
         });
     }
 
 
     function testTaskExecutor_shutdown_with_running_tasks() {
-        var executor = TaskExecutor.create(3);
+        var executor = Executor.create(3);
         var counter = new AtomicInt(0);
         var future = executor.submit(function() counter++, FIXED_RATE(20));
         var startAt = Dates.now();
@@ -220,13 +222,13 @@ class TestRunner extends hx.doctest.DocTestRunner {
         );
         _later(300, function() {
             assertTrue(future.isStopped);
-            assertEquals(executor.state, TaskExecutor.TaskExecutorState.STOPPED);
+            assertEquals(executor.state, ExecutorState.STOPPED);
         });
     }
 
 
     function testTaskExecutor_schedule_ONCE() {
-        var executor = TaskExecutor.create(3);
+        var executor = Executor.create(3);
 
         var flag1 = new AtomicBool(false);
         var flag2 = new AtomicBool(false);
@@ -258,7 +260,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
     function testTaskExecutor_schedule_RATE_DELAY() {
-        var executor = TaskExecutor.create(2);
+        var executor = Executor.create(2);
 
         var intervalMS = 20;
         var threadMS = 10;
@@ -308,7 +310,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
     function testTaskExecutor_schedule_HOURLY_DAILY_WEEKLY() {
-        var executor = TaskExecutor.create(3);
+        var executor = Executor.create(3);
 
         var hourlyCounter  = new AtomicInt(0);
         var dailyCounter  = new AtomicInt(0);
@@ -339,7 +341,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
-    var _asyncExecutor = TaskExecutor.create(3);
+    var _asyncExecutor = Executor.create(3);
     var _asyncTests = new AtomicInt(0);
     function _later(delayMS:Int, fn:Void->Void) {
         _asyncTests++;
