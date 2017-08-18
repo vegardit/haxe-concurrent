@@ -13,14 +13,26 @@ if errorlevel 1 (
 
 echo Compiling...
 haxe -main hx.concurrent.TestRunner ^
--swf-version 11.5 ^
 -lib haxe-doctest ^
 -cp "%CDP%..\src" ^
 -cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
 -D dump=pretty ^
+-swf-version 11.5 ^
 -swf "%CDP%..\target\flash\TestRunner.swf" || goto :eof
+
+REM enable Flash logging
+(
+    echo ErrorReportingEnable=1
+    echo TraceOutputFileEnable=1
+) > "%HOME%\mm.cfg"
 
 echo Testing...
 flashplayer_24_sa_debug "%CDP%..\target\flash\TestRunner.swf"
+set exitCode=%errorlevel%
+
+REM printing log file
+type "%HOME%\AppData\Roaming\Macromedia\Flash Player\Logs\flashlog.txt"
+
+exit /b %exitCode%

@@ -9,5 +9,6 @@
         "vegardit"
     ],
     "releasenote": "See https://github.com/vegardit/haxe-concurrent/blob/master/CHANGELOG.md",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "dependencies": { }
 }

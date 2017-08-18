@@ -2,7 +2,7 @@
 set CDP=%~dp0
 
 echo Cleaning...
-if exist "%CDP%dump\cpp" rd /s /q "%CDP%dump\cpp"
+if exist "%CDP%dump\cs" rd /s /q "%CDP%dump\cs"
 if exist "%CDP%..\target\cs" rd /s /q "%CDP%..\target\cs"
 
 haxelib list | findstr haxe-doctest >NUL

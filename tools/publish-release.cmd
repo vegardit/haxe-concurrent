@@ -1,7 +1,7 @@
 @echo off
-:: @author Sebastian Thomschke, Vegard IT GmbH
-::
-:: creates a new release in GitHub and haxelib.org
+REM @author Sebastian Thomschke, Vegard IT GmbH
+REM 
+REM creates a new release in GitHub and haxelib.org
 
 where zip.exe /Q
 if %errorlevel% neq 0 (
@@ -24,12 +24,13 @@ setlocal
 set DRAFT=false
 set PREPRELEASE=false
 
-:: cd into project root
+REM cd into project root
 cd %~dp0
 
 REM extract GIT URL from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr url haxelib.json' ) do (set textLine=%%a)
 set REPO_URL=%textLine:"url": "=%
+set REPO_URL=%REPO_URL:",=%
 set REPO_URL=%REPO_URL:"=%
 echo REPO_URL=%REPO_URL%
 
@@ -40,25 +41,27 @@ echo REPO_NAME=%REPO_NAME%
 REM extract project version from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr version haxelib.json' ) do (set textLine=%%a)
 set PROJECT_VERSION=%textLine:"version": "=%
+set PROJECT_VERSION=%PROJECT_VERSION:",=%
 set PROJECT_VERSION=%PROJECT_VERSION:"=%
+echo PROJECT_VERSION=%PROJECT_VERSION%
 
-exit /b
 REM extract release note from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr releasenote haxelib.json' ) do (set textLine=%%a)
 set RELEASE_NOTE=%textLine:"releasenote": "=%
+set RELEASE_NOTE=%RELEASE_NOTE:",=%
 set RELEASE_NOTE=%RELEASE_NOTE:"=%
 echo RELEASE_NOTE=%RELEASE_NOTE%
 
 if not exist target mkdir target
 
-:: create haxelib release
-if exist target/haxelib-upload.zip (
-    del target/haxelib-upload.zip
+REM create haxelib release
+if exist target\haxelib-upload.zip (
+    del target\haxelib-upload.zip
 )
 echo Building haxelib release...
 zip target\haxelib-upload.zip src haxelib.json LICENSE.txt CONTRIBUTING.md README.md -r -9 || goto :eof
 
-:: create github release https://developer.github.com/v3/repos/releases/#create-a-release
+REM create github release https://developer.github.com/v3/repos/releases/#create-a-release
 echo Creating GitHub release https://github.com/%REPO_NAME%/releases/tag/v%PROJECT_VERSION%...
 (
   echo {
@@ -69,10 +72,10 @@ echo Creating GitHub release https://github.com/%REPO_NAME%/releases/tag/v%PROJE
   echo "draft":%DRAFT%,
   echo "prerelease":%PREPRELEASE%
   echo }
-)>target/github_release.json
+)>target\github_release.json
 wget -qO- --post-file=target/github_release.json "https://api.github.com/repos/%REPO_NAME%/releases?access_token=%GITHUB_ACCESS_TOKEN%" || goto :eof
 
-:: submit haxelib release
+REM submit haxelib release
 echo Submitting haxelib release...
 haxelib submit target\haxelib-upload.zip
 
