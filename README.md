@@ -1,4 +1,5 @@
 # haxe-concurrent - cross platform concurrency support
+[![Build Status](https://travis-ci.org/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.org/vegardit/haxe-concurrent)
 
 1. [What is it?](#what-is-it)
 1. [The `Executor` class](#executor-class)
