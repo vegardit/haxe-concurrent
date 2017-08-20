@@ -376,15 +376,21 @@ class TestRunner extends hx.doctest.DocTestRunner {
                 }
 
                 var exitCode = results.getFailureCount() == 0 ? 0 : 1;
-                #if sys
-                    Sys.exit(exitCode);
-                #elseif js
-                    var isNodeJS = untyped __js__("(typeof process !== 'undefined') && (process.release.name === 'node')");
-                    if(isNodeJS) {
-                        untyped __js__("process.exit(exitCode)");
-                    } else {
-                        untyped __js__("phantom.exit(exitCode)");
-                    }
+                #if travix
+                    travix.Logger.exit(exitCode);
+                #else
+                    #if sys
+                        Sys.exit(exitCode);
+                    #elseif js
+                        var isPhantomJS = untyped __js__("(typeof phantom !== 'undefined')");
+                        if(isPhantomJS) {
+                            untyped __js__("phantom.exit(exitCode)");
+                        } else {
+                            untyped __js__("process.exit(exitCode)");
+                        }
+                    #elseif flash
+                        flash.system.System.exit(exitCode);
+                    #end
                 #end
             }
         };
