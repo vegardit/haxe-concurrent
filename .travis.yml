@@ -8,7 +8,6 @@ os:
   - osx
 
 haxe:
-  - "3.2.1"
   - "3.4.2"
   - development
 

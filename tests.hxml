@@ -3,3 +3,4 @@
 -main hx.concurrent.TestRunner
 -lib haxe-doctest
 -dce full
+-debug
