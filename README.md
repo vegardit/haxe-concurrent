@@ -18,7 +18,7 @@ All classes are under the package `hx.concurrent` or below.
 The library has been tested with Haxe 3.4.2 and 4.0 nightly on targets C++, C#, Flash, Java, JavaScript (node.js and phantom.js),
 PHP 5, PHP 7, Python 3.
 
-**Note:** When compiling for Flash the option `-swf-version 11.4` (or higher) must be specified.
+**Note:** When compiling for Flash the option `-swf-version 11.5` (or higher) must be specified.
 
 
 ## <a name="executor-class"></a>The `Executor` class

@@ -4,4 +4,4 @@
 -lib haxe-doctest
 -dce full
 -debug
--swf-version 11.4
+-swf-version 11.5
