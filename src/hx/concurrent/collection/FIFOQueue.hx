@@ -31,7 +31,7 @@ class FIFOQueue<T> {
     #elseif python
         var _queue:Dynamic;
     #else
-        var _queue = new Array<T>();
+        var _queue = new List<T>();
         var _queueLock = new RLock();
     #end
 
@@ -94,7 +94,7 @@ class FIFOQueue<T> {
     #else
     public function pop():Null<T> {
         _queueLock.acquire();
-        var msg = _queue.shift();
+        var msg = _queue.pop();
         _queueLock.release();
         return msg;
     }
@@ -116,7 +116,7 @@ class FIFOQueue<T> {
             _queue.append(msg);
         #else
             _queueLock.acquire();
-            _queue.unshift(msg);
+            _queue.push(msg);
             _queueLock.release();
         #end
     }
@@ -137,7 +137,7 @@ class FIFOQueue<T> {
             _queue.appendleft(msg);
         #else
             _queueLock.acquire();
-            _queue.push(msg);
+            _queue.add(msg);
             _queueLock.release();
         #end
     }
