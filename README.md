@@ -54,7 +54,6 @@ class Test {
         executor.submit(myTask, ONCE(2000));            // async one-time execution with a delay of 2 seconds
         executor.submit(myTask, FIXED_RATE(200));       // repeated async execution every 200ms
         executor.submit(myTask, FIXED_DELAY(200));      // repeated async execution 200ms after the last execution
-        executor.submit(myTask, FIXED_DELAY(200));      // repeated async execution 200ms after the last execution
         executor.submit(myTask, HOURLY(30));            // async execution 30min after each full hour
         executor.submit(myTask, DAILY(3, 30));          // async execution daily at 3:30
         executor.submit(myTask, WEEKLY(SUNDAY, 3, 30)); // async execution sundays at 3:30

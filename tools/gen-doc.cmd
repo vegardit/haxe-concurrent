@@ -1,7 +1,8 @@
 @echo off
 REM @author Sebastian Thomschke, Vegard IT GmbH
 REM
-REM generates API documentation using dox
+REM generates API documentation using dox at <project_root>\target\site
+
 set CDP=%~dp0
 
 pushd .
@@ -12,7 +13,7 @@ popd
 setlocal
 
 set TOP_LEVEL_PACKAGE=hx.concurrent
-set OWNER=http://vegardit.com
+set OWNER=https://vegardit.com
 
 REM extract GIT URL from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr url "%CDP%..\haxelib.json"' ) do (set textLine=%%a)
@@ -63,7 +64,7 @@ haxelib run dox ^
  -D themeColor 0x00658F ^
  -D version "%PROJECT_VERSION%" ^
  -D website "%OWNER%" ^
- -ex "^%OWNER:.=\.%\.internal" ^
+ -ex "^%TOP_LEVEL_PACKAGE:.=\.%\.internal" ^
  -i "%TARGET%\doc.xml" ^
  -o "%TARGET%\site"
 
