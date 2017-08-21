@@ -24,6 +24,7 @@ haxe -main hx.concurrent.TestRunner ^
 -cp "%CDP%..\test" ^
 -dce full ^
 -debug ^
+-D net-ver=45 ^
 -D dump=pretty ^
 -cs "%CDP%..\target\cs" || goto :eof
 
