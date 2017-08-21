@@ -24,6 +24,7 @@ import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
 
 /**
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 #if (cpp||cs||java||neko||python)

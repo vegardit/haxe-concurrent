@@ -17,8 +17,8 @@ package hx.concurrent;
 
 import hx.concurrent.internal.Dates;
 
-
 /**
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 interface Future<T> {

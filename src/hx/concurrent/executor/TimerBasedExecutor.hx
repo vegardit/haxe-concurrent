@@ -23,6 +23,7 @@ import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
 
 /**
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class TimerBasedExecutor extends Executor {

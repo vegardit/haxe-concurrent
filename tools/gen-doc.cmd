@@ -1,6 +1,6 @@
 @echo off
 REM @author Sebastian Thomschke, Vegard IT GmbH
-REM 
+REM
 REM generates API documentation using dox
 set CDP=%~dp0
 
