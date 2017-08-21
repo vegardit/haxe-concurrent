@@ -63,7 +63,7 @@ class Test {
 
         // check if a result is already available
         switch(future.result) {
-            case SUCCESS(result, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $result');
+            case SUCCESS(value, time, _):  trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
             case EXCEPTION(ex, time, _):   trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
             case NONE:                     trace("No result yet...");
         }
