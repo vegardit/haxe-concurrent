@@ -70,7 +70,7 @@ class FIFOQueue<T> {
                 msg = try _queue.pop() catch(e:Dynamic) null;
             #else
                 _queueLock.acquire();
-                msg = _queue.shift();
+                msg = _queue.pop();
                 _queueLock.release();
             #end
         } else {
@@ -83,7 +83,7 @@ class FIFOQueue<T> {
                     msg = try _queue.pop() catch(e:Dynamic) null;
                 #else
                     _queueLock.acquire();
-                    msg = _queue.shift();
+                    msg = _queue.pop();
                     _queueLock.release();
                 #end
                 return msg != null;
