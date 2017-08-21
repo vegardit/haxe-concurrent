@@ -123,7 +123,7 @@ class ScheduleTools {
 
     /**
      * @return schedule with default values applied if required.
-     * @throws if any argument is out-of range
+     * @throws exception if any argument is out-of range
      */
     public static function assertValid(schedule:Schedule):Schedule {
         schedule = applyDefaults(schedule);

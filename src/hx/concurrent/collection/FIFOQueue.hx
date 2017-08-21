@@ -104,7 +104,7 @@ class FIFOQueue<T> {
     /**
      * Skips the quue and adds the given message to the head of the queue.
      *
-     * @throws if given msg is null
+     * @throws exception if given msg is null
      */
     public function pushHead(msg:T):Void {
         if (msg == null) throw "[msg] must not be null";
@@ -125,7 +125,7 @@ class FIFOQueue<T> {
     /**
      * Add a message at the end of the queue.
      *
-     * @throws if given msg is null
+     * @throws exception if given msg is null
      */
     public function push(msg:T):Void {
         if (msg == null) throw "[msg] must not be null";
