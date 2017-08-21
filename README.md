@@ -4,6 +4,7 @@
 1. [What is it?](#what-is-it)
 1. [The `Executor` class](#executor-class)
 1. [`hx.concurrent.atomic` package](#atomic-package)
+1. [`hx.concurrent.event` package](#event-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
 1. [License](#license)
@@ -32,7 +33,7 @@ On platform with the thread support (C++, C#, Neko, Python, Java) threads are us
 other platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
-import hx.concurrent.executor.Executor;
+import hx.concurrent.executor.*;
 
 class Test {
 
@@ -81,12 +82,63 @@ class Test {
 
 ## <a name="atomic-package"></a>The `hx.concurrent.atomic` package
 
-The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic) package contains
-mutable value holder classes that allow for thread.safe manipulation:
+The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic) package contains mutable value holder classes that allow for thread.safe manipulation:
 
 * [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicBool.hx)
 * [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicInt.hx)
 * [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicValue.hx)
+
+
+## <a name="event-package"></a>The `hx.concurrent.event` package
+
+The [hx.current.event](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
+
+```haxe
+import hx.concurrent.executor.*;
+import hx.concurrent.event.*;
+
+class Test {
+
+    static function main() {
+        /**
+         * create a dispatcher that notifies listeners/callbacks synchronously in the current thread
+         */
+        var syncDispatcher = new SyncEventDispatcher<String>(); // events are of type string
+
+        // create event listener
+        var onEvent = function(event:String):Void {
+            trace('Received event: $event');
+        }
+
+        syncDispatcher.subscribe(onEvent);
+
+        // notify all registered listeners synchronously,
+        // meaning this method call blocks until all listeners are finished executing
+        syncDispatcher.fire("Hey there");
+
+        /**
+         * create a dispatcher that notifies listeners ansychronously using an execturo
+         */
+        var executor = Executor.create(5); // thread-pool with 5 threads
+        var asyncDispatcher = new AsyncEventDispatcher<String>(executor);
+
+        // notify all registered listeners asynchronously,
+        // meaning this method call returns immediately
+        asyncDispatcher.fire("Hey there");
+
+        // fire another event and get notified when all listeners where notified
+        var future = asyncDipatcher.fire("Boom");
+
+        future.onResult = function(result:Future.FutureResult<Int>) {
+            switch(result) {
+                case SUCCESS(count, _): trace('$count listeners were successfully notified');
+                case EXCEPTION(ex, _): trace('Event could not be delivered because of: $ex');
+            }
+        };
+
+    }
+}
+```
 
 
 ## <a name="installation"></a>Installation

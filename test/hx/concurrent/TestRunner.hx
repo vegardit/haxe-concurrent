@@ -18,6 +18,9 @@ package hx.concurrent;
 import hx.concurrent.atomic.AtomicBool;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.event.AsyncEventDispatcher;
+import hx.concurrent.event.EventDispatcherWithHistory;
+import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
 import hx.concurrent.executor.Executor.ExecutorState;
 import hx.concurrent.internal.Dates;
@@ -195,6 +198,78 @@ class TestRunner extends hx.doctest.DocTestRunner {
         assertEquals(i.value, 10);
     }
     #end
+
+
+    function testEventDispatcher_Async() {
+        var executor = Executor.create(2);
+        var disp = new AsyncEventDispatcher(executor);
+
+        var listener1Count = new AtomicInt();
+        var listener1 = function(event:String) {
+            listener1Count.incrementAndGet();
+        }
+
+        assertTrue(disp.subscribe(listener1));
+        assertFalse(disp.subscribe(listener1));
+
+        var fut1 = disp.fire("123");
+        var fut2 = disp.fire("1234567890");
+
+        _later(100, function() {
+            executor.stop();
+            assertEquals(2, listener1Count.value);
+            switch(fut1.result) {
+                case SUCCESS(v,_): assertEquals(1, v);
+                default: fail();
+            }
+            switch(fut2.result) {
+                case SUCCESS(v,_): assertEquals(1, v);
+                default: fail();
+            }
+        });
+
+    }
+
+
+    function testEventDispatcher_WithHistory() {
+        var disp = new EventDispatcherWithHistory<String>(new SyncEventDispatcher<String>());
+
+        switch(disp.fire("123").result) {
+            case SUCCESS(v,_): assertEquals(0, v);
+            default: fail();
+        }
+        switch(disp.fire("1234567890").result) {
+            case SUCCESS(v,_): assertEquals(0, v);
+            default: fail();
+        }
+
+        var listener1Count = new AtomicInt();
+        var listener1 = function(event:String) {
+            listener1Count.incrementAndGet();
+        }
+        assertTrue(disp.subscribeAndReplayHistory(listener1));
+        assertFalse(disp.subscribeAndReplayHistory(listener1));
+        assertEquals(2, listener1Count.value);
+    }
+
+
+    function testEventDispatcher_Sync() {
+        var disp = new SyncEventDispatcher<String>();
+
+        var listener1Count = new AtomicInt();
+        var listener1 = function(event:String) {
+            listener1Count.incrementAndGet();
+        }
+
+        assertTrue(disp.subscribe(listener1));
+        assertFalse(disp.subscribe(listener1));
+
+        switch(disp.fire("123").result) {
+            case SUCCESS(v,_): assertEquals(1, v);
+            default: fail();
+        }
+        assertEquals(1, listener1Count.value);
+    }
 
 
     function testTaskExecutor_shutdown() {
