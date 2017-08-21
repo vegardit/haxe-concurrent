@@ -4,4 +4,5 @@
 -lib haxe-doctest
 -dce full
 -debug
--swf-version 11.5
+-swf-version 11.5  # setting for flash target
+-D net-ver=45      # setting for cs target
