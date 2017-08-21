@@ -134,6 +134,7 @@ class ThreadBasedExecutor extends Executor {
 
     override
     public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
+
         return _stateLock.execute(function() {
             if (state != RUNNING)
                 throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
@@ -156,6 +157,7 @@ class ThreadBasedExecutor extends Executor {
     }
 }
 
+
 private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
 
     public var result(default, null):FutureResult<T>;
@@ -164,9 +166,9 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
     public var isStopped(default, null) = false;
 
     public var onResult(default, set):FutureResult<T>->Void = null;
-    var _onResultLock:RLock = new RLock();
     inline function set_onResult(fn:FutureResult<T>->Void) {
-        return _onResultLock.execute(function() {
+        return _sync.execute(function() {
+            // immediately invoke the callback function in case a result is already present
             if(fn != null) switch(this.result) {
                 case NONE(_):
                 default: fn(this.result);
@@ -176,13 +178,16 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
     }
 
     var _nextRunAt:Float;
+    var _sync:RLock = new RLock();
     var _task:Either2<Void->T,Void->Void>;
+
 
     public function new(task:Either2<Void->T,Void->Void>, schedule:Schedule) {
         _task = task;
         result = FutureResult.NONE(this);
 
         this.schedule = ScheduleTools.assertValid(schedule);
+
         this._nextRunAt = ScheduleTools.firstRunAt(this.schedule);
     }
 
@@ -221,14 +226,14 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
         } catch (e:Dynamic)
             result = FutureResult.EXCEPTION(ConcurrentException.capture(e), Dates.now(), this);
 
-        // calculate next run for FIXED_DELAY
-        switch(schedule) {
-            case ONCE(_):                    isStopped = true;
-            case FIXED_DELAY(intervalMS, _): _nextRunAt = Dates.now() + intervalMS;
-            default: /*nothing*/
-        };
+        _sync.execute(function() {
+            // calculate next run for FIXED_DELAY
+            switch(schedule) {
+                case ONCE(_):                    isStopped = true;
+                case FIXED_DELAY(intervalMS, _): _nextRunAt = Dates.now() + intervalMS;
+                default: /*nothing*/
+            }
 
-        _onResultLock.execute(function() {
             this.result = result;
             if (onResult != null)
                 onResult(result);
@@ -240,6 +245,7 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
     public function cancel():Void {
         isStopped = true;
     }
+
 
     public function waitAndGet(timeoutMS:Int):FutureResult<T> {
 

@@ -32,7 +32,8 @@ interface Future<T> {
     public var result(default, null):FutureResult<T>;
 
     /**
-     * Callback function `function(result:FutureResult<T>):Void` to be executed when a result comes available.
+     * Callback function `function(result:FutureResult<T>):Void` to be executed when a result comes
+     * available or immediately in case a result is already present.
      *
      * Replaces any previously registered onResult function.
      */

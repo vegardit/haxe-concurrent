@@ -70,6 +70,8 @@ class TimerBasedExecutor extends Executor {
         });
     }
 }
+
+
 private class TimerBasedTaskFuture<T> implements TaskFuture<T> {
 
     public var result(default, null):FutureResult<T>;
@@ -80,6 +82,7 @@ private class TimerBasedTaskFuture<T> implements TaskFuture<T> {
     public var onResult(default, set):FutureResult<T>->Void = null;
     inline function set_onResult(fn:FutureResult<T>->Void) {
         return _sync.execute(function() {
+            // immediately invoke the callback function in case a result is already present
             if(fn != null) switch(this.result) {
                 case NONE(_):
                 default: fn(this.result);
@@ -126,17 +129,18 @@ private class TimerBasedTaskFuture<T> implements TaskFuture<T> {
                 case a(fn): fn();
                 case b(fn): fn(); null;
             }
-
             result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
         } catch (e:Dynamic)
             result = FutureResult.EXCEPTION(ConcurrentException.capture(e), Dates.now(), this);
 
         _sync.execute(function() {
+            // calculate next run for FIXED_DELAY
             switch(schedule) {
                 case ONCE(_): isStopped = true;
                 case FIXED_DELAY(intervalMS, _): _timer = haxe.Timer.delay(this.run, intervalMS);
-                default:
+                default: /*nothing*/
             }
+
             this.result = result;
             if (onResult != null)
                 onResult(result);
