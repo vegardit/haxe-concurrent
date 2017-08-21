@@ -28,6 +28,7 @@ class Executor {
 
     static var NOW_ONCE = Schedule.ONCE(0);
 
+
     /**
      * Creates a new target specific task executor instance.
      *
@@ -41,8 +42,10 @@ class Executor {
         #end
     }
 
+
     public var state(default, null):ExecutorState = RUNNING;
     var _stateLock:RLock = new RLock();
+
 
     /**
      * Submits the given task for background execution.
@@ -56,6 +59,7 @@ class Executor {
         throw "Not implemented";
     }
 
+
     /**
      * Initiates a graceful shutdown of this executor. Canceling execution of all scheduled tasks.
      */
@@ -67,15 +71,32 @@ class Executor {
     }
 }
 
+/**
+ * Represents the runtime state of an executore instance
+ */
 enum ExecutorState {
+    /**
+     * Executor accepts new tasks and processes submitted tasks.
+     */
     RUNNING;
+
+    /**
+     * Executor is shutting down and does not accept new tasks but is currently executing previously submitted tasks.
+     */
     STOPPING;
+
+    /**
+     * Executor does not accept new tasks and does not process any previously submitted tasks.
+     */
     STOPPED;
 }
 
 
 interface TaskFuture<T> extends Future<T> {
 
+    /**
+     * The effective schedule of the task.
+     */
     public var schedule(default, null):Schedule;
 
     /**
