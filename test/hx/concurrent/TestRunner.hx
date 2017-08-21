@@ -234,9 +234,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var flag2 = new AtomicBool(false);
         var flag3 = new AtomicBool(false);
         var startAt = Dates.now();
-        var future1 = executor.submit(function() flag1.negate(), ONCE(0));
-        var future2 = executor.submit(function() flag2.negate(), ONCE(100));
-        var future3 = executor.submit(function() flag3.negate(), ONCE(100));
+        var future1 = executor.submit(function():Void flag1.negate(), ONCE(0));
+        var future2 = executor.submit(function():Void flag2.negate(), ONCE(100));
+        var future3 = executor.submit(function():Void flag3.negate(), ONCE(100));
         _later(10, function() {
             assertTrue(flag1.value);
             assertFalse(flag2.value);

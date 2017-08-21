@@ -40,7 +40,7 @@ class Test {
         var executor = Executor.create(3);  // <- 3 means to use a thread pool of 3 threads on platforms that support threads
         // depending on the platform either a thread-based or timer-based implementation is returned
 
-        // define a task to be executed concurrently/async/scheduled
+        // define a function to be executed concurrently/async/scheduled (return type can also be Void)
         var myTask=function():Date {
             trace("Executing...");
             return Date.now();

@@ -20,6 +20,7 @@ import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.FIFOQueue;
 import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
+import hx.concurrent.internal.Either2;
 
 /**
  * A scheduler/work manager that executes submitted tasks asynchronously or concurrently
@@ -50,12 +51,12 @@ class Executor {
     /**
      * Submits the given task for background execution.
      *
-     * @param task the function to be executed
+     * @param task the function to be executed either `function():T {}` or `function():Void {}`
      * @param schedule the task's execution schedule, if not specified Schedule.ONCE(0) is used
      *
      * @throws exception if in state TaskExecutorState#STOPPING or TaskExecutorState#STOPPED
      */
-    public function submit<T>(task:Void->T, ?schedule:Schedule):TaskFuture<T> {
+    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
         throw "Not implemented";
     }
 
@@ -69,7 +70,6 @@ class Executor {
         });
     }
 }
-
 
 enum ExecutorState {
     RUNNING;
@@ -211,7 +211,7 @@ private class ThreadBasedExecutor extends Executor {
 
 
     override
-    public function submit<T>(task:Void->T, ?schedule:Schedule):TaskFuture<T> {
+    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
         return _stateLock.execute(function() {
             if (state != RUNNING)
                 throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
@@ -254,9 +254,9 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
     }
 
     var _nextRunAt:Float;
-    var _task:Void->T;
+    var _task:Either2<Void->T,Void->Void>;
 
-    public function new(task:Void->T, schedule:Schedule) {
+    public function new(task:Either2<Void->T,Void->Void>, schedule:Schedule) {
         _task = task;
         result = FutureResult.NONE(this);
 
@@ -291,7 +291,10 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
 
         var result:FutureResult<T> = null;
         try {
-            var resultValue:T = _task();
+            var resultValue:T = switch(_task.value) {
+                case a(fn): fn();
+                case b(fn): fn(); null;
+            }
             result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
         } catch (e:Dynamic)
             result = FutureResult.EXCEPTION(ConcurrentException.capture(e), Dates.now(), this);
@@ -340,7 +343,7 @@ private class TimerBasedExecutor extends Executor {
 
 
     override
-    public function submit<T>(task:Void->T, ?schedule:Schedule):TaskFuture<T> {
+    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
 
         return _stateLock.execute(function() {
             if (state != RUNNING)
@@ -393,11 +396,11 @@ private class TimerBasedTaskFuture<T> implements TaskFuture<T> {
     }
 
     var _sync:RLock = new RLock();
-    var _task:Void->T;
+    var _task:Either2<Void->T,Void->Void>;
     var _timer:haxe.Timer;
 
 
-    public function new(task:Void->T, schedule:Schedule) {
+    public function new(task:Either2<Void->T,Void->Void>, schedule:Schedule) {
         _task = task;
         result = FutureResult.NONE(this);
 
@@ -426,7 +429,11 @@ private class TimerBasedTaskFuture<T> implements TaskFuture<T> {
 
         var result:FutureResult<T> = null;
         try {
-            var resultValue:T = _task();
+            var resultValue:T = switch(_task.value) {
+                case a(fn): fn();
+                case b(fn): fn(); null;
+            }
+
             result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
         } catch (e:Dynamic)
             result = FutureResult.EXCEPTION(ConcurrentException.capture(e), Dates.now(), this);
