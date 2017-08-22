@@ -20,7 +20,52 @@ package hx.concurrent.event;
  */
 interface EventListenable<EVENT> {
 
+    /**
+     * @return false if was subscribed already
+     */
     function subscribe(listener:EVENT->Void):Bool;
 
+    /**
+     * @return false if was not subscribed
+     */
     function unsubscribe(listener:EVENT->Void):Bool;
+}
+
+
+@:abstract
+class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
+
+    var _eventListeners = new Array<EVENT->Void>();
+    var _eventListenersLock = new RLock();
+
+    public function subscribe(listener:EVENT->Void):Bool  {
+        if (listener == null)
+            throw "[listener] must not be null";
+
+        return _eventListenersLock.execute(function() {
+            if (_eventListeners.indexOf(listener) > -1)
+                return false;
+
+            var newList = _eventListeners.copy();
+            newList.push(listener);
+            _eventListeners = newList;
+            return true;
+        });
+    }
+
+
+    public function unsubscribe(listener:EVENT->Void):Bool {
+        if (listener == null)
+            throw "[listener] must not be null";
+
+        return _eventListenersLock.execute(function() {
+            if (_eventListeners.indexOf(listener) == -1)
+                return false;
+
+            var newList = _eventListeners.copy();
+            newList.remove(listener);
+            _eventListeners = newList;
+            return true;
+        });
+    }
 }

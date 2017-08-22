@@ -53,7 +53,7 @@ enum FutureResult<T> {
      * Indicates an error during the last execution attempt.
      * @param time when the failure occured
      */
-    EXCEPTION(ex:ConcurrentException, time:Float, future:Future<T>);
+    FAILURE(ex:ConcurrentException, time:Float, future:Future<T>);
 
     /**
      * Indicates no result has been computed yet

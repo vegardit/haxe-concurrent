@@ -28,7 +28,6 @@ class Executor {
 
     static var NOW_ONCE = Schedule.ONCE(0);
 
-
     /**
      * Creates a new target specific task executor instance.
      *
@@ -42,10 +41,17 @@ class Executor {
         #end
     }
 
+    /**
+     * Global callback function `function(result:FutureResult<T>):Void` to be executed when a
+     * new result comes available for any task.
+     *
+     * Replaces any previously registered onResult function.
+     */
+    public var onResult:FutureResult<Dynamic>->Void;
+
 
     public var state(default, null):ExecutorState = RUNNING;
     var _stateLock:RLock = new RLock();
-
 
     /**
      * Submits the given task for background execution.
@@ -55,7 +61,7 @@ class Executor {
      *
      * @throws exception if in state TaskExecutorState#STOPPING or TaskExecutorState#STOPPED
      */
-    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
+    public function submit<T>(task:Task<T>, ?schedule:Schedule):TaskFuture<T> {
         throw "Not implemented";
     }
 
@@ -69,7 +75,10 @@ class Executor {
                 state = ExecutorState.STOPPING;
         });
     }
+
 }
+
+typedef Task<T> = Either2<Void->T,Void->Void>;
 
 
 /**
@@ -122,3 +131,55 @@ interface TaskFuture<T> extends Future<T> {
     public function waitAndGet(timeoutMS:Int):FutureResult<T>;
     #end
 }
+
+class TaskFutureBase<T> implements TaskFuture<T> {
+
+    public var result(default, null):FutureResult<T>;
+
+    public var schedule(default, null):Schedule;
+    public var isStopped(default, null) = false;
+
+    public var onResult(default, set):FutureResult<T>->Void = null;
+    inline function set_onResult(fn:FutureResult<T>->Void) {
+        // immediately invoke the callback function in case a result is already present
+        if (fn != null) {
+            var result = this.result;
+            switch(result) {
+                case NONE(_):
+                default: fn(result);
+            }
+        }
+        return onResult = fn;
+    }
+
+    var _executor:Executor;
+    var _task:Task<T>;
+
+    function new(executor:Executor, task:Task<T>, schedule:Schedule) {
+        _executor = executor;
+        _task = task;
+
+        this.schedule = Schedule.ScheduleTools.assertValid(schedule);
+        this.result = FutureResult.NONE(this);
+    }
+
+    public function cancel():Void {
+        isStopped = true;
+    }
+
+
+    #if (cpp||cs||java||neko||python)
+    public function waitAndGet(timeoutMS:Int):FutureResult<T> {
+        Threads.wait(function() {
+            return switch(this.result) {
+                case NONE(_): false;
+                default: true;
+            };
+        }, timeoutMS, ThreadBasedExecutor.SCHEDULER_RESOLUTION_SEC);
+
+        return this.result;
+    }
+    #end
+}
+
+

@@ -290,12 +290,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
         _later(200, function() {
             var v = counter.value;
             assertFalse(future.isStopped);
-            assertTrue(v >= 10 * 0.75);
-            assertTrue(v <= 10 * 1.25);
+            assertTrue(v >= 10 * 0.60);
+            assertTrue(v <= 10 * 1.40);
             executor.stop();
         }
         );
-        _later(300, function() {
+        _later(400, function() {
             assertTrue(future.isStopped);
             assertEquals(executor.state, ExecutorState.STOPPED);
         });
@@ -362,14 +362,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
         _later(waitMS, function() {
             future1.cancel();
             v1.value = fixedRateCounter.value;
-            assertTrue(v1.value <= (waitMS / intervalMS) * 1.25);
-            assertTrue(v1.value >= (waitMS / intervalMS) * 0.75);
+            assertTrue(v1.value <= (waitMS / intervalMS) * 1.4);
+            assertTrue(v1.value >= (waitMS / intervalMS) * 0.6);
 
             #if (cpp||cs||java||neko||python)
             future2.cancel();
             v2.value = fixedDelayCounter.value;
-            assertTrue(v2.value <= (waitMS / (intervalMS + threadMS)) * 1.25);
-            assertTrue(v2.value >= (waitMS / (intervalMS + threadMS)) * 0.75);
+            assertTrue(v2.value <= (waitMS / (intervalMS + threadMS)) * 1.4);
+            assertTrue(v2.value >= (waitMS / (intervalMS + threadMS)) * 0.6);
             assertTrue(v1 > v2);
             #end
         });
@@ -390,14 +390,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var hourlyCounter  = new AtomicInt(0);
         var dailyCounter  = new AtomicInt(0);
         var weeklyCounter  = new AtomicInt(0);
-        var d = Date.fromTime(Dates.now() + 1000);
+        var d = Date.fromTime(Dates.now() + 2000);
         var future1 = executor.submit(function() hourlyCounter.increment(), HOURLY(d.getMinutes(), d.getSeconds()));
         var future2 = executor.submit(function() dailyCounter.increment(),  DAILY(d.getHours(), d.getMinutes(), d.getSeconds()));
         var future3 = executor.submit(function() weeklyCounter.increment(), WEEKLY(d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()));
         assertEquals(hourlyCounter.value, 0);
         assertEquals(dailyCounter.value, 0);
         assertEquals(weeklyCounter.value, 0);
-        _later(1500, function() {
+        _later(2500, function() {
             assertEquals(hourlyCounter.value, 1);
             assertEquals(dailyCounter.value, 1);
             assertEquals(weeklyCounter.value, 1);
@@ -408,7 +408,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             executor.stop();
         });
 
-        _later(1600, function() {
+        _later(2600, function() {
             assertTrue(future1.isStopped);
             assertTrue(future2.isStopped);
             assertTrue(future3.isStopped);

@@ -18,7 +18,9 @@ package hx.concurrent.executor;
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
+import hx.concurrent.executor.Executor.TaskFutureBase;
 import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
@@ -139,7 +141,7 @@ class ThreadBasedExecutor extends Executor {
             if (state != RUNNING)
                 throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
 
-            var future = new ThreadBasedTaskFuture<T>(task, schedule == null ? Executor.NOW_ONCE : schedule);
+            var future = new ThreadBasedTaskFuture<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
 
             // skip round-trip via scheduler for one-shot tasks that should be executed immediately
             switch(schedule) {
@@ -158,36 +160,13 @@ class ThreadBasedExecutor extends Executor {
 }
 
 
-private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
-
-    public var result(default, null):FutureResult<T>;
-
-    public var schedule(default, null):Schedule;
-    public var isStopped(default, null) = false;
-
-    public var onResult(default, set):FutureResult<T>->Void = null;
-    inline function set_onResult(fn:FutureResult<T>->Void) {
-        return _sync.execute(function() {
-            // immediately invoke the callback function in case a result is already present
-            if(fn != null) switch(this.result) {
-                case NONE(_):
-                default: fn(this.result);
-            }
-            return onResult = fn;
-        });
-    }
+private class ThreadBasedTaskFuture<T> extends TaskFutureBase<T> {
 
     var _nextRunAt:Float;
-    var _sync:RLock = new RLock();
-    var _task:Either2<Void->T,Void->Void>;
 
 
-    public function new(task:Either2<Void->T,Void->Void>, schedule:Schedule) {
-        _task = task;
-        result = FutureResult.NONE(this);
-
-        this.schedule = ScheduleTools.assertValid(schedule);
-
+    public function new(executor:ThreadBasedExecutor, task:Either2<Void->T,Void->Void>, schedule:Schedule) {
+        super(executor, task, schedule);
         this._nextRunAt = ScheduleTools.firstRunAt(this.schedule);
     }
 
@@ -224,39 +203,21 @@ private class ThreadBasedTaskFuture<T> implements TaskFuture<T> {
             }
             result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
         } catch (e:Dynamic)
-            result = FutureResult.EXCEPTION(ConcurrentException.capture(e), Dates.now(), this);
+            result = FutureResult.FAILURE(ConcurrentException.capture(e), Dates.now(), this);
 
-        _sync.execute(function() {
-            // calculate next run for FIXED_DELAY
-            switch(schedule) {
-                case ONCE(_):                    isStopped = true;
-                case FIXED_DELAY(intervalMS, _): _nextRunAt = Dates.now() + intervalMS;
-                default: /*nothing*/
-            }
+        // calculate next run for FIXED_DELAY
+        switch(schedule) {
+            case ONCE(_):                    isStopped = true;
+            case FIXED_DELAY(intervalMS, _): _nextRunAt = Dates.now() + intervalMS;
+            default: /*nothing*/
+        }
 
-            this.result = result;
-            if (onResult != null)
-                onResult(result);
-        }, true);
-    }
+        this.result = result;
 
-
-    inline
-    public function cancel():Void {
-        isStopped = true;
-    }
-
-
-    public function waitAndGet(timeoutMS:Int):FutureResult<T> {
-
-        Threads.wait(function() {
-            return switch(this.result) {
-                case NONE(_): false;
-                default: true;
-            };
-        }, timeoutMS, ThreadBasedExecutor.SCHEDULER_RESOLUTION_SEC);
-
-        return this.result;
+        var fn = this.onResult;
+        if (fn != null) try fn(result) catch (ex:Dynamic) {};
+        var fn = _executor.onResult;
+        if (fn != null) try fn(result) catch (ex:Dynamic) {};
     }
 }
 #end

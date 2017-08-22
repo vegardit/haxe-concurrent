@@ -64,9 +64,9 @@ class Test {
 
         // check if a result is already available
         switch(future.result) {
-            case SUCCESS(value, time, _):  trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
-            case EXCEPTION(ex, time, _):   trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
-            case NONE:                     trace("No result yet...");
+            case SUCCESS(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
+            case FAILURE(ex, time, _):    trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
+            case NONE:                    trace("No result yet...");
         }
 
         // check if the task is scheduled to be executed (again) in the future
@@ -132,7 +132,7 @@ class Test {
         future.onResult = function(result:Future.FutureResult<Int>) {
             switch(result) {
                 case SUCCESS(count, _): trace('$count listeners were successfully notified');
-                case EXCEPTION(ex, _): trace('Event could not be delivered because of: $ex');
+                case FAILURE(ex, _): trace('Event could not be delivered because of: $ex');
             }
         };
 

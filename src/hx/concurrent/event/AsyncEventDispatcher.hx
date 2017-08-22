@@ -22,10 +22,8 @@ import hx.concurrent.executor.Executor;
  *
  * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
  */
-class AsyncEventDispatcher<EVENT> implements EventDispatcher<EVENT> {
+class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
-    var _eventListeners = new Array<EVENT->Void>();
-    var _eventListenersLock = new RLock();
     var _executor:Executor;
 
 
@@ -40,9 +38,8 @@ class AsyncEventDispatcher<EVENT> implements EventDispatcher<EVENT> {
     /**
      * @return the number of listeners notified successfully
      */
-    inline
     public function fire(event:EVENT):Future<Int> {
-        var listeners:Array<EVENT->Void> = _eventListenersLock.execute(function() return _eventListeners.copy());
+        var listeners = _eventListeners;
         return _executor.submit(function():Int {
             var count = 0;
             for (listener in listeners) {
@@ -58,28 +55,6 @@ class AsyncEventDispatcher<EVENT> implements EventDispatcher<EVENT> {
     }
 
 
-    public function subscribe(listener:EVENT->Void):Bool  {
-        if (listener == null)
-            throw "[listener] must not be null";
-
-        return _eventListenersLock.execute(function() {
-            if (_eventListeners.indexOf(listener) > -1)
-                return false;
-            _eventListeners.push(listener);
-            return true;
-        });
-    }
-
-
-    public function unsubscribe(listener:EVENT->Void):Bool {
-        if (listener == null)
-            throw "[listener] must not be null";
-
-        return _eventListenersLock.execute(function() return _eventListeners.remove(listener));
-    }
-
-
-    inline
     public function unsubscribeAll():Void {
         _eventListenersLock.execute(function() _eventListeners = []);
     }
