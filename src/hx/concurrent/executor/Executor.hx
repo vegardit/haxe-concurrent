@@ -38,10 +38,10 @@ class Executor extends ServiceBase {
      */
     public static function create(maxConcurrent:Int = 1):Executor {
         #if threads
-            return new ThreadPoolExecutor(maxConcurrent);
-        #else
-            return new TimerExecutor();
+            if (Threads.isSupported())
+                return new ThreadPoolExecutor(maxConcurrent);
         #end
+        return new TimerExecutor();
     }
 
     /**

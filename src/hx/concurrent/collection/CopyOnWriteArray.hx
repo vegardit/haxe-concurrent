@@ -292,7 +292,11 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      */
     inline
     public function lastIndexOf(x:T, ?startAt:Int):Int {
+        #if flash
+        return _items.lastIndexOf(x, startAt == null ? _items.length - 1 : startAt);
+        #else
         return _items.lastIndexOf(x, startAt);
+        #end
     }
 
     /**
@@ -360,7 +364,11 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      */
     inline
     public function toString():String {
+        #if flash
+        return "[" + _items.toString() + "]";
+        #else
         return _items.toString();
+        #end
     }
 
 }

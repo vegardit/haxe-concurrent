@@ -32,6 +32,25 @@ class Threads {
         Sys.sleep(timeMS/1000);
     }
 
+    #if !python
+    inline
+    #end
+    public static function isSupported():Bool {
+        #if threads
+            #if python
+                try {
+                    python.Syntax.pythonCode("from threading import Thread");
+                    return true;
+                } catch (ex:Dynamic) {
+                    return false;
+                }
+            #end
+            return true;
+        #else
+            return false;
+        #end
+    }
+
     #if threads
     /**
      * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.

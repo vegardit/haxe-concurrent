@@ -59,6 +59,7 @@ class ConcurrentException {
     }
 
 
+    #if python @:keep #end
     public function toString():String {
         var sb = new StringBuf();
         sb.add("rethrown exception:\n");
