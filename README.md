@@ -23,7 +23,7 @@ PHP 5, PHP 7, Python 3.
 
 **Note:**
 * When compiling for Flash the option `-swf-version 11.5` (or higher) must be specified, otherwise you will get `Class flash.concurrent::Condition could not be found.`
-* When compiling for Flash the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
+* When compiling for C# the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
 
 
 ## <a name="atomic-package"></a>The `hx.concurrent.atomic` package

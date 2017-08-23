@@ -28,8 +28,12 @@ matrix:
   fast_finish: true
   allow_failures:
     - haxe: development
+    - haxe: "3.4.2"
+      env: HAXE_TARGET=lua
     - env: HAXE_TARGET=cs
-    - env: HAXE_TARGET=lua
+
+# cs fails because of https://github.com/HaxeFoundation/haxe/issues/6533
+# lua fails on 3.4.2 with "too many local variables (limit is 200)"
 
 install:
   - haxelib install haxe-doctest
