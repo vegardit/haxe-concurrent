@@ -14,7 +14,7 @@ if errorlevel 1 (
 echo Compiling...
 pushd .
 cd "%CDP%.."
-haxe -main hx.concurrent.TestRunner ^
+haxe extraParams.hxml -main hx.concurrent.TestRunner ^
   -lib haxe-doctest ^
   -cp "src" ^
   -cp "test" ^

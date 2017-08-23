@@ -29,7 +29,7 @@ import hx.concurrent.internal.Either2;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-#if (cpp||cs||java||neko||python)
+#if threads
 class ThreadBasedExecutor extends Executor {
 
     public inline static var SCHEDULER_RESOLUTION_MS = 5;

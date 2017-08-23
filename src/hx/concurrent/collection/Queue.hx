@@ -44,7 +44,7 @@ class Queue<T> {
     }
 
 
-    #if (cpp||cs||java||neko||python)
+    #if threads
     /**
      * Pop a message from the queue head.
      *

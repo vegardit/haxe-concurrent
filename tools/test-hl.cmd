@@ -12,7 +12,7 @@ if errorlevel 1 (
 )
 
 echo Compiling and Testing...
-haxe -main hx.concurrent.TestRunner ^
+haxe extraParams.hxml -main hx.concurrent.TestRunner ^
 -lib haxe-doctest ^
 -cp "%CDP%..\src" ^
 -cp "%CDP%..\test" ^

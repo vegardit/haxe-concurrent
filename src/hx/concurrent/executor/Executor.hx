@@ -34,7 +34,7 @@ class Executor {
      * @param maxConcurrent maximum number of concurrently executed tasks. Has no effect on targets without thread support.
      */
     public static function create(maxConcurrent:Int = 1):Executor {
-        #if (cpp||cs||java||neko||python)
+        #if threads
             return new ThreadBasedExecutor(maxConcurrent);
         #else
             return new TimerBasedExecutor();
@@ -122,7 +122,7 @@ interface TaskFuture<T> extends Future<T> {
      */
     public function cancel():Void;
 
-    #if (cpp||cs||java||neko||python)
+    #if threads
     /**
      * If <code>timeoutMS</code> is set 0, the function immediatly returns.
      * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
@@ -172,7 +172,7 @@ class TaskFutureBase<T> implements TaskFuture<T> {
     }
 
 
-    #if (cpp||cs||java||neko||python)
+    #if threads
     public function waitAndGet(timeoutMS:Int):FutureResult<T> {
         Threads.wait(function() {
             return switch(this.result) {

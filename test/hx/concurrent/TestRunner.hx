@@ -146,7 +146,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         assertEquals(1, q.pop());
         assertEquals(2, q.pop());
 
-        #if (cpp||cs||java||neko||python)
+        #if threads
         var q = new Queue<Int>();
         Threads.spawn(function() {
             Threads.sleep(1000);
@@ -168,7 +168,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     function testRLock() {
         var lock = new RLock();
 
-        #if (cpp||cs||java||neko||python)
+        #if threads
         Threads.spawn(function() {
             lock.acquire();
             Threads.sleep(2000);
@@ -189,7 +189,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
-    #if (cpp||cs||java||neko||python)
+    #if threads
     function testThreads() {
         var i = new AtomicInt(0);
         for (j in 0...10)
@@ -343,13 +343,13 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var fixedRateCounter  = new AtomicInt(0);
         var future1 = executor.submit(function() {
             fixedRateCounter.increment();
-            #if (cpp || cs || java || neko || python)
+            #if threads
             Threads.sleep(threadMS);
             #end
         }, FIXED_RATE(intervalMS));
         var v1 = new AtomicInt(0);
 
-        #if (cpp||cs||java||neko||python)
+        #if threads
         var fixedDelayCounter = new AtomicInt(0);
         var future2 = executor.submit(function() {
             fixedDelayCounter.increment();
@@ -365,7 +365,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertTrue(v1.value <= (waitMS / intervalMS) * 1.4);
             assertTrue(v1.value >= (waitMS / intervalMS) * 0.6);
 
-            #if (cpp||cs||java||neko||python)
+            #if threads
             future2.cancel();
             v2.value = fixedDelayCounter.value;
             assertTrue(v2.value <= (waitMS / (intervalMS + threadMS)) * 1.4);
@@ -375,7 +375,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         });
         _later(waitMS + 2 * intervalMS, function() {
             assertEquals(v1.value, fixedRateCounter.value);
-            #if (cpp||cs||java||neko||python)
+            #if threads
             assertEquals(v2.value, fixedDelayCounter.value);
             #end
 

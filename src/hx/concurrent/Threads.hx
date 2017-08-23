@@ -32,7 +32,7 @@ class Threads {
         Sys.sleep(timeMS/1000);
     }
 
-    #if (cpp||cs||java||neko||python)
+    #if threads
     /**
      * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.
      */
@@ -85,3 +85,4 @@ class Threads {
     }
 }
 #end
+
