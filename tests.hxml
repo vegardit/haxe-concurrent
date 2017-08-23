@@ -1,3 +1,4 @@
+extraParams.hxml
 -cp src
 -cp test
 -main hx.concurrent.TestRunner
