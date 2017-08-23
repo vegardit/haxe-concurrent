@@ -18,15 +18,20 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D HXCPP_CHECK_POINTER ^
--D dump=pretty ^
--cpp "%CDP%..\target\cpp" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D HXCPP_CHECK_POINTER ^
+  -D dump=pretty ^
+  -cpp "target\cpp"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 echo Testing...
 "%CDP%..\target\cpp\TestRunner-Debug.exe"

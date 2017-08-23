@@ -12,15 +12,20 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D dump=pretty ^
--D nodejs ^
--js "%CDP%..\target\js\TestRunner.js" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -D nodejs ^
+  -js "target\js\TestRunner.js"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 echo Testing...
 node "%CDP%..\target\js\TestRunner.js"

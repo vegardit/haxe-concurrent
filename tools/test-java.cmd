@@ -18,14 +18,19 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D dump=pretty ^
--java "%CDP%..\target\java" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -java "target\java"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 echo Testing...
 java -jar "%CDP%..\target\java\TestRunner-Debug.jar"

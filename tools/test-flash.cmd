@@ -12,15 +12,20 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D dump=pretty ^
--swf-version 11.5 ^
--swf "%CDP%..\target\flash\TestRunner.swf" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -swf-version 11.5 ^
+  -swf "target\flash\TestRunner.swf"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 REM enable Flash logging
 (

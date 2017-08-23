@@ -12,15 +12,20 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D dump=pretty ^
--D luajit ^
--lua "%CDP%..\target\lua\TestRunner.lua" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -D luajit ^
+  -lua "target\lua\TestRunner.lua"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 echo Testing...
 lua "%CDP%..\target\lua\TestRunner.lua"

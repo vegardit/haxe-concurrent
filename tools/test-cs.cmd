@@ -18,15 +18,19 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D net-ver=45 ^
--D dump=pretty ^
--cs "%CDP%..\target\cs" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -cs "%CDP%..\target\cs"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 exit /b %rc%
 
 echo Testing...
 mono "%CDP%..\target\cs\bin\TestRunner-Debug.exe"
