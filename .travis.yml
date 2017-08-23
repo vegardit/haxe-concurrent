@@ -28,6 +28,8 @@ matrix:
   fast_finish: true
   allow_failures:
     - haxe: development
+    - env: HAXE_TARGET=cs
+    - env: HAXE_TARGET=lua
 
 install:
   - haxelib install haxe-doctest
