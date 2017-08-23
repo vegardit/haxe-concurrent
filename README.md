@@ -2,9 +2,9 @@
 [![Build Status](https://travis-ci.org/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.org/vegardit/haxe-concurrent)
 
 1. [What is it?](#what-is-it)
-1. [The `Executor` class](#executor-class)
 1. [`hx.concurrent.atomic` package](#atomic-package)
 1. [`hx.concurrent.collection` package](#collection-package)
+1. [`hx.concurrent.executor` package](#executor-package)
 1. [`hx.concurrent.event` package](#event-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
@@ -25,13 +25,33 @@ PHP 5, PHP 7, Python 3.
 * When compiling for Flash the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
 
 
-## <a name="executor-class"></a>The `Executor` class
+## <a name="atomic-package"></a>The `hx.concurrent.atomic` package
 
-The [hx.concurrent.executor.Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) allows you execute code
-concurrently and to schedule tasks for later execution.
+The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic) package contains mutable value holder classes that allow for thread.safe manipulation:
 
-On platform with the thread support (C++, C#, Neko, Python, Java) threads are used to realize true concurrent execution on
-other platforms `haxe.Timer` is used to at least realize async execution.
+* [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicBool.hx)
+* [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicInt.hx)
+* [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicValue.hx)
+
+
+## <a name="collection-package"></a>The `hx.concurrent.collection` package
+
+The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of differnt types of collections:
+
+* [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/CopyOnWriteArray.hx)
+* [Queue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/Queue.hx)
+* [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedArray.hx)
+* [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
+
+
+## <a name="executor-package"></a>The `hx.concurrent.executor` package
+
+The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains
+[Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) implementations that allow
+to execute functions concurrently and to schedule tasks for later/repeated execution.
+
+On platform with the thread support (C++, C#, Neko, Python, Java) threads are used to realize true concurrent execution, on other
+platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
 import hx.concurrent.executor.*;
@@ -79,25 +99,6 @@ class Test {
         future.cancel();
     }
 ```
-
-
-## <a name="atomic-package"></a>The `hx.concurrent.atomic` package
-
-The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic) package contains mutable value holder classes that allow for thread.safe manipulation:
-
-* [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicBool.hx)
-* [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicInt.hx)
-* [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicValue.hx)
-
-
-## <a name="collection-package"></a>The `hx.concurrent.collection` package
-
-The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of differnt types of collections:
-
-* [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/CopyOnWriteArray.hx)
-* [Queue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/Queue.hx)
-* [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedArray.hx)
-* [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
 
 
 ## <a name="event-package"></a>The `hx.concurrent.event` package
