@@ -48,8 +48,8 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * >>> new SynchronizedArray([1,2]).first == 1
      * </code></pre>
      */
-    public var first(get, never):T;
-    inline function get_first():T {
+    public var first(get, never):Null<T>;
+    inline function get_first():Null<T> {
         return _sync.execute(function() {
             return _items.length == 0 ? null : _items[0];
         });
@@ -61,8 +61,8 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * >>> new SynchronizedArray([1,2]).last == 2
      * </code></pre>
      */
-    public var last(get, never):T;
-    inline function get_last():T {
+    public var last(get, never):Null<T>;
+    inline function get_last():Null<T> {
         return _sync.execute(function() {
             return _items.length == 0 ? null : _items[_items.length  - 1];
         });
@@ -148,7 +148,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedArray([1,2]).removeAt(1)     == 2
      * >>> new SynchronizedArray([1]).removeAt(1)       == null
-     * >>> new SynchronizedArray([1]).removeAt(1, true) throws "Index out of range."
+     * >>> new SynchronizedArray([1]).removeAt(1, true) throws ~/Index out of range/
      * </code></pre>
      */
     public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T> {
@@ -167,7 +167,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedArray([1,2]).removeFirst() == 1
      * >>> new SynchronizedArray().removeFirst()      == null
-     * >>> new SynchronizedArray().removeFirst(true)  throws "This collection is empty."
+     * >>> new SynchronizedArray().removeFirst(true)  throws ~/This collection is empty/
      * </code></pre>
      */
     public function removeFirst(throwIfEmpty:Bool = false):Null<T> {
@@ -186,7 +186,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedArray([1,2]).removeLast() == 2
      * >>> new SynchronizedArray().removeLast()      == null
-     * >>> new SynchronizedArray().removeLast(true)  throws "This collection is empty."
+     * >>> new SynchronizedArray().removeLast(true)  throws ~/This collection is empty/
      * </code></pre>
      */
     public function removeLast(throwIfEmpty:Bool = false):Null<T> {
@@ -236,7 +236,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedArray([1,2]).get(1)  == 2
      * >>> new SynchronizedArray([2]).get(1)    == null
-     * >>> new SynchronizedArray().get(1, true) throws "Index out of range."
+     * >>> new SynchronizedArray().get(1, true) throws ~/Index out of range/
      * </code></pre>
      */
     public function get(idx:Int, throwIfOutOfRange:Bool = false):Null<T> {

@@ -24,9 +24,10 @@ class Macros {
 
     macro
     public static function addDefines() {
-        #if (cpp||cs||java||neko||python)
+        var def = haxe.macro.Context.getDefines();
+        if(def.exists("cpp") || def.exists("cs") || def.exists("java") || def.exists("neko") || def.exists("python")) {
             Compiler.define("threads");
-        #end
+        }
         return macro {}
     }
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package hx.concurrent.collection;
+
 import hx.concurrent.internal.Either3;
 
 /**
@@ -48,8 +49,8 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * >>> new SynchronizedLinkedList([1,2]).first == 1
      * </code></pre>
      */
-    public var first(get, never):T;
-    inline function get_first():T {
+    public var first(get, never):Null<T>;
+    inline function get_first():Null<T> {
         return _sync.execute(function() {
             return _items.first();
         });
@@ -61,8 +62,8 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * >>> new SynchronizedLinkedList([1,2]).last == 2
      * </code></pre>
      */
-    public var last(get, never):T;
-    inline function get_last():T {
+    public var last(get, never):Null<T>;
+    inline function get_last():Null<T> {
         return _sync.execute(function() {
             return _items.last();
         });
@@ -135,7 +136,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
                 if (idx < 0)
                     idx = 0;
             }
-            if (idx == null) {
+            if (idx == 0) {
                 items.push(x);
                 return;
             }
@@ -175,7 +176,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).removeAt(1)     == 2
      * >>> new SynchronizedLinkedList([1]).removeAt(1)       == null
-     * >>> new SynchronizedLinkedList([1]).removeAt(1, true) throws "Index out of range."
+     * >>> new SynchronizedLinkedList([1]).removeAt(1, true) throws ~/Index out of range/
      * </code></pre>
      */
     public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T> {
@@ -206,7 +207,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).removeFirst() == 1
      * >>> new SynchronizedLinkedList().removeFirst()      == null
-     * >>> new SynchronizedLinkedList().removeFirst(true)  throws "This collection is empty."
+     * >>> new SynchronizedLinkedList().removeFirst(true)  throws ~/This collection is empty/
      * </code></pre>
      */
     public function removeFirst(throwIfEmpty:Bool = false):Null<T> {
@@ -225,7 +226,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).removeLast() == 2
      * >>> new SynchronizedLinkedList().removeLast()      == null
-     * >>> new SynchronizedLinkedList().removeLast(true)  throws "This collection is empty."
+     * >>> new SynchronizedLinkedList().removeLast(true)  throws ~/This collection is empty/
      * </code></pre>
      */
     public function removeLast(throwIfEmpty:Bool = false):Null<T> {
@@ -285,7 +286,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).get(1)  == 2
      * >>> new SynchronizedLinkedList([2]).get(1)    == null
-     * >>> new SynchronizedLinkedList().get(1, true) throws "Index out of range."
+     * >>> new SynchronizedLinkedList().get(1, true) throws ~/Index out of range/
      * </code></pre>
      */
     public function get(idx:Int, throwIfOutOfRange:Bool = false):Null<T> {

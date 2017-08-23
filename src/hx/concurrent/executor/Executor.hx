@@ -16,6 +16,7 @@
 package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
+import hx.concurrent.Future.FutureBase;
 import hx.concurrent.internal.Either2;
 
 /**
@@ -136,35 +137,20 @@ interface TaskFuture<T> extends Future<T> {
 }
 
 
-class TaskFutureBase<T> implements TaskFuture<T> {
-
-    public var result(default, null):FutureResult<T>;
+class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
 
     public var schedule(default, null):Schedule;
     public var isStopped(default, null) = false;
-
-    public var onResult(default, set):FutureResult<T>->Void = null;
-    inline function set_onResult(fn:FutureResult<T>->Void) {
-        // immediately invoke the callback function in case a result is already present
-        if (fn != null) {
-            var result = this.result;
-            switch(result) {
-                case NONE(_):
-                default: fn(result);
-            }
-        }
-        return onResult = fn;
-    }
 
     var _executor:Executor;
     var _task:Task<T>;
 
     function new(executor:Executor, task:Task<T>, schedule:Schedule) {
+        super();
         _executor = executor;
         _task = task;
 
         this.schedule = Schedule.ScheduleTools.assertValid(schedule);
-        this.result = FutureResult.NONE(this);
     }
 
     public function cancel():Void {

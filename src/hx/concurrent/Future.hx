@@ -62,21 +62,38 @@ enum FutureResult<T> {
 }
 
 
-/**
- * Future with a pre-calculated result.
- */
-class ConstantFuture<T> implements Future<T> {
+class FutureBase<T> implements Future<T> {
 
     public var result(default, null):FutureResult<T>;
 
-    public var onResult(default, set):FutureResult<T>->Void = null;
+    public var onResult(default, set):FutureResult<T>->Void;
     inline function set_onResult(fn:FutureResult<T>->Void) {
-        if(fn != null) fn(result);
+        // immediately invoke the callback function in case a result is already present
+        if (fn != null) {
+            var result = this.result;
+            switch(result) {
+                case NONE(_):
+                default: fn(result);
+            }
+        }
         return onResult = fn;
     }
 
     inline
+    function new() {
+        onResult = null;
+        result = FutureResult.NONE(this);
+    }
+}
+
+
+/**
+ * Future with a pre-calculated result.
+ */
+class ConstantFuture<T> extends FutureBase<T> {
+
     public function new(result:T) {
+        super();
         this.result = FutureResult.SUCCESS(result, Dates.now(), this);
     }
 }

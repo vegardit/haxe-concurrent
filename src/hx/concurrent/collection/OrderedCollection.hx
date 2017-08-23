@@ -21,6 +21,9 @@ import hx.concurrent.internal.Either3;
  */
 interface OrderedCollection<T> extends Collection<T> {
 
+    public var first(get, never):Null<T>;
+    public var last(get, never):Null<T>;
+
     public function insertAt(idx:Int, x:T):Void;
     public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
     public function removeFirst(throwIfEmpty:Bool=false):Null<T>;
