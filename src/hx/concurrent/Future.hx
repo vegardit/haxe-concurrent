@@ -18,6 +18,7 @@ package hx.concurrent;
 import hx.concurrent.internal.Dates;
 
 /**
+ * https://en.wikipedia.org/wiki/Futures_and_promises
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
