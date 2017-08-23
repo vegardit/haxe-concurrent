@@ -113,6 +113,7 @@ class ThreadBasedExecutor extends Executor {
         for (i in 0...threadPoolSize) {
             Threads.spawn(function() {
                 _threadCount++;
+                trace('Spawned thread $_threadCount/$threadPoolSize...');
 
                 while (true) {
                     var task = _runNow.pop(SCHEDULER_RESOLUTION_MS);
