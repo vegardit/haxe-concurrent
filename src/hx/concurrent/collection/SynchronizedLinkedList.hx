@@ -95,6 +95,12 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+    /**
+     * <pre><code>
+     * >>> new SynchronizedLinkedList([1]).addIfAbsent(2)   == true
+     * >>> new SynchronizedLinkedList([1,2]).addIfAbsent(1) == false
+     * </code></pre>
+     */
     public function addIfAbsent(item:T):Bool {
         return _sync.execute(function() {
             if (contains(item))

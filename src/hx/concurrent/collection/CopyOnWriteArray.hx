@@ -90,6 +90,12 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         });
     }
 
+    /**
+     * <pre><code>
+     * >>> new CopyOnWriteArray([1]).addIfAbsent(2)   == true
+     * >>> new CopyOnWriteArray([1,2]).addIfAbsent(1) == false
+     * </code></pre>
+     */
     public function addIfAbsent(item:T):Bool {
         return _sync.execute(function() {
             if (_items.indexOf(item) > -1)

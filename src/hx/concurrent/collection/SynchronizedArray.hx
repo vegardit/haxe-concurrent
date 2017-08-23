@@ -91,6 +91,12 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
         });
     }
 
+    /**
+     * <pre><code>
+     * >>> new SynchronizedArray([1]).addIfAbsent(2)   == true
+     * >>> new SynchronizedArray([1,2]).addIfAbsent(1) == false
+     * </code></pre>
+     */
     public function addIfAbsent(item:T):Bool {
         return _sync.execute(function() {
             if (_items.indexOf(item) >-1)
