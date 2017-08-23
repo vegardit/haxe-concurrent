@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package hx.concurrent.collection;
+import hx.concurrent.thread.Threads;
 
 /**
  * Unbound thread-safe first-in-first-out message queue.

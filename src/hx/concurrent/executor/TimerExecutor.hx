@@ -16,7 +16,6 @@
 package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
-import hx.concurrent.executor.Executor.ExecutorState;
 import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
 import hx.concurrent.executor.Executor.TaskFutureBase;
@@ -25,15 +24,16 @@ import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
 
 /**
+ * haxe.Timer based executor.
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class TimerBasedExecutor extends Executor {
+class TimerExecutor extends Executor {
 
-    var _scheduledTasks = new Array<TimerBasedTaskFuture<Dynamic>>();
+    var _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
 
-    inline
     public function new() {
+        super();
     }
 
 
@@ -48,7 +48,7 @@ class TimerBasedExecutor extends Executor {
             var i = _scheduledTasks.length;
             while (i-- > 0) if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
 
-            var future = new TimerBasedTaskFuture<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+            var future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
             switch(schedule) {
                 case ONCE(0):
                 default: _scheduledTasks.push(future);
@@ -61,25 +61,25 @@ class TimerBasedExecutor extends Executor {
     override
     public function stop() {
         _stateLock.execute(function() {
-            if (state == ExecutorState.RUNNING) {
-                state = ExecutorState.STOPPING;
+            if (state == RUNNING) {
+                state = STOPPING;
 
                 for (t in _scheduledTasks)
                     t.cancel();
 
-                state = ExecutorState.STOPPED;
+                state = STOPPED;
             }
         });
     }
 }
 
 
-private class TimerBasedTaskFuture<T> extends TaskFutureBase<T> {
+private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
     var _timer:haxe.Timer;
 
 
-    public function new(executor:TimerBasedExecutor, task:Task<T>, schedule:Schedule) {
+    public function new(executor:TimerExecutor, task:Task<T>, schedule:Schedule) {
         super(executor, task, schedule);
         var initialDelay = Std.int(ScheduleTools.firstRunAt(this.schedule) - Dates.now());
         haxe.Timer.delay(this.run, initialDelay < 0 ? 0 : initialDelay);

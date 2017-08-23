@@ -15,6 +15,7 @@
  */
 package hx.concurrent;
 
+import hx.concurrent.Service.ServiceState;
 import hx.concurrent.atomic.AtomicBool;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.Queue;
@@ -22,8 +23,8 @@ import hx.concurrent.event.AsyncEventDispatcher;
 import hx.concurrent.event.EventDispatcherWithHistory;
 import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
-import hx.concurrent.executor.Executor.ExecutorState;
 import hx.concurrent.internal.Dates;
+import hx.concurrent.thread.Threads;
 
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
@@ -44,6 +45,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         }
     }
     #end
+
 
     public static function main() {
         var runner = new TestRunner();
@@ -287,10 +289,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     function testTaskExecutor_shutdown() {
         var executor = Executor.create(2);
-        assertEquals(executor.state, ExecutorState.RUNNING);
+        assertEquals(executor.state, ServiceState.RUNNING);
         executor.stop();
         _later(200, function() {
-            assertEquals(executor.state, ExecutorState.STOPPED);
+            assertEquals(executor.state, ServiceState.STOPPED);
         });
     }
 
@@ -310,7 +312,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         );
         _later(400, function() {
             assertTrue(future.isStopped);
-            assertEquals(executor.state, ExecutorState.STOPPED);
+            assertEquals(executor.state, ServiceState.STOPPED);
         });
     }
 

@@ -17,6 +17,7 @@ package hx.concurrent;
 
 import hx.concurrent.internal.Dates;
 import hx.concurrent.ConcurrentException;
+import hx.concurrent.thread.Threads;
 
 /**
  * A re-entrant lock that can only be released by the same thread that acquired it.

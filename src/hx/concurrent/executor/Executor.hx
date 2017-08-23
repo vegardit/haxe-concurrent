@@ -17,7 +17,9 @@ package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.Future.FutureBase;
+import hx.concurrent.Service.ServiceBase;
 import hx.concurrent.internal.Either2;
+import hx.concurrent.thread.Threads;
 
 /**
  * A scheduler/work manager that executes submitted tasks asynchronously or concurrently
@@ -25,7 +27,7 @@ import hx.concurrent.internal.Either2;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class Executor {
+class Executor extends ServiceBase {
 
     static var NOW_ONCE = Schedule.ONCE(0);
 
@@ -36,9 +38,9 @@ class Executor {
      */
     public static function create(maxConcurrent:Int = 1):Executor {
         #if threads
-            return new ThreadBasedExecutor(maxConcurrent);
+            return new ThreadPoolExecutor(maxConcurrent);
         #else
-            return new TimerBasedExecutor();
+            return new TimerExecutor();
         #end
     }
 
@@ -51,16 +53,13 @@ class Executor {
     public var onResult:FutureResult<Dynamic>->Void;
 
 
-    public var state(default, null):ExecutorState = RUNNING;
-    var _stateLock:RLock = new RLock();
-
     /**
      * Submits the given task for background execution.
      *
      * @param task the function to be executed either `function():T {}` or `function():Void {}`
      * @param schedule the task's execution schedule, if not specified Schedule.ONCE(0) is used
      *
-     * @throws exception if in state TaskExecutorState#STOPPING or TaskExecutorState#STOPPED
+     * @throws exception if in state ServiceState#STOPPING or ServiceState#STOPPED
      */
     public function submit<T>(task:Task<T>, ?schedule:Schedule):TaskFuture<T> {
         throw "Not implemented";
@@ -70,40 +69,16 @@ class Executor {
     /**
      * Initiates a graceful shutdown of this executor. Canceling execution of all scheduled tasks.
      */
+    override
     public function stop() {
-        _stateLock.execute(function() {
-            if (state == ExecutorState.RUNNING)
-                state = ExecutorState.STOPPING;
-        });
+        super.stop();
     }
-
 }
 
 /**
  * A function with no parameters and return type Void or T
  */
 typedef Task<T> = Either2<Void->T,Void->Void>;
-
-
-/**
- * Represents the runtime state of an executore instance
- */
-enum ExecutorState {
-    /**
-     * Executor accepts new tasks and processes submitted tasks.
-     */
-    RUNNING;
-
-    /**
-     * Executor is shutting down and does not accept new tasks but is currently executing previously submitted tasks.
-     */
-    STOPPING;
-
-    /**
-     * Executor does not accept new tasks and does not process any previously submitted tasks.
-     */
-    STOPPED;
-}
 
 
 interface TaskFuture<T> extends Future<T> {
@@ -165,7 +140,7 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
                 case NONE(_): false;
                 default: true;
             };
-        }, timeoutMS, ThreadBasedExecutor.SCHEDULER_RESOLUTION_SEC);
+        }, timeoutMS, ThreadPoolExecutor.SCHEDULER_RESOLUTION_SEC);
 
         return this.result;
     }

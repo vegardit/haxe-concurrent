@@ -18,40 +18,46 @@ package hx.concurrent.executor;
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.Queue;
-import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
 import hx.concurrent.executor.Executor.TaskFutureBase;
 import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
+import hx.concurrent.thread.ThreadPool;
+import hx.concurrent.thread.Threads;
 
 /**
+ * hx.concurrent.thread.ThreadPool based executor.
+ * Only available on platforms supporting threads.
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 #if threads
-class ThreadBasedExecutor extends Executor {
+class ThreadPoolExecutor extends Executor {
 
     public inline static var SCHEDULER_RESOLUTION_MS = 5;
     public inline static var SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
 
-    var _threadCount = new AtomicInt(0);
-    var _runNow = new Queue<ThreadBasedTaskFuture<Dynamic>>();
+    var _threadPool:ThreadPool;
 
-    var _scheduledTasks = new Array<ThreadBasedTaskFuture<Dynamic>>();
-    var _newScheduledTasks = new Queue<ThreadBasedTaskFuture<Dynamic>>();
+    var _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
+    var _newScheduledTasks = new Queue<TaskFutureImpl<Dynamic>>();
 
 
     public function new(threadPoolSize:Int) {
         if (threadPoolSize < 1)
             throw "[threadPoolSize] must be > 0";
 
+        super();
+
+        _threadPool = new ThreadPool(threadPoolSize);
+
         /*
          * start scheduler thread
          */
         Threads.spawn(function() {
 
-            var doneTasks = new Array<ThreadBasedTaskFuture<Dynamic>>();
+            var doneTasks = new Array<TaskFutureImpl<Dynamic>>();
 
             while (state == RUNNING) {
                 /*
@@ -59,7 +65,7 @@ class ThreadBasedExecutor extends Executor {
                  */
                 for (t in _scheduledTasks) {
                     if (t.isDue())
-                        _runNow.push(t);
+                        _threadPool.submit(function(context:ThreadContext) t.run());
                     else if (t.isStopped)
                         doneTasks.push(t);
                 }
@@ -105,33 +111,12 @@ class ThreadBasedExecutor extends Executor {
                 if (t == null) break;
                 t.cancel();
             }
+
+            Threads.wait(function() {
+                return _threadPool.state == STOPPED;
+            }, -1);
+            state = STOPPED;
         });
-
-        /*
-         * start worker threads
-         */
-        for (i in 0...threadPoolSize) {
-            Threads.spawn(function() {
-                _threadCount++;
-                trace('Spawned thread $_threadCount/$threadPoolSize...');
-
-                while (true) {
-                    var task = _runNow.pop(SCHEDULER_RESOLUTION_MS);
-                    if (task == null) {
-                        if(state != RUNNING)
-                            break;
-                    } else
-                        task.run();
-                }
-
-                _threadCount--;
-
-                if (_threadCount == 0)
-                    _stateLock.execute(function() {
-                        state = STOPPED;
-                    });
-            });
-        }
     }
 
 
@@ -142,13 +127,13 @@ class ThreadBasedExecutor extends Executor {
             if (state != RUNNING)
                 throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
 
-            var future = new ThreadBasedTaskFuture<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+            var future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
 
             // skip round-trip via scheduler for one-shot tasks that should be executed immediately
             switch(schedule) {
                 case ONCE(_):
                     if (future.isDue()) {
-                        _runNow.push(future);
+                        _threadPool.submit(function(context:ThreadContext) future.run());
                         return future;
                     }
                 default:
@@ -158,15 +143,26 @@ class ThreadBasedExecutor extends Executor {
             return future;
         });
     }
+
+    override
+    public function stop() {
+        _stateLock.execute(function() {
+            if (state == RUNNING) {
+                state = STOPPING;
+
+                _threadPool.stop();
+            }
+        });
+    }
 }
 
 
-private class ThreadBasedTaskFuture<T> extends TaskFutureBase<T> {
+private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
     var _nextRunAt:Float;
 
 
-    public function new(executor:ThreadBasedExecutor, task:Either2<Void->T,Void->Void>, schedule:Schedule) {
+    public function new(executor:ThreadPoolExecutor, task:Either2<Void->T,Void->Void>, schedule:Schedule) {
         super(executor, task, schedule);
         this._nextRunAt = ScheduleTools.firstRunAt(this.schedule);
     }
