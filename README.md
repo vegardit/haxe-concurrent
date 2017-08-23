@@ -6,6 +6,7 @@
 1. [`hx.concurrent.collection` package](#collection-package)
 1. [`hx.concurrent.executor` package](#executor-package)
 1. [`hx.concurrent.event` package](#event-package)
+1. [`hx.concurrent.thread` package](#thread-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
 1. [License](#license)
@@ -151,6 +152,15 @@ class Test {
     }
 }
 ```
+
+
+## <a name="thread-package"></a>The `hx.concurrent.thread` package
+
+The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread) package contains
+classes for platforms supporting threads:
+
+* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx)
+* [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
 
 
 ## <a name="installation"></a>Installation
