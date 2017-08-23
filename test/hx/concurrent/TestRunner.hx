@@ -31,11 +31,24 @@ import hx.concurrent.internal.Dates;
 @:build(hx.doctest.DocTestGenerator.generateDocTests("src", ".*\\.hx"))
 class TestRunner extends hx.doctest.DocTestRunner {
 
+    #if threads
+    @:keep
+    static var __static_init = {
+        /*
+         * synchronize trace calls
+         */
+        var sync = new RLock();
+        var old = haxe.Log.trace;
+        haxe.Log.trace = function(v:Dynamic, ?pos: haxe.PosInfos ):Void {
+            sync.execute(function() old(v, pos));
+        }
+    }
+    #end
+
     public static function main() {
         var runner = new TestRunner();
         runner.runAndExit();
     }
-
 
     function testAtomicInt() {
         var val:Int = -1;
