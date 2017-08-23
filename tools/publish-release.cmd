@@ -25,7 +25,8 @@ set DRAFT=false
 set PREPRELEASE=false
 
 REM cd into project root
-cd %~dp0
+pushd .
+cd %~dp0..
 
 REM extract GIT URL from haxelib.json
 for /f "tokens=*" %%a in ( 'findstr url haxelib.json' ) do (set textLine=%%a)
@@ -80,4 +81,5 @@ echo Submitting haxelib release...
 haxelib submit target\haxelib-upload.zip
 
 :eof
+popd
 endlocal
