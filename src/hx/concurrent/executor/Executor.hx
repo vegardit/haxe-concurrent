@@ -78,6 +78,9 @@ class Executor {
 
 }
 
+/**
+ * A function with no parameters and return type Void or T
+ */
 typedef Task<T> = Either2<Void->T,Void->Void>;
 
 
@@ -131,6 +134,7 @@ interface TaskFuture<T> extends Future<T> {
     public function waitAndGet(timeoutMS:Int):FutureResult<T>;
     #end
 }
+
 
 class TaskFutureBase<T> implements TaskFuture<T> {
 

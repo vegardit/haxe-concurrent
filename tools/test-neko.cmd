@@ -12,14 +12,19 @@ if errorlevel 1 (
 )
 
 echo Compiling...
+pushd .
+cd "%CDP%.."
 haxe -main hx.concurrent.TestRunner ^
--lib haxe-doctest ^
--cp "%CDP%..\src" ^
--cp "%CDP%..\test" ^
--dce full ^
--debug ^
--D dump=pretty ^
--neko "%CDP%..\target/neko/TestRunner.n" || goto :eof
+  -lib haxe-doctest ^
+  -cp "src" ^
+  -cp "test" ^
+  -dce full ^
+  -debug ^
+  -D dump=pretty ^
+  -neko "target\neko\TestRunner.n"
+set rc=%errorlevel%
+popd
+if not %rc% == 0 goto :eof
 
 echo Testing...
-neko "%CDP%..\target/neko/TestRunner.n"
+neko "%CDP%..\target\neko\TestRunner.n"

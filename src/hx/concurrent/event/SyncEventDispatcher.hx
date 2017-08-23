@@ -30,24 +30,20 @@ class SyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<
      * @return the number of listeners notified successfully
      */
     public function fire(event:EVENT):ConstantFuture<Int> {
-        var listeners = _eventListeners;
-
-        return _eventListenersLock.execute(function() {
-            var count = 0;
-            for (listener in listeners) {
-                try {
-                    listener(event);
-                    count++;
-                } catch (ex:Dynamic) {
-                    trace(ex);
-                }
+        var count = 0;
+        for (listener in _eventListeners.iterator()) {
+            try {
+                listener(event);
+                count++;
+            } catch (ex:Dynamic) {
+                trace(ex);
             }
-            return new ConstantFuture(count);
-        });
+        }
+        return new ConstantFuture(count);
     }
 
 
     public function unsubscribeAll():Void {
-        _eventListenersLock.execute(function() _eventListeners = []);
+        _eventListeners.clear();
     }
 }

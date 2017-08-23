@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package hx.concurrent.event;
+import hx.concurrent.collection.CopyOnWriteArray;
 
 /**
  * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
@@ -35,22 +36,13 @@ interface EventListenable<EVENT> {
 @:abstract
 class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
 
-    var _eventListeners = new Array<EVENT->Void>();
-    var _eventListenersLock = new RLock();
+    var _eventListeners = new CopyOnWriteArray<EVENT->Void>();
 
     public function subscribe(listener:EVENT->Void):Bool  {
         if (listener == null)
             throw "[listener] must not be null";
 
-        return _eventListenersLock.execute(function() {
-            if (_eventListeners.indexOf(listener) > -1)
-                return false;
-
-            var newList = _eventListeners.copy();
-            newList.push(listener);
-            _eventListeners = newList;
-            return true;
-        });
+        return _eventListeners.addIfAbsent(listener);
     }
 
 
@@ -58,14 +50,6 @@ class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
         if (listener == null)
             throw "[listener] must not be null";
 
-        return _eventListenersLock.execute(function() {
-            if (_eventListeners.indexOf(listener) == -1)
-                return false;
-
-            var newList = _eventListeners.copy();
-            newList.remove(listener);
-            _eventListeners = newList;
-            return true;
-        });
+        return _eventListeners.remove(listener);
     }
 }

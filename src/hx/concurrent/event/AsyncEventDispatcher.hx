@@ -39,10 +39,9 @@ class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable
      * @return the number of listeners notified successfully
      */
     public function fire(event:EVENT):Future<Int> {
-        var listeners = _eventListeners;
         return _executor.submit(function():Int {
             var count = 0;
-            for (listener in listeners) {
+            for (listener in _eventListeners.iterator()) {
                 try {
                     listener(event);
                     count++;
@@ -56,6 +55,6 @@ class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable
 
 
     public function unsubscribeAll():Void {
-        _eventListenersLock.execute(function() _eventListeners = []);
+        _eventListeners.clear();
     }
 }

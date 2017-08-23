@@ -4,6 +4,7 @@
 1. [What is it?](#what-is-it)
 1. [The `Executor` class](#executor-class)
 1. [`hx.concurrent.atomic` package](#atomic-package)
+1. [`hx.concurrent.collection` package](#collection-package)
 1. [`hx.concurrent.event` package](#event-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
@@ -87,6 +88,16 @@ The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/mast
 * [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicBool.hx)
 * [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicInt.hx)
 * [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicValue.hx)
+
+
+## <a name="collection-package"></a>The `hx.concurrent.collection` package
+
+The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of differnt types of collections:
+
+* [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/CopyOnWriteArray.hx)
+* [Queue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/Queue.hx)
+* [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedArray.hx)
+* [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
 
 
 ## <a name="event-package"></a>The `hx.concurrent.event` package

@@ -17,7 +17,7 @@ package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
-import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.collection.Queue;
 import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
 import hx.concurrent.executor.Executor.TaskFutureBase;
@@ -36,10 +36,10 @@ class ThreadBasedExecutor extends Executor {
     public inline static var SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
 
     var _threadCount = new AtomicInt(0);
-    var _runNow = new FIFOQueue<ThreadBasedTaskFuture<Dynamic>>();
+    var _runNow = new Queue<ThreadBasedTaskFuture<Dynamic>>();
 
     var _scheduledTasks = new Array<ThreadBasedTaskFuture<Dynamic>>();
-    var _newScheduledTasks = new FIFOQueue<ThreadBasedTaskFuture<Dynamic>>();
+    var _newScheduledTasks = new Queue<ThreadBasedTaskFuture<Dynamic>>();
 
 
     public function new(threadPoolSize:Int) {

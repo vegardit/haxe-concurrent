@@ -17,7 +17,7 @@ package hx.concurrent;
 
 import hx.concurrent.atomic.AtomicBool;
 import hx.concurrent.atomic.AtomicInt;
-import hx.concurrent.collection.FIFOQueue;
+import hx.concurrent.collection.Queue;
 import hx.concurrent.event.AsyncEventDispatcher;
 import hx.concurrent.event.EventDispatcherWithHistory;
 import hx.concurrent.event.SyncEventDispatcher;
@@ -136,8 +136,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
-    function testFIFOQueue() {
-        var q = new FIFOQueue<Int>();
+    function testQueue() {
+        var q = new Queue<Int>();
         assertEquals(null, q.pop());
         q.push(1);
         q.push(2);
@@ -147,7 +147,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         assertEquals(2, q.pop());
 
         #if (cpp||cs||java||neko||python)
-        var q = new FIFOQueue<Int>();
+        var q = new Queue<Int>();
         Threads.spawn(function() {
             Threads.sleep(1000);
             q.push(123);
@@ -318,7 +318,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertTrue(future1.isStopped);
             assertFalse(future2.isStopped);
         });
-        _later(60, function() {
+        _later(40, function() {
             assertFalse(flag2.value);
             assertFalse(future2.isStopped);
             future3.cancel();
@@ -416,7 +416,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
-    var _asyncExecutor = Executor.create(3);
+    var _asyncExecutor = Executor.create(10);
     var _asyncTests = new AtomicInt(0);
     function _later(delayMS:Int, fn:Void->Void) {
         _asyncTests++;

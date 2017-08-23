@@ -16,11 +16,11 @@
 package hx.concurrent.collection;
 
 /**
- * Thread-safe first-in-first-out message queue.
+ * Unbound thread-safe first-in-first-out message queue.
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class FIFOQueue<T> {
+class Queue<T> {
 
     #if cpp
         var _queue = new cpp.vm.Deque<T>();

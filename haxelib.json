@@ -4,7 +4,7 @@
     "license": "Apache",
     "classPath": "src/",
     "tags": ["utility","vegardit","cross","cpp","cs","flash","java","js","neko","lua","php","php7","python"],
-    "description": "A haxelib with cross-platform concurrency functions and classes (atomic int/bool, FIFO queue, re-entrant lock, task executor/scheduler)",
+    "description": "A haxelib with cross-platform concurrency functions and classes (atomic int/bool, thread-safe collections/queues, re-entrant lock, task executor/scheduler)",
     "contributors": [
         "vegardit"
     ],
