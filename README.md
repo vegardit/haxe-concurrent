@@ -13,7 +13,7 @@
 
 ## <a name="what-is-it"></a>What is it?
 
-A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides concurrency support on all targets.
+A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides platform agnostic concurrency support.
 
 All classes are under the package `hx.concurrent` or below.
 
