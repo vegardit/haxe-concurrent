@@ -333,15 +333,15 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var future1 = executor.submit(function():Void flag1.negate(), ONCE(0));
         var future2 = executor.submit(function():Void flag2.negate(), ONCE(100));
         var future3 = executor.submit(function():Void flag3.negate(), ONCE(100));
-        _later(10, function() {
-            assertTrue(flag1.value);
-            assertFalse(flag2.value);
-            assertTrue(future1.isStopped);
-            assertFalse(future2.isStopped);
-        });
         _later(40, function() {
+            assertTrue(flag1.value);
+            assertTrue(future1.isStopped);
+
             assertFalse(flag2.value);
             assertFalse(future2.isStopped);
+
+            assertFalse(flag3.value);
+            assertFalse(future3.isStopped);
             future3.cancel();
             assertFalse(flag3.value);
             assertTrue(future3.isStopped);
@@ -349,7 +349,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
         _later(120, function() {
             assertTrue(flag2.value);
             assertTrue(future2.isStopped);
+
             assertFalse(flag3.value);
+            assertTrue(future3.isStopped);
 
             executor.stop();
         });
