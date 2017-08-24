@@ -23,6 +23,7 @@ import hx.concurrent.event.AsyncEventDispatcher;
 import hx.concurrent.event.EventDispatcherWithHistory;
 import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
+import hx.concurrent.executor.Schedule;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.thread.Threads;
 
@@ -177,6 +178,21 @@ class TestRunner extends hx.doctest.DocTestRunner {
         assertEquals(456,  q.pop(-1));
         assertEquals(null, q.pop());
         #end
+    }
+
+
+    function testScheduleTools() {
+        var now = Dates.now();
+        var in2sDate = Date.fromTime(now + 2000);
+        var runInMS = ScheduleTools.firstRunAt(HOURLY(in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
+        assertTrue(runInMS > 1000);
+        assertTrue(runInMS < 3000);
+        var runInMS = ScheduleTools.firstRunAt(DAILY(in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
+        assertTrue(runInMS > 1000);
+        assertTrue(runInMS < 3000);
+        var runInMS = ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
+        assertTrue(runInMS > 1000);
+        assertTrue(runInMS < 3000);
     }
 
 

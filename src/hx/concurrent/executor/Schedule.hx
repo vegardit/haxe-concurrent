@@ -167,25 +167,28 @@ class ScheduleTools {
      * @return time in milliseconds when the first run with this schedule would occur
      */
     public static function firstRunAt(schedule:Schedule):Float {
-        var nowMS = Dates.now();
 
         schedule = assertValid(schedule);
 
         // validate schedule and calculate initial run
         switch(schedule) {
-            case ONCE(initialDelayMS):                    return nowMS + initialDelayMS;
-            case FIXED_DELAY(intervalMS, initialDelayMS): return nowMS + initialDelayMS;
-            case FIXED_RATE(intervalMS, initialDelayMS):  return nowMS + initialDelayMS;
+            case ONCE(initialDelayMS):                    return Dates.now() + initialDelayMS;
+            case FIXED_DELAY(intervalMS, initialDelayMS): return Dates.now() + initialDelayMS;
+            case FIXED_RATE(intervalMS, initialDelayMS):  return Dates.now() + initialDelayMS;
 
             case HOURLY(minute, second):
-                var now = Dates.toDate(nowMS);
+                var now = Date.now();
+                var nowMS:Float = Std.int(now.getTime() / 1000) * 1000.0; // rounding to second-precision
+
                 var runAtSecondOfHour = minute * 60 + second;
                 var elapsedSecondsThisHour = now.getMinutes() * 60 + now.getSeconds();
 
-                return nowMS - (runAtSecondOfHour - elapsedSecondsThisHour) * 1000 + (elapsedSecondsThisHour > runAtSecondOfHour ? HOUR_IN_MS : 0);
+                return nowMS + (runAtSecondOfHour - elapsedSecondsThisHour) * 1000 + (elapsedSecondsThisHour > runAtSecondOfHour ? HOUR_IN_MS : 0);
 
             case DAILY(hour, minute, second):
-                var now = Dates.toDate(nowMS);
+                var now = Date.now();
+                var nowMS:Float = Std.int(now.getTime() / 1000) * 1000.0; // rounding to second-precision
+
                 var runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
                 var elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
@@ -193,7 +196,9 @@ class ScheduleTools {
 
 
             case WEEKLY(day, hour, minute, second):
-                var now = Dates.toDate(nowMS);
+                var now = Date.now();
+                var nowMS:Float = Std.int(now.getTime() / 1000) * 1000.0; // rounding to second-precision
+
                 var runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
                 var elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
