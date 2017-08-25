@@ -96,7 +96,7 @@ class ThreadContext {
     /**
      * ID of the current thread
      */
-    public var id:Int;
+    public var id(default, null):Int;
     public var vars(default, never) = new StringMap<Dynamic>();
 
     inline
