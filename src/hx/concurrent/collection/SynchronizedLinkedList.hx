@@ -33,6 +33,11 @@ abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from Synchroni
             this.addAll(initialValues);
     }
 
+    /**
+     * <pre><code>
+     * >>> new SynchronizedLinkedList([1,2])[0] == 1
+     * </code></pre>
+     */
     @:arrayAccess
     inline function _get(idx:Int):Null<T> {
       return this.get(idx);

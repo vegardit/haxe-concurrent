@@ -32,15 +32,36 @@ abstract SynchronizedArray<T>(SynchronizedArrayImpl<T>) from SynchronizedArrayIm
             this.addAll(initialValues);
     }
 
+    /**
+     * <pre><code>
+     * >>> new SynchronizedArray([1,2])[0] == 1
+     * </code></pre>
+     */
     @:arrayAccess
     inline function _get(idx:Int):Null<T> {
       return this.get(idx);
+    }
+
+    /**
+     * >>> function(){var arr=new SynchronizedArray([1,2]); arr[2]=3; return arr.toArray(); }() == [1, 2, 3]
+     */
+    @:arrayAccess
+    inline function _set(idx:Int, x:T):T {
+      this._set(idx, x);
+      return x;
     }
 }
 
 private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     var _items = new Array<T>();
     var _sync = new RLock();
+
+    @:allow(hx.concurrent.collection.SynchronizedArray)
+    function set(idx:Int, x:T):Void {
+        _sync.execute(function() {
+            _items[idx] = x;
+        });
+    }
 
     /**
      * <pre><code>

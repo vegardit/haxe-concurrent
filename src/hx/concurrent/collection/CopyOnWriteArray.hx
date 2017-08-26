@@ -33,15 +33,38 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
             this.addAll(initialValues);
     }
 
+    /**
+     * <pre><code>
+     * >>> new CopyOnWriteArray([1,2])[0] == 1
+     * </code></pre>
+     */
     @:arrayAccess
     inline function _get(idx:Int):Null<T> {
       return this.get(idx);
+    }
+
+    /**
+     * >>> function(){var arr=new CopyOnWriteArray([1,2]); arr[2]=3; return arr.toArray(); }() == [1, 2, 3]
+     */
+    @:arrayAccess
+    inline function _set(idx:Int, x:T):T {
+      this._set(idx, x);
+      return x;
     }
 }
 
 private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     var _items = new Array<T>();
     var _sync = new RLock();
+
+    @:allow(hx.concurrent.collection.CopyOnWriteArray)
+    function _set(idx:Int, x:T):Void {
+        _sync.execute(function() {
+            var items = _items.copy();
+            items[idx] = x;
+            _items = items;
+        });
+    }
 
     /**
      * <pre><code>
@@ -82,10 +105,10 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     public function new() {
     }
 
-    public function add(item:T):Void {
+    public function add(x:T):Void {
         _sync.execute(function() {
             var items = _items.copy();
-            items.push(item);
+            items.push(x);
             _items = items;
         });
     }
@@ -96,13 +119,13 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      * >>> new CopyOnWriteArray([1,2]).addIfAbsent(1) == false
      * </code></pre>
      */
-    public function addIfAbsent(item:T):Bool {
+    public function addIfAbsent(x:T):Bool {
         return _sync.execute(function() {
-            if (_items.indexOf(item) > -1)
+            if (_items.indexOf(x) > -1)
                 return false;
 
             var items = _items.copy();
-            items.push(item);
+            items.push(x);
             _items = items;
             return true;
         });
