@@ -47,7 +47,7 @@ abstract SynchronizedArray<T>(SynchronizedArrayImpl<T>) from SynchronizedArrayIm
      */
     @:arrayAccess
     inline function _set(idx:Int, x:T):T {
-      this._set(idx, x);
+      this.set(idx, x);
       return x;
     }
 }
