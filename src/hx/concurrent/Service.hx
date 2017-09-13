@@ -16,6 +16,7 @@
 package hx.concurrent;
 
 import hx.concurrent.atomic.AtomicInt;
+import hx.concurrent.lock.RLock;
 
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH

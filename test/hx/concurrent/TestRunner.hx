@@ -25,6 +25,8 @@ import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
 import hx.concurrent.executor.Schedule;
 import hx.concurrent.internal.Dates;
+import hx.concurrent.lock.RLock;
+import hx.concurrent.lock.Semaphore;
 import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 

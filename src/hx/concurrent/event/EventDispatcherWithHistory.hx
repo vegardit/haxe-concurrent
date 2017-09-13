@@ -16,7 +16,7 @@
 package hx.concurrent.event;
 
 import hx.concurrent.Future;
-import hx.concurrent.RLock;
+import hx.concurrent.lock.RLock;
 
 /**
  * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>

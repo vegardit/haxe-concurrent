@@ -6,15 +6,17 @@
 1. [`hx.concurrent.collection` package](#collection-package)
 1. [`hx.concurrent.executor` package](#executor-package)
 1. [`hx.concurrent.event` package](#event-package)
+1. [`hx.concurrent.lock` package](#lock-package)
 1. [`hx.concurrent.thread` package](#thread-package)
 1. [Installation](#installation)
 1. [Using the latest code](#latest)
 1. [License](#license)
+1. [Alternatives](#alternatives)
 
 
 ## <a name="what-is-it"></a>What is it?
 
-A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides platform agnostic concurrency support.
+A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides some basic platform agnostic concurrency support.
 
 All classes are under the package `hx.concurrent` or below.
 
@@ -154,12 +156,20 @@ class Test {
 ```
 
 
+## <a name="lock-package"></a>The `hx.concurrent.lock` package
+
+The [hx.concurrent.lock](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock) package contains lock implementations for different purposes:
+
+* [RLock](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock/RLock.hx) - a re-entrant lock
+* [Semaphore](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock/Semaphore.hx)
+
+
 ## <a name="thread-package"></a>The `hx.concurrent.thread` package
 
 The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread) package contains
 classes for platforms supporting threads:
 
-* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx)
+* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - very basic thread-pool implementation supporting C++, C#, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
 * [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
 
 
@@ -212,3 +222,15 @@ haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent master D
 ## <a name="license"></a>License
 
 All files are released under the [Apache License 2.0](https://github.com/vegardit/haxe-concurrent/blob/master/LICENSE.txt).
+
+
+## <a name="alternatives"></a>Alternatives
+
+**Other libraries addressing concurrency/parallism:**
+
+* https://github.com/thomasuster/haxe-threadpool - thread pool implementation for C++ and Neko
+* https://github.com/Blank101/haxe-concurrency
+* https://github.com/kevinresol/filelock
+* http://hamaluik.com/posts/a-platform-agnostic-thread-pool-for-haxe-openfl/ - cross platform API but only uses real threads on C++ and Neko, otherwise single threaded blocking execution
+* https://github.com/Rezmason/Golems
+* https://github.com/zjnue/hxworker

@@ -15,6 +15,7 @@
  */
 package hx.concurrent.collection;
 
+import hx.concurrent.lock.RLock;
 import hx.concurrent.thread.Threads;
 
 /**

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package hx.concurrent.atomic;
+import hx.concurrent.lock.RLock;
 
 /**
  * Value holder with thread-safe accessors.

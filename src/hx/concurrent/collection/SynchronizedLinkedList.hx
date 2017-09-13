@@ -16,6 +16,7 @@
 package hx.concurrent.collection;
 
 import hx.concurrent.internal.Either3;
+import hx.concurrent.lock.RLock;
 
 /**
  *
