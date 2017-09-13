@@ -51,7 +51,6 @@ class ThreadPool extends ServiceBase {
 
                 trace('[$this] Spawned thread $_threadCount/$numThreads with ID ${context.id}.');
 
-                var i = 0;
                 while (true) {
                     var task = _workQueue.pop();
                     if (task == null) {
@@ -59,7 +58,6 @@ class ThreadPool extends ServiceBase {
                             break;
                         Sys.sleep(0.001);
                     } else {
-                        i++;
                         try {
                             task(context);
                         } catch (ex:Dynamic) {
@@ -68,7 +66,7 @@ class ThreadPool extends ServiceBase {
                     }
                 }
 
-                trace('[$this] Stopped thread with ID ${context.id}. ${i}');
+                trace('[$this] Stopped thread with ID ${context.id}.');
 
                 _threadCount--;
 
