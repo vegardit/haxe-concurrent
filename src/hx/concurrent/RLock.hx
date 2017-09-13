@@ -32,7 +32,7 @@ class RLock {
      * Indicates if this class will have any effect on the current target.
      * Currently: CPP, CS, Flash, Java, Neko, Python.
      */
-    public static var isSupported(default, never) = #if (cpp||cs||flash||java||neko||python) true #else false #end;
+    public static inline var isSupported = #if (cpp||cs||flash||java||neko||python) true #else false #end;
 
     #if cpp
         var _rlock = new cpp.vm.Mutex();
@@ -100,19 +100,13 @@ class RLock {
      * By default this call is non-blocking, meaning if the lock cannot be acquired `false` is returned immediately.
      *
      * If <code>timeoutMS</code> is set to value > 0, results in blocking for the given time to aqcuire the lock.
-     * If <code>timeoutMS</code> is set to `-1`, results in indefinitely blocking to acquire the lock.
-     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+     * If <code>timeoutMS</code> is set to value lower than -0, results in an exception.
      *
      * @return `false` if lock could not be acquired
      */
     public function tryAcquire(timeoutMS:Int = 0):Bool {
 
-        if (timeoutMS < -1) throw "[timeoutMS] must be >= -1";
-
-        if (timeoutMS == -1) {
-            acquire();
-            return true;
-        }
+        if (timeoutMS < 0) throw "[timeoutMS] must be >= 0";
 
         #if cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);

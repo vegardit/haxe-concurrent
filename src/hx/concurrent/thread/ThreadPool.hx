@@ -31,6 +31,8 @@ class ThreadPool extends ServiceBase {
 
     var _threadCount = new AtomicInt(0);
     var _workQueue = new Queue<Task>();
+    var _workQueueSize = new AtomicInt();
+
 
     public function new(numThreads:Int) {
         if (numThreads < 1)
@@ -49,15 +51,24 @@ class ThreadPool extends ServiceBase {
 
                 trace('[$this] Spawned thread $_threadCount/$numThreads with ID ${context.id}.');
 
+                var i = 0;
                 while (true) {
                     var task = _workQueue.pop();
                     if (task == null) {
                         if(state != RUNNING)
                             break;
                         Sys.sleep(0.001);
-                    } else
-                        try task(context) catch (ex:Dynamic) { trace(ex); }
+                    } else {
+                        i++;
+                        try {
+                            task(context);
+                        } catch (ex:Dynamic) {
+                            trace(ex);
+                        }
+                    }
                 }
+
+                trace('[$this] Stopped thread with ID ${context.id}. ${i}');
 
                 _threadCount--;
 
@@ -69,6 +80,7 @@ class ThreadPool extends ServiceBase {
         }
     }
 
+
     /**
      * Submits a task for immediate execution in a thread.
      */
@@ -78,6 +90,7 @@ class ThreadPool extends ServiceBase {
 
         _workQueue.push(task);
     }
+
 
     /**
      * Initiates a graceful shutdown of this executor. Canceling execution of all scheduled tasks.

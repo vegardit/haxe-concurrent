@@ -25,6 +25,7 @@ import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
 import hx.concurrent.executor.Schedule;
 import hx.concurrent.internal.Dates;
+import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 
 /**
@@ -219,14 +220,45 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     }
 
+    function testSemaphore() {
+        var sem = new Semaphore(2);
+
+        assertEquals(2, sem.availablePermits);
+
+        assertEquals(true, sem.tryAcquire());
+        assertEquals(true, sem.tryAcquire());
+        assertEquals(0, sem.availablePermits);
+        assertEquals(false, sem.tryAcquire());
+        sem.release();
+        assertEquals(true, sem.tryAcquire());
+        sem.release();
+        sem.release();
+        sem.release();
+        assertEquals(3, sem.availablePermits);
+    }
 
     #if threads
-    function testThreads() {
+    function _testThreads() {
         var i = new AtomicInt(0);
         for (j in 0...10)
             Threads.spawn(function() i.increment());
         Threads.sleep(100);
         assertEquals(i.value, 10);
+    }
+
+    function testThreadPool() {
+        var pool = new ThreadPool(2);
+        var ids = [-1, -1];
+        for (j in 0...2)
+            pool.submit(function(ctx:ThreadContext) {
+                Threads.sleep(50);
+                ids[j] = ctx.id;
+            });
+        Threads.sleep(80);
+        pool.stop();
+        assertNotEquals(-1, ids[0]);
+        assertNotEquals(-1, ids[1]);
+        assertNotEquals(ids[0], ids[1]);
     }
     #end
 

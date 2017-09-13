@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package hx.concurrent.collection;
+
 import hx.concurrent.thread.Threads;
 
 /**
@@ -108,7 +109,9 @@ class Queue<T> {
      * @throws exception if given msg is null
      */
     public function pushHead(msg:T):Void {
-        if (msg == null) throw "[msg] must not be null";
+        if (msg == null)
+            throw "[msg] must not be null";
+
         #if (cpp||neko)
             _queue.push(msg);
         #elseif java
@@ -129,7 +132,9 @@ class Queue<T> {
      * @throws exception if given msg is null
      */
     public function push(msg:T):Void {
-        if (msg == null) throw "[msg] must not be null";
+        if (msg == null)
+            throw "[msg] must not be null";
+
         #if (cpp||neko)
             _queue.add(msg);
         #elseif java
