@@ -28,8 +28,8 @@ abstract Semaphore(SemaphoreImpl) from SemaphoreImpl to SemaphoreImpl {
     inline function get_availablePermits():Int return this.availablePermits;
 
     inline
-    public function new(availablePermits:Int) {
-        this = new SemaphoreImpl(availablePermits);
+    public function new(initialPermits:Int) {
+        this = new SemaphoreImpl(initialPermits);
     }
 
     #if threads
@@ -67,8 +67,8 @@ private abstract SemaphoreImpl(java.util.concurrent.Semaphore) from java.util.co
 
 
     inline
-    public function new(availablePermits:Int) {
-        this = new java.util.concurrent.Semaphore(availablePermits);
+    public function new(initialPermits:Int) {
+        this = new java.util.concurrent.Semaphore(initialPermits);
     }
 
 
@@ -95,8 +95,8 @@ private class SemaphoreImpl {
     var permitLock = new RLock();
 
     inline
-    public function new(availablePermits:Int) {
-        this.availablePermits = availablePermits;
+    public function new(initialPermits:Int) {
+        this.availablePermits = initialPermits;
     }
 
 
