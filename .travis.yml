@@ -36,7 +36,7 @@ matrix:
       os: osx
 
 # cs fails because of https://github.com/HaxeFoundation/haxe/issues/6533
-# lua fails on 3.4.2 with "too many local variables (limit is 200)"
+# lua fails on 3.4.4 with "too many local variables (limit is 200)"
 
 install:
   - haxelib install haxe-doctest
