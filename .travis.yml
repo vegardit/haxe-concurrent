@@ -8,7 +8,7 @@ os:
   - osx
 
 haxe:
-  - "3.4.2"
+  - "3.4.4"
   - development
 
 env:
@@ -28,7 +28,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - haxe: development
-    - haxe: "3.4.2"
+    - haxe: "3.4.4"
       env: HAXE_TARGET=lua
     - env: HAXE_TARGET=cs
   exclude:
