@@ -240,7 +240,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
     #if threads
-    function _testThreads() {
+    function testThreads() {
         var i = new AtomicInt(0);
         for (j in 0...10)
             Threads.spawn(function() i.increment());
@@ -363,9 +363,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertFalse(future.isStopped);
             assertTrue(v >= 10 * 0.4);
             assertTrue(v <= 10 * 1.4);
+        });
+        _later(220, function() {
             executor.stop();
-        }
-        );
+        });
         _later(400, function() {
             assertTrue(future.isStopped);
             assertEquals(executor.state, ServiceState.STOPPED);
@@ -493,7 +494,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     var _asyncTests = new AtomicInt(0);
     function _later(delayMS:Int, fn:Void->Void) {
         _asyncTests++;
-        _asyncExecutor.submit(function() {
+        var future:TaskFuture<Dynamic> = _asyncExecutor.submit(function() {
             fn();
             _asyncTests--;
         }, ONCE(delayMS));
