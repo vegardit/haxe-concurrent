@@ -28,6 +28,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - haxe: development
+    - haxe: flash
     - haxe: "3.4.4"
       env: HAXE_TARGET=lua
     - env: HAXE_TARGET=cs
