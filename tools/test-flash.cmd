@@ -1,9 +1,16 @@
 @echo off
-set CDP=%~dp0
+REM Copyright (c) 2016-2017 Vegard IT GmbH, http://vegardit.com
+REM SPDX-License-Identifier: Apache-2.0
+REM Author: Sebastian Thomschke, Vegard IT GmbH
+
+pushd .
+
+REM cd into project root
+cd %~dp0..
 
 echo Cleaning...
-if exist "%CDP%dump\flash" rd /s /q "%CDP%dump\flash"
-if exist "%CDP%..\target\flash" rd /s /q "%CDP%..\target\flash"
+if exist dump\flash rd /s /q dump\flash
+if exist target\flash rd /s /q target\flash
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -12,17 +19,17 @@ if errorlevel 1 (
 )
 
 echo Compiling...
-pushd .
-cd "%CDP%.."
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
   -lib haxe-doctest ^
-  -cp "src" ^
-  -cp "test" ^
+  -cp src ^
+  -cp test ^
   -dce full ^
   -debug ^
   -D dump=pretty ^
+  -D no-swf-compress ^
+  -D swf-script-timeout=180 ^
   -swf-version 11.5 ^
-  -swf "target\flash\TestRunner.swf"
+  -swf target\flash\TestRunner.swf
 set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%
@@ -34,10 +41,10 @@ REM enable Flash logging
 ) > "%HOME%\mm.cfg"
 
 echo Testing...
-flashplayer_24_sa_debug "%CDP%..\target\flash\TestRunner.swf"
-set exitCode=%errorlevel%
+flashplayer_27_sa_debug "%~dp0..\target\flash\TestRunner.swf"
+set rc=%errorlevel%
 
 REM printing log file
 type "%HOME%\AppData\Roaming\Macromedia\Flash Player\Logs\flashlog.txt"
 
-exit /b %exitCode%
+exit /b %rc%

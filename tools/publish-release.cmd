@@ -1,6 +1,8 @@
 @echo off
-REM @author Sebastian Thomschke, Vegard IT GmbH
-REM 
+REM Copyright (c) 2016-2017 Vegard IT GmbH, http://vegardit.com
+REM SPDX-License-Identifier: Apache-2.0
+REM Author: Sebastian Thomschke, Vegard IT GmbH
+
 REM creates a new release in GitHub and haxelib.org
 
 where zip.exe /Q

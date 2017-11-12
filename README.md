@@ -1,5 +1,8 @@
 # haxe-concurrent - cross platform concurrency support
+
 [![Build Status](https://travis-ci.org/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.org/vegardit/haxe-concurrent)
+[![Release](https://img.shields.io/github/release/vegardit/haxe-concurrent.svg)](http://lib.haxe.org/p/haxe-concurrent)
+[![License](https://img.shields.io/github/license/vegardit/haxe-concurrent.svg?label=license)](#license)
 
 1. [What is it?](#what-is-it)
 1. [`hx.concurrent.atomic` package](#atomic-package)

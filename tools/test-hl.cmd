@@ -1,9 +1,16 @@
 @echo off
-set CDP=%~dp0
+REM Copyright (c) 2016-2017 Vegard IT GmbH, http://vegardit.com
+REM SPDX-License-Identifier: Apache-2.0
+REM Author: Sebastian Thomschke, Vegard IT GmbH
+
+pushd .
+
+REM cd into project root
+cd %~dp0..
 
 echo Cleaning...
-if exist "%CDP%dump\hl" rd /s /q "%CDP%dump\hl"
-if exist "%CDP%..\target\hl" rd /s /q "%CDP%..\target\hl"
+if exist dump\hl rd /s /q dump\hl
+if exist target\hl rd /s /q target\hl
 
 haxelib list | findstr haxe-doctest >NUL
 if errorlevel 1 (
@@ -11,19 +18,19 @@ if errorlevel 1 (
     haxelib install haxe-doctest
 )
 
-echo Compiling and Testing...
-pushd .
-cd "%CDP%.."
+echo Compiling...
 haxe extraParams.hxml -main hx.concurrent.TestRunner ^
   -lib haxe-doctest ^
-  -cp "src" ^
-  -cp "test" ^
+  -cp src ^
+  -cp test ^
   -dce full ^
   -debug ^
   -D dump=pretty ^
-  -hl "target\hl\TestRunner.hl"
+  -hl target\hl\TestRunner.hl
 set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%
 
-hl "%CDP%..\target\hl\TestRunner.hl"
+echo Testing...
+hl "%~dp0..\target\hl\TestRunner.hl"
+
