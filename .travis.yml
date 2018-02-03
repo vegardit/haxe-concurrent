@@ -8,7 +8,7 @@ os:
   - osx
 
 haxe:
-  - "3.4.4"
+  - "3.4.5"
   - development
 
 env:
@@ -28,16 +28,12 @@ matrix:
   fast_finish: true
   allow_failures:
     - haxe: development
-    - haxe: flash
-    - haxe: "3.4.4"
-      env: HAXE_TARGET=lua
-    - env: HAXE_TARGET=cs
+    - env: HAXE_TARGET=flash
+    - env: HAXE_TARGET=lua   # LUA fails on 3.4.x with "too many local variables (limit is 200)", see https://github.com/HaxeFoundation/haxe/issues/5243
+    - env: HAXE_TARGET=cs    # C# fails because of https://github.com/HaxeFoundation/haxe/issues/6533
   exclude:
     - haxe: development
       os: osx
-
-# cs fails because of https://github.com/HaxeFoundation/haxe/issues/6533
-# lua fails on 3.4.4 with "too many local variables (limit is 200)"
 
 install:
   - haxelib install haxe-doctest
