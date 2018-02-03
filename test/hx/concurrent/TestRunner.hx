@@ -233,8 +233,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var i = new AtomicInt(0);
         for (j in 0...10)
             Threads.spawn(function() i.increment());
-        Threads.sleep(100);
-        assertEquals(i.value, 10);
+        assertTrue(Threads.wait(function() { return i.value == 10; }, 200));
     }
 
     function testThreadPool() {
@@ -245,10 +244,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
                 Threads.sleep(50);
                 ids[j] = ctx.id;
             });
-        Threads.sleep(80);
+        assertTrue(Threads.wait(function() { return ids[0] != -1 && ids[1] != -1; }, 200));
         pool.stop();
-        assertNotEquals(-1, ids[0]);
-        assertNotEquals(-1, ids[1]);
         assertNotEquals(ids[0], ids[1]);
     }
     #end
