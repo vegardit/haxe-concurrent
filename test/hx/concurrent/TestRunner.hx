@@ -383,7 +383,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertFalse(flag3.value);
             assertTrue(future3.isStopped);
         });
-        _later(120, function() {
+        _later(140, function() {
             assertTrue(flag2.value);
             assertTrue(future2.isStopped);
 
