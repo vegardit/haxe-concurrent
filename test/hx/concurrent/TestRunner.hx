@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent;
