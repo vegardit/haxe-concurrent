@@ -190,7 +190,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).removeAt(1)     == 2
      * >>> new CopyOnWriteArray([1]).removeAt(1)       == null
-     * >>> new CopyOnWriteArray([1]).removeAt(1, true) throws ~/Index out of range/
+     * >>> new CopyOnWriteArray([1]).removeAt(1, true) throws "Index out of range."
      * </code></pre>
      */
     public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T> {
@@ -212,7 +212,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).removeFirst() == 1
      * >>> new CopyOnWriteArray().removeFirst()      == null
-     * >>> new CopyOnWriteArray().removeFirst(true)  throws ~/This collection is empty/
+     * >>> new CopyOnWriteArray().removeFirst(true)  throws "This collection is empty."
      * </code></pre>
      */
     public function removeFirst(throwIfEmpty:Bool = false):Null<T> {
@@ -235,7 +235,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).removeLast() == 2
      * >>> new CopyOnWriteArray().removeLast()      == null
-     * >>> new CopyOnWriteArray().removeLast(true)  throws ~/This collection is empty/
+     * >>> new CopyOnWriteArray().removeLast(true)  throws "This collection is empty."
      * </code></pre>
      */
     public function removeLast(throwIfEmpty:Bool = false):Null<T> {
@@ -289,7 +289,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).get(1)  == 2
      * >>> new CopyOnWriteArray([2]).get(1)    == null
-     * >>> new CopyOnWriteArray().get(1, true) throws ~/Index out of range/
+     * >>> new CopyOnWriteArray().get(1, true) throws "Index out of range."
      * </code></pre>
      */
     public function get(idx:Int, throwIfOutOfRange:Bool = false):Null<T> {
