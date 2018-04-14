@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.collection;
@@ -23,6 +23,7 @@ abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from Synchroni
             this.addAll(initialValues);
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2])[0] == 1
@@ -34,9 +35,12 @@ abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from Synchroni
     }
 }
 
+
 private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
+
     var _items = new List<T>();
     var _sync = new RLock();
+
 
     /**
      * <pre><code>
@@ -51,6 +55,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList().last      == null
@@ -63,6 +68,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return _items.last();
         });
     }
+
 
     /**
      * <pre><code>
@@ -80,6 +86,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     inline
     public function new() {
     }
@@ -90,6 +97,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             _items.add(item);
         });
     }
+
 
     /**
      * <pre><code>
@@ -106,6 +114,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void {
         _sync.execute(function() {
             switch(coll.value) {
@@ -116,11 +125,13 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     public function clear():Void {
         _sync.execute(function() {
             _items = new List<T>();
         });
     }
+
 
     public function insertAt(idx:Int, x:T):Void {
         _sync.execute(function() {
@@ -151,6 +162,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).remove(1) == true
@@ -166,6 +178,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return _items.remove(x);
         });
     }
+
 
     /**
      * <pre><code>
@@ -198,6 +211,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).removeFirst() == 1
@@ -216,6 +230,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return _items.pop();
         });
     }
+
 
     /**
      * <pre><code>
@@ -244,6 +259,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     public function copy():SynchronizedLinkedList<T> {
         return _sync.execute(function() {
             var copy = new List<T>();
@@ -252,6 +268,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return new SynchronizedLinkedList<T>(copy);
         });
     }
+
 
     /**
      * <pre><code>
@@ -265,6 +282,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         return indexOf(x) > -1;
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([2]).isEmpty() == false
@@ -276,6 +294,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return !_items.iterator().hasNext();
         });
     }
+
 
     /**
      * <pre><code>
@@ -302,6 +321,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2,1]).indexOf(1)    == 0
@@ -321,6 +341,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return -1;
         });
     }
+
 
     /**
      * <pre><code>
@@ -346,6 +367,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2,1]).filter(function(x) return x == 1).toArray() == [1, 1]
@@ -357,6 +379,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2,1]).map(function(x) return Std.string(x)).toArray() == ["1", "2", "1"]
@@ -367,6 +390,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return new SynchronizedLinkedList(_items.map(fn));
         });
     }
+
 
     /**
      * <pre><code>
@@ -381,6 +405,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new SynchronizedLinkedList([1,2]).iterator().hasNext() == true
@@ -393,6 +418,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return _items.iterator();
         });
     }
+
 
     /**
      * <pre><code>
@@ -409,6 +435,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return arr;
         });
     }
+
 
     /**
      * <pre><code>

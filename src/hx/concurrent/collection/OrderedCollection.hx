@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.collection;
@@ -11,15 +11,15 @@ import hx.concurrent.internal.Either3;
  */
 interface OrderedCollection<T> extends Collection<T> {
 
-    public var first(get, never):Null<T>;
-    public var last(get, never):Null<T>;
+    var first(get, never):Null<T>;
+    var last(get, never):Null<T>;
 
-    public function insertAt(idx:Int, x:T):Void;
-    public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
-    public function removeFirst(throwIfEmpty:Bool=false):Null<T>;
-    public function removeLast(throwIfEmpty:Bool=false):Null<T>;
+    function insertAt(idx:Int, x:T):Void;
+    function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
+    function removeFirst(throwIfEmpty:Bool=false):Null<T>;
+    function removeLast(throwIfEmpty:Bool=false):Null<T>;
 
-    public function get(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
-    public function indexOf(x:T, startAt:Int=0):Int;
-    public function lastIndexOf(x:T, ?startAt:Int):Int;
+    function get(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
+    function indexOf(x:T, startAt:Int=0):Int;
+    function lastIndexOf(x:T, ?startAt:Int):Int;
 }

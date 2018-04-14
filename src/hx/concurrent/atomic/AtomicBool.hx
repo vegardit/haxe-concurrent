@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.atomic;
@@ -67,6 +67,7 @@ abstract AtomicBool(AB) from AB to AB {
         return this.getAndSet(value);
     }
 
+
     /**
      * <pre><code>
      * >>> new AtomicBool(true).negate()  == false
@@ -86,6 +87,7 @@ abstract AtomicBool(AB) from AB to AB {
         #end
     }
 
+
     /**
      * <pre><code>
      * >>> new AtomicBool(true).getAndNegate()  == true
@@ -104,6 +106,7 @@ abstract AtomicBool(AB) from AB to AB {
             return this.getAndNegate();
         #end
     }
+
 
     /**
      * <pre><code>
@@ -129,10 +132,12 @@ private class AtomicBoolImpl {
         return result;
     }
 
+
     public function new(initialValue:Bool=false) {
         _lock = new RLock();
         this._value = initialValue;
     }
+
 
     public function getAndSet(value:Bool):Bool {
         _lock.acquire();
@@ -142,6 +147,7 @@ private class AtomicBoolImpl {
         return old;
     }
 
+
     public function getAndNegate():Bool {
         _lock.acquire();
         var oldValue = _value;
@@ -149,6 +155,7 @@ private class AtomicBoolImpl {
         _lock.release();
         return oldValue;
     }
+
 
     public function negate():Bool {
         _lock.acquire();
@@ -158,11 +165,13 @@ private class AtomicBoolImpl {
         return newValue;
     }
 
+
     public function set(value:Bool):Void {
         _lock.acquire();
         this._value = value;
         _lock.release();
     }
+
 
     inline
     public function toString() {

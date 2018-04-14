@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.event;
@@ -32,7 +32,8 @@ class SyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<
     }
 
 
+    override
     public function unsubscribeAll():Void {
-        _eventListeners.clear();
+        super.unsubscribeAll();
     }
 }

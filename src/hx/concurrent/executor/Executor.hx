@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.executor;
@@ -75,17 +75,17 @@ interface TaskFuture<T> extends Future<T> {
     /**
      * The effective schedule of the task.
      */
-    public var schedule(default, null):Schedule;
+    var schedule(default, null):Schedule;
 
     /**
      * @return true if no future executions are scheduled
      */
-    public var isStopped(default, null):Bool;
+    var isStopped(default, null):Bool;
 
     /**
      * Prevents any further scheduled executions of this task.
      */
-    public function cancel():Void;
+    function cancel():Void;
 
     #if threads
     /**
@@ -96,7 +96,7 @@ interface TaskFuture<T> extends Future<T> {
      *
      * @return result of the last execution
      */
-    public function waitAndGet(timeoutMS:Int):FutureResult<T>;
+    function waitAndGet(timeoutMS:Int):FutureResult<T>;
     #end
 }
 
@@ -109,6 +109,7 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
     var _executor:Executor;
     var _task:Task<T>;
 
+
     function new(executor:Executor, task:Task<T>, schedule:Schedule) {
         super();
         _executor = executor;
@@ -116,6 +117,7 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
 
         this.schedule = Schedule.ScheduleTools.assertValid(schedule);
     }
+
 
     public function cancel():Void {
         isStopped = true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.thread;
@@ -21,6 +21,7 @@ class Threads {
         Sys.sleep(timeMS/1000);
     }
 
+
     #if !python
     inline
     #end
@@ -39,6 +40,7 @@ class Threads {
             return false;
         #end
     }
+
 
     #if threads
     /**
@@ -63,6 +65,7 @@ class Threads {
         #end
     }
     #end
+
 
     /**
      * Blocks the current thread until `condition` returns `true`.

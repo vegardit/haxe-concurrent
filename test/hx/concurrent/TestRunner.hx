@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent;
@@ -44,6 +44,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var runner = new TestRunner();
         runner.runAndExit();
     }
+
 
     function testAtomicInt() {
         var val:Int = -1;
@@ -393,6 +394,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             executor.stop();
         });
     }
+
 
     function testTaskExecutor_schedule_RATE_DELAY() {
         var executor = Executor.create(2);

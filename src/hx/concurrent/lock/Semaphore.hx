@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
@@ -17,10 +17,12 @@ abstract Semaphore(SemaphoreImpl) from SemaphoreImpl to SemaphoreImpl {
     public var availablePermits(get, never):Int;
     inline function get_availablePermits():Int return this.availablePermits;
 
+
     inline
     public function new(initialPermits:Int) {
         this = new SemaphoreImpl(initialPermits);
     }
+
 
     #if threads
     /**
@@ -29,6 +31,7 @@ abstract Semaphore(SemaphoreImpl) from SemaphoreImpl to SemaphoreImpl {
     inline
     public function acquire():Void this.acquire();
     #end
+
 
     /**
      * By default this call is non-blocking, meaning if no permit can be acquired `false` is returned immediately.
@@ -40,6 +43,7 @@ abstract Semaphore(SemaphoreImpl) from SemaphoreImpl to SemaphoreImpl {
      */
     inline
     public function tryAcquire(timeoutMS:Int = 0):Bool return this.tryAcquire(timeoutMS);
+
 
     /**
      * Increases availablePermits by one.

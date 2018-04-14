@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent;
@@ -19,7 +19,7 @@ interface Future<T> {
      *
      * @return the future's computed result
      */
-    public var result(default, null):FutureResult<T>;
+    var result(default, null):FutureResult<T>;
 
     /**
      * Callback function `function(result:FutureResult<T>):Void` to be executed when a result
@@ -27,7 +27,7 @@ interface Future<T> {
      *
      * Replaces any previously registered onResult function.
      */
-    public var onResult(default, set):FutureResult<T>->Void;
+    var onResult(default, set):FutureResult<T>->Void;
 }
 
 

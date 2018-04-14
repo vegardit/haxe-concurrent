@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.event;
@@ -28,6 +28,7 @@ class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
 
     var _eventListeners = new CopyOnWriteArray<EVENT->Void>();
 
+
     public function subscribe(listener:EVENT->Void):Bool  {
         if (listener == null)
             throw "[listener] must not be null";
@@ -41,5 +42,10 @@ class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
             throw "[listener] must not be null";
 
         return _eventListeners.remove(listener);
+    }
+
+
+    function unsubscribeAll():Void {
+        _eventListeners.clear();
     }
 }

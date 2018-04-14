@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent;
 
 import hx.concurrent.atomic.AtomicInt;
+import hx.concurrent.event.EventListenable;
 import hx.concurrent.lock.RLock;
 
 /**
@@ -12,13 +13,13 @@ import hx.concurrent.lock.RLock;
  */
 interface Service<T> {
 
-    public var id(default, null):T;
+    var id(default, null):T;
 
-    public var state(default, null):ServiceState;
+    var state(default, null):ServiceState;
 
-    public function stop():Void;
+    function stop():Void;
 
-    public function toString():String;
+    function toString():String;
 }
 
 
@@ -37,8 +38,6 @@ class ServiceBase implements Service<Int> {
     public var id(default, never):Int = _ids.incrementAndGet();
 
     public var state(default, set):ServiceState = RUNNING;
-    var _stateLock:RLock = new RLock();
-
     function set_state(s:ServiceState) {
         switch(s) {
             case RUNNING: trace('[$this] is running.');
@@ -47,10 +46,14 @@ class ServiceBase implements Service<Int> {
         }
         return state = s;
     }
+    var _stateLock:RLock = new RLock();
 
+
+    inline
     function new() {
         trace('[$this] instantiated.');
     }
+
 
     public function stop() {
         _stateLock.execute(function() {
@@ -60,8 +63,9 @@ class ServiceBase implements Service<Int> {
         });
     }
 
-    inline
+
     public function toString():String {
         return Type.getClassName(Type.getClass(this)) + "#" + id;
     }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Vegard IT GmbH, http://vegardit.com
+ * Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.collection;
@@ -23,6 +23,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
             this.addAll(initialValues);
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2])[0] == 1
@@ -32,6 +33,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
     inline function _get(idx:Int):Null<T> {
       return this.get(idx);
     }
+
 
     /**
      * >>> function(){var arr=new CopyOnWriteArray([1,2]); arr[2]=3; return arr.toArray(); }() == [1, 2, 3]
@@ -44,6 +46,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
 }
 
 private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
+
     var _items = new Array<T>();
     var _sync = new RLock();
 
@@ -55,6 +58,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             _items = items;
         });
     }
+
 
     /**
      * <pre><code>
@@ -68,6 +72,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return items.length == 0 ? null : items[0];
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray().last      == null
@@ -80,6 +85,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return items.length == 0 ? null : items[items.length - 1];
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray().length      == 0
@@ -91,9 +97,11 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return _items.length;
     }
 
+
     inline
     public function new() {
     }
+
 
     public function add(x:T):Void {
         _sync.execute(function() {
@@ -102,6 +110,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             _items = items;
         });
     }
+
 
     /**
      * <pre><code>
@@ -120,6 +129,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return true;
         });
     }
+
 
     public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void {
         _sync.execute(function() {
@@ -140,10 +150,12 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     inline
     public function clear():Void {
         _items = [];
     }
+
 
     public function insertAt(idx:Int, x:T):Void {
         _items = _sync.execute(function() {
@@ -152,6 +164,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return items;
         });
     }
+
 
     /**
      * <pre><code>
@@ -171,6 +184,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return removed;
         });
     }
+
 
     /**
      * <pre><code>
@@ -192,6 +206,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return removed.length == 0 ? null : removed[0];
         });
     }
+
 
     /**
      * <pre><code>
@@ -215,6 +230,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).removeLast() == 2
@@ -237,10 +253,12 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         });
     }
 
+
     inline
     public function copy():CopyOnWriteArray<T> {
         return new CopyOnWriteArray(_items.copy());
     }
+
 
     /**
      * <pre><code>
@@ -254,6 +272,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return indexOf(x) > -1;
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([2]).isEmpty() == false
@@ -264,6 +283,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     public function isEmpty():Bool {
         return _items.length == 0;
     }
+
 
     /**
      * <pre><code>
@@ -282,6 +302,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return items[idx];
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2,1]).indexOf(1)    == 0
@@ -294,6 +315,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     public function indexOf(x:T, startAt:Int=0):Int {
         return _items.indexOf(x, startAt);
     }
+
 
     /**
      * <pre><code>
@@ -313,6 +335,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         #end
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2,1]).filter(function(x) return x == 1).toArray() == [1, 1]
@@ -323,6 +346,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return new CopyOnWriteArray(_items.filter(fn));
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2,1]).map(function(x) return Std.string(x)).toArray() == ["1", "2", "1"]
@@ -332,6 +356,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     public function map<X>(fn:T->X):CopyOnWriteArray<X> {
         return new CopyOnWriteArray(_items.map(fn));
     }
+
 
     /**
      * <pre><code>
@@ -345,6 +370,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return _items.join(sep);
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).iterator().hasNext() == true
@@ -357,6 +383,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
         return _items.iterator();
     }
 
+
     /**
      * <pre><code>
      * >>> new CopyOnWriteArray([1,2]).toArray() == [1,2]
@@ -368,6 +395,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     public function toArray():Array<T> {
         return _items.copy();
     }
+
 
     /**
      * <pre><code>
