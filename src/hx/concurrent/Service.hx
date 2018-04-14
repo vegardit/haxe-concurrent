@@ -58,7 +58,7 @@ class ServiceBase implements Service<Int> {
     public function stop() {
         _stateLock.execute(function() {
             if (state == RUNNING) {
-                state = STOPPING;
+                state = STOPPED;
             }
         });
     }

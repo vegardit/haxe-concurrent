@@ -84,7 +84,11 @@ class ThreadPool extends ServiceBase {
      */
     override
     public function stop() {
-        super.stop();
+        _stateLock.execute(function() {
+            if (state == RUNNING) {
+                state = STOPPING;
+            }
+        });
     }
 }
 
