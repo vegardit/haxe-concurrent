@@ -25,13 +25,14 @@ class Executor extends ServiceBase {
      *
      * @param maxConcurrent maximum number of concurrently executed tasks. Has no effect on targets without thread support.
      */
-    public static function create(maxConcurrent:Int = 1):Executor {
+    public static function create(maxConcurrent:Int = 1, autostart = true):Executor {
         #if threads
             if (Threads.isSupported())
-                return new ThreadPoolExecutor(maxConcurrent);
+                return new ThreadPoolExecutor(maxConcurrent, autostart);
         #end
-        return new TimerExecutor();
+        return new TimerExecutor(autostart);
     }
+
 
     /**
      * Global callback function `function(result:FutureResult<T>):Void` to be executed when a
@@ -60,11 +61,7 @@ class Executor extends ServiceBase {
      */
     override
     public function stop() {
-        _stateLock.execute(function() {
-            if (state == RUNNING) {
-                state = STOPPING;
-            }
-        });
+        super.stop();
     }
 }
 

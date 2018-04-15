@@ -18,27 +18,39 @@ class ThreadPool extends ServiceBase {
 
     static var _threadIDs(default, never) = new AtomicInt();
 
+    var _numThreads:Int;
     var _threadCount = new AtomicInt(0);
     var _workQueue = new Queue<Task>();
     var _workQueueSize = new AtomicInt();
 
 
-    public function new(numThreads:Int) {
+    public function new(numThreads:Int, autostart = true) {
         if (numThreads < 1)
             throw "[numThreads] must be > 0";
 
         super();
 
+        _numThreads = numThreads;
+
+        if (autostart)
+            start();
+    }
+
+    override
+    function onStart() {
+
+        state = RUNNING;
+
         /*
          * start worker threads
          */
-        for (i in 0...numThreads) {
+        for (i in 0..._numThreads) {
             Threads.spawn(function() {
                 _threadCount++;
 
                 var context = new ThreadContext(_threadIDs.incrementAndGet());
 
-                trace('[$this] Spawned thread $_threadCount/$numThreads with ID ${context.id}.');
+                trace('[$this] Spawned thread $_threadCount/$_numThreads with ID ${context.id}.');
 
                 while (true) {
                     var task = _workQueue.pop();

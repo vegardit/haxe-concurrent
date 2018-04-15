@@ -19,12 +19,15 @@ import hx.concurrent.internal.Either2;
  */
 class TimerExecutor extends Executor {
 
-    var _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
+    var _scheduledTasks:Array<TaskFutureImpl<Dynamic>>;
 
 
     inline
-    public function new() {
+    public function new(autostart = true) {
         super();
+
+        if (autostart)
+            start();
     }
 
 
@@ -33,7 +36,7 @@ class TimerExecutor extends Executor {
 
         return _stateLock.execute(function() {
             if (state != RUNNING)
-                throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
+                throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
 
             // cleanup task list
             var i = _scheduledTasks.length;
@@ -50,17 +53,16 @@ class TimerExecutor extends Executor {
 
 
     override
-    public function stop() {
-        _stateLock.execute(function() {
-            if (state == RUNNING) {
-                state = STOPPING;
+    function onStart() {
+        _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
+    }
 
-                for (t in _scheduledTasks)
-                    t.cancel();
 
-                state = STOPPED;
-            }
-        });
+    override
+    function onStop() {
+        for (t in _scheduledTasks)
+            t.cancel();
+        _scheduledTasks = null;
     }
 }
 

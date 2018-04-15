@@ -17,6 +17,8 @@ interface Service<T> {
 
     var state(default, null):ServiceState;
 
+    function start():Void;
+
     function stop():Void;
 
     function toString():String;
@@ -24,6 +26,7 @@ interface Service<T> {
 
 
 enum ServiceState {
+    STARTING;
     RUNNING;
     STOPPING;
     STOPPED;
@@ -37,11 +40,12 @@ class ServiceBase implements Service<Int> {
 
     public var id(default, never):Int = _ids.incrementAndGet();
 
-    public var state(default, set):ServiceState = RUNNING;
+    public var state(default, set):ServiceState = STOPPED;
     function set_state(s:ServiceState) {
         switch(s) {
+            case STARTING: trace('[$this] is starting...');
             case RUNNING: trace('[$this] is running.');
-            case STOPPING: trace('[$this] is stopping.');
+            case STOPPING: trace('[$this] is stopping...');
             case STOPPED: trace('[$this] is stopped.');
         }
         return state = s;
@@ -49,18 +53,45 @@ class ServiceBase implements Service<Int> {
     var _stateLock:RLock = new RLock();
 
 
-    inline
     function new() {
         trace('[$this] instantiated.');
+    }
+
+
+    public function start() {
+        _stateLock.execute(function() {
+            switch(state) {
+                case STARTING:  {/*nothing to do*/};
+                case RUNNING:  {/*nothing to do*/};
+                case STOPPING: throw 'Service [$this] is currently stopping!';
+                case STOPPED:  {
+                    state = STARTING;
+                    onStart();
+                    state = RUNNING;
+                }
+            }
+        });
+    }
+
+
+    function onStart():Void {
+        // override if required
     }
 
 
     public function stop() {
         _stateLock.execute(function() {
             if (state == RUNNING) {
+                state = STOPPING;
+                onStop();
                 state = STOPPED;
             }
         });
+    }
+
+
+    function onStop():Void {
+        // override if required
     }
 
 

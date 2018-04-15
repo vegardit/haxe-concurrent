@@ -33,13 +33,22 @@ class ThreadPoolExecutor extends Executor {
     var _newScheduledTasks = new Queue<TaskFutureImpl<Dynamic>>();
 
 
-    public function new(threadPoolSize:Int) {
+    public function new(threadPoolSize:Int, autostart = true) {
         if (threadPoolSize < 1)
             throw "[threadPoolSize] must be > 0";
 
         super();
 
-        _threadPool = new ThreadPool(threadPoolSize);
+        _threadPool = new ThreadPool(threadPoolSize, autostart);
+
+        if (autostart)
+            start();
+    }
+
+    override
+    function onStart() {
+
+        state = RUNNING;
 
         /*
          * start scheduler thread
@@ -114,7 +123,7 @@ class ThreadPoolExecutor extends Executor {
 
         return _stateLock.execute(function() {
             if (state != RUNNING)
-                throw "Cannot accept new tasks. TaskExecutor is not in state [RUNNING].";
+                throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
 
             var future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
 
@@ -132,6 +141,7 @@ class ThreadPoolExecutor extends Executor {
             return future;
         });
     }
+
 
     override
     public function stop() {

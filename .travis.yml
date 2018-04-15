@@ -31,14 +31,17 @@ matrix:
     - env: HAXE_TARGET=flash # https://github.com/travis-ci/travis-ci/issues/8481
     - env: HAXE_TARGET=lua   # LUA fails on 3.4.x with "too many local variables (limit is 200)", see https://github.com/HaxeFoundation/haxe/issues/5243
     - env: HAXE_TARGET=cs    # C# fails because of https://github.com/HaxeFoundation/haxe/issues/6533
+    - os: osx
   exclude:
     - haxe: development
       os: osx
 
 install:
-  - haxelib install haxe-doctest
   - haxelib git travix https://github.com/back2dos/travix && pushd . && cd $(haxelib config)travix/git && haxe build-neko.hxml && popd
   - haxelib run travix install
+  - haxelib dev haxe-concurrent .
+  - haxelib install haxe-doctest
+  - haxelib install travix
 
 script:
   - haxelib run travix $HAXE_TARGET
