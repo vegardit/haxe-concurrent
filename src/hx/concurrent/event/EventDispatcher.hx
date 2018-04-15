@@ -7,8 +7,7 @@ package hx.concurrent.event;
 import hx.concurrent.Future;
 
 /**
- *
- * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
+ * @author Sebastian Thomschke, Vegard IT GmbH
  */
 interface EventDispatcher<EVENT> extends EventListenable<EVENT> {
 

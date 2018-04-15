@@ -7,8 +7,7 @@ package hx.concurrent.event;
 import hx.concurrent.Future.ConstantFuture;
 
 /**
- *
- * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
+ * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class SyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 

@@ -7,7 +7,6 @@ package hx.concurrent.executor;
 import hx.concurrent.internal.Dates;
 
 /**
- *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 enum Schedule {

@@ -8,7 +8,6 @@ import hx.concurrent.internal.Either3;
 import hx.concurrent.lock.RLock;
 
 /**
- *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 @:forward

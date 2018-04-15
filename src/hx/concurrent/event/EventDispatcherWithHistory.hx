@@ -8,7 +8,7 @@ import hx.concurrent.Future;
 import hx.concurrent.lock.RLock;
 
 /**
- * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
+ * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
     var _eventHistory = new Array<EVENT>();

@@ -7,7 +7,7 @@ package hx.concurrent.event;
 import hx.concurrent.collection.CopyOnWriteArray;
 
 /**
- * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
+ * @author Sebastian Thomschke, Vegard IT GmbH
  */
 interface EventListenable<EVENT> {
 

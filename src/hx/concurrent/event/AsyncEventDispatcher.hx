@@ -8,8 +8,7 @@ import hx.concurrent.Future;
 import hx.concurrent.executor.Executor;
 
 /**
- *
- * @author <a href="http://sebthom.de/">Sebastian Thomschke</a>
+ * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
