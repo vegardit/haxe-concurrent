@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## [Unreleased]
 
+
+## [1.1.0] - 2018-04-15
+
 ### Added
 - hx.concurrent.Service.ServiceState.STARTING
 - hx.concurrent.Service.Service#start()
