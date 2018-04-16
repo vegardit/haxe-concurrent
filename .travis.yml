@@ -29,7 +29,6 @@ matrix:
   allow_failures:
     - haxe: development
     - env: HAXE_TARGET=flash # https://github.com/travis-ci/travis-ci/issues/8481
-    - env: HAXE_TARGET=lua   # LUA fails on 3.4.x with "too many local variables (limit is 200)", see https://github.com/HaxeFoundation/haxe/issues/5243
     - env: HAXE_TARGET=cs    # C# fails because of https://github.com/HaxeFoundation/haxe/issues/6533
     - os: osx
   exclude:
