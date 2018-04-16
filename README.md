@@ -1,4 +1,4 @@
-# haxe-concurrent - cross platform concurrency support
+# haxe-concurrent - cross-platform concurrency support
 
 [![Build Status](https://travis-ci.org/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.org/vegardit/haxe-concurrent)
 [![Release](https://img.shields.io/github/release/vegardit/haxe-concurrent.svg)](http://lib.haxe.org/p/haxe-concurrent)
@@ -21,10 +21,12 @@
 
 A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides some basic platform agnostic concurrency support.
 
-All classes are under the package `hx.concurrent` or below.
+All classes are located in the package `hx.concurrent` or below.
 
-The library has been tested with Haxe 3.4.4 and 4.0 nightly on targets C++, C#, Flash, Java, JavaScript (node.js and phantom.js),
-PHP 5, PHP 7, Python 3.
+The library has been successfully tested on the targets C++, C#, Flash, HashLink, Java, JavaScript (Node.js and PhantomJS), Lua,
+Neko, PHP 5, PHP 7 and Python 3.
+
+Requires Haxe 3.4 or higher.
 
 **Note:**
 * When compiling for Flash the option `-swf-version 11.5` (or higher) must be specified, otherwise you will get `Class flash.concurrent::Condition could not be found.`
