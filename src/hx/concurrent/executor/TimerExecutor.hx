@@ -75,7 +75,12 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
     public function new(executor:TimerExecutor, task:Task<T>, schedule:Schedule) {
         super(executor, task, schedule);
         var initialDelay = Std.int(ScheduleTools.firstRunAt(this.schedule) - Dates.now());
-        haxe.Timer.delay(this.run, initialDelay < 0 ? 0 : initialDelay);
+        #if java
+            if (initialDelay < 1) initialDelay = 1;
+        #else
+            if (initialDelay < 0) initialDelay = 0;
+        #end
+        haxe.Timer.delay(this.run, initialDelay);
     }
 
 

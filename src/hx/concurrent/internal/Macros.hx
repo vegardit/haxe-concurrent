@@ -15,9 +15,11 @@ class Macros {
     public static function addDefines() {
         var def = haxe.macro.Context.getDefines();
         if(def.exists("cpp") || def.exists("cs") || def.exists("java") || def.exists("neko") || def.exists("python")) {
+            trace("[INFO] Setting compiler define 'threads'.");
             Compiler.define("threads");
+        } else {
+            trace("[INFO] NOT setting compiler define 'threads'.");
         }
         return macro {}
     }
 }
-

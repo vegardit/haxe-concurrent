@@ -7,6 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 ## [Unreleased]
 
 
+## [1.1.1] - 2018-04-19
+
+### Fixed
+- [java] "java.lang.IllegalArgumentException: Non-positive period" when using TimerExecutor.submit()
+
+
 ## [1.1.0] - 2018-04-15
 
 ### Added
