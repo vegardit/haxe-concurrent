@@ -483,7 +483,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     function _later(delayMS:Int, fn:Void->Void) {
         _asyncTests++;
         var future:TaskFuture<Dynamic> = _asyncExecutor.submit(function() {
-            fn();
+            try fn() catch (ex:Dynamic) trace(ex);
             _asyncTests--;
         }, ONCE(delayMS));
     }
