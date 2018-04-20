@@ -1,6 +1,7 @@
 /.project
 /.settings
 /.svn
+/bin
 /dump
 /target
 /tools/dump

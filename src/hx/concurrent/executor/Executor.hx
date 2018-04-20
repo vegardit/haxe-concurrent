@@ -40,7 +40,12 @@ class Executor extends ServiceBase {
      *
      * Replaces any previously registered onResult function.
      */
-    public var onResult:FutureResult<Dynamic>->Void;
+    public var onResult:FutureResult<Dynamic>->Void = function(result) {
+        switch(result) {
+            case FAILURE(ex, _): trace(ex);
+            default:
+        }
+    };
 
 
     /**

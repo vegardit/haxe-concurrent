@@ -118,9 +118,9 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
         this.result = result;
 
         var fn = this.onResult;
-        if (fn != null) try fn(result) catch (ex:Dynamic) {};
+        if (fn != null) try fn(result) catch (ex:Dynamic) { trace(ex); };
         var fn = _executor.onResult;
-        if (fn != null) try fn(result) catch (ex:Dynamic) {};
+        if (fn != null) try fn(result) catch (ex:Dynamic) { trace(ex); };
     }
 
 
