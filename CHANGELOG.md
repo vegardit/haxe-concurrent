@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## [Unreleased]
 
+### Added
+- better error logging in Executor
+
 
 ## [1.1.1] - 2018-04-19
 
