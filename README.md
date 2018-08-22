@@ -174,7 +174,7 @@ The [hx.concurrent.lock](https://github.com/vegardit/haxe-concurrent/blob/master
 The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread) package contains
 classes for platforms supporting threads:
 
-* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - very basic thread-pool implementation supporting C++, C#, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
+* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - very basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
 * [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
 
 
