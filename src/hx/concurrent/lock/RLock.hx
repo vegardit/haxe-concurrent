@@ -31,6 +31,8 @@ class RLock {
         // flash.concurrent.Mutex requries swf-version >= 11.4
         // flash.concurrent.Condition requries swf-version >= 11.5
         var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+    #elseif hl
+        var _rlock = new hl.vm.Mutex();
     #elseif java
         var _rlock = new java.util.concurrent.locks.ReentrantLock();
     #elseif neko
@@ -73,7 +75,7 @@ class RLock {
     public function acquire():Void {
         #if cs
             cs.system.threading.Monitor.Enter(this);
-        #elseif (cpp||neko||python)
+        #elseif (cpp||hl||neko||python)
             _rlock.acquire();
         #elseif java
             _rlock.lock();
@@ -99,7 +101,7 @@ class RLock {
 
         #if cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);
-        #elseif (cpp||neko)
+        #elseif (cpp||hl||neko)
             return Threads.wait(function() return _rlock.tryAcquire(), timeoutMS);
         #elseif java
             return _rlock.tryLock(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
@@ -133,7 +135,7 @@ class RLock {
     public function release():Void {
         #if cs
             cs.system.threading.Monitor.Exit(this);
-        #elseif (cpp||neko||python)
+        #elseif (cpp||hl||neko||python)
             _rlock.release();
         #elseif java
             _rlock.unlock();

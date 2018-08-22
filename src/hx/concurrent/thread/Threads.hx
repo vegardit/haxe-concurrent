@@ -51,6 +51,8 @@ class Threads {
             cpp.vm.Thread.create(func);
         #elseif cs
             new cs.system.threading.Thread(cs.system.threading.ThreadStart.FromHaxeFunction(func)).Start();
+        #elseif hl
+            hl.vm.Thread.create(func);
         #elseif java
             java.vm.Thread.create(func);
         #elseif neko

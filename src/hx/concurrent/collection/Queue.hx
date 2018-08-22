@@ -16,6 +16,8 @@ class Queue<T> {
 
     #if cpp
         var _queue = new cpp.vm.Deque<T>();
+    #elseif hl
+        var _queue = new hl.vm.Deque<T>();
     #elseif neko
         var _queue = new neko.vm.Deque<T>();
     #elseif java
@@ -54,7 +56,7 @@ class Queue<T> {
             throw "[timeoutMS] must be >= -1";
 
         if (timeoutMS == 0) {
-            #if (cpp||neko)
+            #if (cpp||hl||neko)
                 msg = _queue.pop(false);
             #elseif java
                 msg = _queue.poll();
@@ -67,7 +69,7 @@ class Queue<T> {
             #end
         } else {
             Threads.wait(function() {
-                #if (cpp||neko)
+                #if (cpp||hl||neko)
                     msg = _queue.pop(false);
                 #elseif java
                     msg = _queue.poll();
@@ -102,7 +104,7 @@ class Queue<T> {
         if (msg == null)
             throw "[msg] must not be null";
 
-        #if (cpp||neko)
+        #if (cpp||hl||neko)
             _queue.push(msg);
         #elseif java
             _queue.addFirst(msg);
@@ -125,7 +127,7 @@ class Queue<T> {
         if (msg == null)
             throw "[msg] must not be null";
 
-        #if (cpp||neko)
+        #if (cpp||hl||neko)
             _queue.add(msg);
         #elseif java
             _queue.addLast(msg);

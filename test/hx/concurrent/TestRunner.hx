@@ -212,6 +212,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     }
 
+
     function testSemaphore() {
         var sem = new Semaphore(2);
 
@@ -228,6 +229,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         sem.release();
         assertEquals(3, sem.availablePermits);
     }
+
 
     #if threads
     function testThreads() {

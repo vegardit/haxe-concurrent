@@ -1,13 +1,19 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/) and
-[Keep a CHANGELOG](http://keepachangelog.com/).
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
 
 ## [Unreleased]
 
+
+## [1.2.0] - 2018-08-22
+
 ### Added
 - better error logging in Executor
+- use native threads on HL target
 
 
 ## [1.1.1] - 2018-04-19
