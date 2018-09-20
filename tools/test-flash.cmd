@@ -40,11 +40,23 @@ REM enable Flash logging
     echo TraceOutputFileEnable=1
 ) > "%HOME%\mm.cfg"
 
+REM add the flash target directory as trusted source to prevent "Only trusted local files may cause the Flash Player to exit."
+call :normalize_path %~dp0..\target
+set target_dir_absolute=%RETVAL%
+(
+    echo %target_dir_absolute%\flash
+) > "%HOME%\AppData\Roaming\Macromedia\Flash Player\#Security\FlashPlayerTrust\HaxeConcurrent.cfg"
 echo Testing...
-flashplayer_27_sa_debug "%~dp0..\target\flash\TestRunner.swf"
+
+for /f "delims=" %%A in ('where flashplayer_*_sa_debug.exe') do set "flashplayer_path=%%A"
+%flashplayer_path% "%~dp0..\target\flash\TestRunner.swf"
 set rc=%errorlevel%
 
 REM printing log file
 type "%HOME%\AppData\Roaming\Macromedia\Flash Player\Logs\flashlog.txt"
 
 exit /b %rc%
+
+:normalize_path
+  SET RETVAL=%~dpfn1
+  exit /b
