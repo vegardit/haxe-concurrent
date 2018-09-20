@@ -62,7 +62,7 @@ if exist target\haxelib-upload.zip (
     del target\haxelib-upload.zip
 )
 echo Building haxelib release...
-zip target\haxelib-upload.zip src haxelib.json LICENSE.txt CONTRIBUTING.md README.md -r -9 || goto :eof
+zip target\haxelib-upload.zip src extraParams.hxml haxelib.json LICENSE.txt CONTRIBUTING.md README.md -r -9 || goto :eof
 
 REM create github release https://developer.github.com/v3/repos/releases/#create-a-release
 echo Creating GitHub release https://github.com/%REPO_NAME%/releases/tag/v%PROJECT_VERSION%...
