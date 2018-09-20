@@ -15,13 +15,13 @@ import hx.concurrent.thread.Threads;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class RLock {
+class RLock implements Acquirable {
 
     /**
      * Indicates if this class will have any effect on the current target.
-     * Currently: CPP, CS, Flash, Java, Neko, Python.
+     * Currently: CPP, CS, Flash, HashLink, Java, Neko, Python.
      */
-    public static inline var isSupported = #if (cpp||cs||flash||java||neko||python) true #else false #end;
+    public static inline var isSupported = #if (cpp||cs||flash||hl||java||neko||python) true #else false #end;
 
     #if cpp
         var _rlock = new cpp.vm.Mutex();
@@ -30,7 +30,7 @@ class RLock {
     #elseif flash
         // flash.concurrent.Mutex requries swf-version >= 11.4
         // flash.concurrent.Condition requries swf-version >= 11.5
-        var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+        var _cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
     #elseif hl
         var _rlock = new hl.vm.Mutex();
     #elseif java
@@ -42,6 +42,47 @@ class RLock {
     #end
 
 
+    var _holder:Dynamic = null;
+    var _holderEntranceCount = 0;
+
+
+    public var availablePermits(get, never):Int;
+    function get_availablePermits():Int return isAcquiredByAnyThread ? 0 : 1;
+
+
+    /**
+     * Indicates if the lock is acquired by any thread
+     */
+    public var isAcquiredByAnyThread(get, null):Bool;
+    inline function get_isAcquiredByAnyThread():Bool {
+        #if java
+            return _rlock.isLocked();
+        #else
+            return _holder != null;
+        #end
+    }
+
+
+    /**
+     * Indicates if the lock is acquired by the current thread
+     */
+    public var isAcquiredByCurrentThread(get, null):Bool;
+    inline function get_isAcquiredByCurrentThread():Bool {
+        #if java
+            return _rlock.isHeldByCurrentThread();
+        #else
+            return _holder == Threads.current;
+        #end
+    }
+
+
+    /**
+     * Indicates if the lock is acquired by any other thread
+     */
+    public var isAcquiredByOtherThread(get, null):Bool;
+    inline function get_isAcquiredByOtherThread():Bool return isAcquiredByAnyThread && !isAcquiredByCurrentThread;
+
+
     inline
     public function new() {
     }
@@ -50,7 +91,7 @@ class RLock {
     /**
      * Executes the given function while the lock is acquired.
      */
-    public function execute<T>(func:Void->T, swallowExceptions:Bool = false):T {
+    public function execute<T>(func:Void->T, swallowExceptions = false):T {
         var ex:ConcurrentException = null;
         var result:T = null;
 
@@ -71,7 +112,6 @@ class RLock {
     /**
      * Blocks until lock can be acquired.
      */
-    inline
     public function acquire():Void {
         #if cs
             cs.system.threading.Monitor.Enter(this);
@@ -80,9 +120,14 @@ class RLock {
         #elseif java
             _rlock.lock();
         #elseif flash
-            cond.mutex.lock();
+            _cond.mutex.lock();
         #else
-            // no concurrency support
+            // single-threaded targets: js,lua,php
+        #end
+
+        #if !java
+            _holder = Threads.current;
+            _holderEntranceCount++;
         #end
     }
 
@@ -95,33 +140,45 @@ class RLock {
      *
      * @return `false` if lock could not be acquired
      */
-    public function tryAcquire(timeoutMS:Int = 0):Bool {
-
+    public function tryAcquire(timeoutMS = 0):Bool {
         if (timeoutMS < 0) throw "[timeoutMS] must be >= 0";
 
+        if (tryAcquireInternal(timeoutMS)) {
+            _holder = Threads.current;
+            _holderEntranceCount++;
+            return true;
+        }
+
+        return false;
+    }
+
+
+    #if !flash inline #end
+    private function tryAcquireInternal(timeoutMS = 0):Bool {
         #if cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);
         #elseif (cpp||hl||neko)
-            return Threads.wait(function() return _rlock.tryAcquire(), timeoutMS);
+            return Threads.await(function() return _rlock.tryAcquire(), timeoutMS);
         #elseif java
             return _rlock.tryLock(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
         #elseif python
-            return Threads.wait(function() return _rlock.acquire(false), timeoutMS);
+            return Threads.await(function() return _rlock.acquire(false), timeoutMS);
         #elseif flash
             var startAt = Dates.now();
             while (true) {
-                if (cond.mutex.tryLock())
+                if (_cond.mutex.tryLock())
                     return true;
 
                 var elapsedMS = Dates.now() - startAt;
                 if (elapsedMS >= timeoutMS)
                     return false;
 
-                cond.wait(timeoutMS - elapsedMS);
+                // wait for mutex to be released by other thread
+                _cond.wait(timeoutMS - elapsedMS);
             }
         #else
-            // no concurrency support
-            return true;
+            // single-threaded targets: js,lua,php
+            return _holder == null || _holder == Threads.current;
         #end
     }
 
@@ -131,8 +188,19 @@ class RLock {
      *
      * @throws an exception if the lock was not acquired by the current thread
      */
-    inline
     public function release():Void {
+        if (isAcquiredByCurrentThread) {
+            #if !java
+                _holderEntranceCount--;
+                if (_holderEntranceCount == 0)
+                    _holder = null;
+            #end
+        } else if (isAcquiredByOtherThread) {
+            throw "Lock was aquired by another thread!";
+        }
+        else
+            throw "Lock was not aquired by any thread!";
+
         #if cs
             cs.system.threading.Monitor.Exit(this);
         #elseif (cpp||hl||neko||python)
@@ -140,10 +208,10 @@ class RLock {
         #elseif java
             _rlock.unlock();
         #elseif flash
-            cond.notify();
-            cond.mutex.unlock();
+            _cond.notify();
+            _cond.mutex.unlock();
         #else
-            // no concurrency support
+            // single-threaded targets: js,lua,php
         #end
     }
 }

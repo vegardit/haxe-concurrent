@@ -68,7 +68,7 @@ class Queue<T> {
                 _queueLock.release();
             #end
         } else {
-            Threads.wait(function() {
+            Threads.await(function() {
                 #if (cpp||hl||neko)
                     msg = _queue.pop(false);
                 #elseif java

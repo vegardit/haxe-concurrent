@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [2.0.0] - 2018-09-20
+
+### Added
+- interface hx.concurrent.lock.Acquirable
+- class hx.concurrent.CountDownLatch
+- class hx.concurrent.lock.RWLock (upgradeable Read Write Lock)
+
+### Changed
+- renamed methid hx.concurrent.thread.Threads#wait() to hx.concurrent.thread.Threads#await()
+- changed hx.concurrent.lock.Semaphore from abstract to class
+
+### Fixed
+- define "threads" is now set correctly for targets supporting real threading
+
+
 ## [1.2.0] - 2018-08-22
 
 ### Added
@@ -25,8 +40,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.1.0] - 2018-04-15
 
 ### Added
-- hx.concurrent.Service.ServiceState.STARTING
-- hx.concurrent.Service.Service#start()
+- field hx.concurrent.Service.ServiceState.STARTING
+- method hx.concurrent.Service.Service#start()
 
 ### Changed
 - replaced license header by "SPDX-License-Identifier: Apache-2.0"

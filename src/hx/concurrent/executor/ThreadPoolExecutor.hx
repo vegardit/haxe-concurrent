@@ -24,7 +24,7 @@ import hx.concurrent.thread.Threads;
 #if threads
 class ThreadPoolExecutor extends Executor {
 
-    public inline static var SCHEDULER_RESOLUTION_MS = 5;
+    public inline static var SCHEDULER_RESOLUTION_MS = 10;
     public inline static var SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
 
     var _threadPool:ThreadPool;
@@ -110,7 +110,7 @@ class ThreadPoolExecutor extends Executor {
                 t.cancel();
             }
 
-            Threads.wait(function() {
+            Threads.await(function() {
                 return _threadPool.state == STOPPED;
             }, -1);
             state = STOPPED;

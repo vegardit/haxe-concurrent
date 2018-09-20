@@ -15,9 +15,11 @@ import hx.concurrent.executor.Executor;
 import hx.concurrent.executor.Schedule;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.lock.RLock;
+import hx.concurrent.lock.RWLock;
 import hx.concurrent.lock.Semaphore;
 import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
+
 
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
@@ -145,6 +147,28 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
+    #if threads
+    function testCountDownLatch() {
+        var signal = new CountDownLatch(1);
+        assertEquals(1, signal.count);
+        assertFalse(signal.tryAwait(10));
+
+        signal.countDown();
+        assertEquals(0, signal.count);
+        assertTrue(signal.tryAwait(10));
+
+        signal.await();
+
+        var signal = new CountDownLatch(1);
+        Threads.spawn(function() {
+            signal.countDown();
+        });
+
+        signal.await();
+    }
+    #end
+
+
     function testQueue() {
         var q = new Queue<Int>();
         assertEquals(null, q.pop());
@@ -191,6 +215,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     function testRLock() {
         var lock = new RLock();
+        assertFalse(lock.isAcquiredByCurrentThread);
+        assertFalse(lock.isAcquiredByOtherThread);
+        assertFalse(lock.isAcquiredByAnyThread);
+        assertEquals(1, lock.availablePermits);
 
         #if threads
         Threads.spawn(function() {
@@ -199,8 +227,19 @@ class TestRunner extends hx.doctest.DocTestRunner {
             lock.release();
         });
         Threads.sleep(100);
-        assertEquals(false, lock.tryAcquire(100));
-        assertEquals(true,  lock.tryAcquire(3000));
+        assertFalse(lock.tryAcquire(100));
+
+        assertFalse(lock.isAcquiredByCurrentThread);
+        assertTrue(lock.isAcquiredByOtherThread);
+        assertTrue(lock.isAcquiredByAnyThread);
+        assertEquals(0, lock.availablePermits);
+
+        assertTrue(lock.tryAcquire(3000));
+
+        assertTrue(lock.isAcquiredByCurrentThread);
+        assertFalse(lock.isAcquiredByOtherThread);
+        assertTrue(lock.isAcquiredByAnyThread);
+        assertEquals(0, lock.availablePermits);
         #end
 
         var flag = new AtomicBool(false);
@@ -209,7 +248,119 @@ class TestRunner extends hx.doctest.DocTestRunner {
         assertTrue(lock.execute(function():Bool { flag.value = true; return true; } ));
         assertTrue(flag.value);
         lock.release();
+    }
 
+
+    function testRWLock() {
+        var lock = new RWLock();
+
+        try {
+            lock.readLock.release();
+            fail("Exception expected!");
+        } catch (ex:Dynamic) { /* expected */ }
+
+        try {
+            lock.writeLock.release();
+            fail("Exception expected!");
+        } catch (ex:Dynamic) { /* expected */ }
+
+        assertTrue(lock.readLock.availablePermits > 0);
+        assertTrue(lock.writeLock.availablePermits == 1);
+        assertFalse(lock.readLock.isAcquiredByAnyThread);
+        assertFalse(lock.readLock.isAcquiredByCurrentThread);
+        assertFalse(lock.readLock.isAcquiredByOtherThread);
+        assertFalse(lock.writeLock.isAcquiredByAnyThread);
+        assertFalse(lock.writeLock.isAcquiredByCurrentThread);
+        assertFalse(lock.writeLock.isAcquiredByOtherThread);
+
+        lock.readLock.acquire();
+
+        assertTrue(lock.readLock.availablePermits > 0);
+        assertTrue(lock.writeLock.availablePermits == 1);
+        assertTrue(lock.readLock.isAcquiredByAnyThread);
+        assertTrue(lock.readLock.isAcquiredByCurrentThread);
+        assertFalse(lock.readLock.isAcquiredByOtherThread);
+        assertFalse(lock.writeLock.isAcquiredByAnyThread);
+        assertFalse(lock.writeLock.isAcquiredByCurrentThread);
+        assertFalse(lock.writeLock.isAcquiredByOtherThread);
+
+        lock.writeLock.acquire(); // upgrading read to write lock
+
+        assertTrue(lock.readLock.availablePermits > 0);
+        assertTrue(lock.writeLock.availablePermits == 0);
+        assertTrue(lock.readLock.isAcquiredByAnyThread);
+        assertTrue(lock.readLock.isAcquiredByCurrentThread);
+        assertFalse(lock.readLock.isAcquiredByOtherThread);
+        assertTrue(lock.writeLock.isAcquiredByAnyThread);
+        assertTrue(lock.writeLock.isAcquiredByCurrentThread);
+        assertFalse(lock.writeLock.isAcquiredByOtherThread);
+
+        var oldPermits = lock.readLock.availablePermits;
+        lock.readLock.acquire(); // read lock reentrance
+        assertEquals(oldPermits -1, lock.readLock.availablePermits);
+
+        lock.readLock.release();
+        assertEquals(oldPermits, lock.readLock.availablePermits);
+
+        assertTrue(lock.readLock.isAcquiredByAnyThread);
+        assertTrue(lock.readLock.isAcquiredByCurrentThread);
+        assertFalse(lock.readLock.isAcquiredByOtherThread);
+
+        lock.readLock.release();
+        assertFalse(lock.readLock.isAcquiredByAnyThread);
+        assertFalse(lock.readLock.isAcquiredByCurrentThread);
+        assertFalse(lock.readLock.isAcquiredByOtherThread);
+
+        lock.writeLock.acquire(); // write lock reentrance
+        lock.writeLock.release();
+        assertTrue(lock.writeLock.availablePermits == 0);
+        assertTrue(lock.writeLock.isAcquiredByAnyThread);
+        assertTrue(lock.writeLock.isAcquiredByCurrentThread);
+        assertFalse(lock.writeLock.isAcquiredByOtherThread);
+
+        lock.writeLock.release();
+        assertTrue(lock.writeLock.availablePermits == 1);
+        assertFalse(lock.writeLock.isAcquiredByAnyThread);
+        assertFalse(lock.writeLock.isAcquiredByCurrentThread);
+        assertFalse(lock.writeLock.isAcquiredByOtherThread);
+
+        #if threads
+        lock.writeLock.acquire();
+
+        var signal = new CountDownLatch(1);
+        Threads.spawn(function() {
+            assertFalse(lock.readLock.tryAcquire());
+            assertFalse(lock.writeLock.tryAcquire());
+
+            assertTrue(lock.writeLock.isAcquiredByAnyThread);
+            assertFalse(lock.writeLock.isAcquiredByCurrentThread);
+            assertTrue(lock.writeLock.isAcquiredByOtherThread);
+            signal.countDown();
+        });
+        signal.await();
+
+        lock.writeLock.release();
+        lock.readLock.acquire();
+
+        var signal = new CountDownLatch(1);
+        Threads.spawn(function() {
+            assertTrue(lock.readLock.isAcquiredByAnyThread);
+            assertFalse(lock.readLock.isAcquiredByCurrentThread);
+            assertTrue(lock.readLock.isAcquiredByOtherThread);
+
+            assertTrue(lock.readLock.tryAcquire());
+
+            assertTrue(lock.readLock.isAcquiredByAnyThread);
+            assertTrue(lock.readLock.isAcquiredByCurrentThread);
+            assertTrue(lock.readLock.isAcquiredByOtherThread);
+            lock.readLock.release();
+
+            assertFalse(lock.writeLock.tryAcquire());
+            signal.countDown();
+        });
+        signal.await();
+        lock.readLock.release();
+        #end
     }
 
 
@@ -218,12 +369,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
         assertEquals(2, sem.availablePermits);
 
-        assertEquals(true, sem.tryAcquire());
-        assertEquals(true, sem.tryAcquire());
+        assertTrue(sem.tryAcquire());
+        assertTrue(sem.tryAcquire());
         assertEquals(0, sem.availablePermits);
-        assertEquals(false, sem.tryAcquire());
+        assertFalse(sem.tryAcquire());
         sem.release();
-        assertEquals(true, sem.tryAcquire());
+        assertTrue(sem.tryAcquire());
         sem.release();
         sem.release();
         sem.release();
@@ -231,14 +382,20 @@ class TestRunner extends hx.doctest.DocTestRunner {
     }
 
 
-    #if threads
     function testThreads() {
-        var i = new AtomicInt(0);
-        for (j in 0...10)
-            Threads.spawn(function() i.increment());
-        assertTrue(Threads.wait(function() { return i.value == 10; }, 200));
+        #if threads
+            assertTrue(Threads.isSupported);
+            var i = new AtomicInt(0);
+            for (j in 0...10)
+                Threads.spawn(function() i.increment());
+            assertTrue(Threads.await(function() return i.value == 10, 200));
+        #else
+            assertFalse(Threads.isSupported);
+        #end
     }
 
+
+    #if threads
     function testThreadPool() {
         var pool = new ThreadPool(2);
         var ids = [-1, -1];
@@ -247,7 +404,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
                 Threads.sleep(50);
                 ids[j] = ctx.id;
             });
-        assertTrue(Threads.wait(function() { return ids[0] != -1 && ids[1] != -1; }, 200));
+        assertTrue(Threads.await(function() { return ids[0] != -1 && ids[1] != -1; }, 200));
         pool.stop();
         assertNotEquals(ids[0], ids[1]);
     }
@@ -371,9 +528,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
         var flag3 = new AtomicBool(false);
         var startAt = Dates.now();
         var future1 = executor.submit(function():Void flag1.negate(), ONCE(0));
-        var future2 = executor.submit(function():Void flag2.negate(), ONCE(100));
-        var future3 = executor.submit(function():Void flag3.negate(), ONCE(100));
-        _later(40, function() {
+        var future2 = executor.submit(function():Void flag2.negate(), ONCE(140));
+        var future3 = executor.submit(function():Void flag3.negate(), ONCE(140));
+        _later(30, function() {
             assertTrue(flag1.value);
             assertTrue(future1.isStopped);
 
@@ -386,7 +543,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertFalse(flag3.value);
             assertTrue(future3.isStopped);
         });
-        _later(140, function() {
+        _later(200, function() {
             assertTrue(flag2.value);
             assertTrue(future2.isStopped);
 

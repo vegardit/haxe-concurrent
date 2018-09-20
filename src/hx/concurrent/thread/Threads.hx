@@ -9,22 +9,48 @@ import hx.concurrent.internal.Dates;
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-#if sys
 class Threads {
 
+
     /**
-     * Puts the current thread in sleep for the given amount of milli seconds.
+     * <pre><code>
+     * >>> Threads.current == Threads.current
+     * </code></pre>
+     *
+     * @return a target-specific object or ID representing the current thread.
      */
-    inline
-    public static function sleep(timeMS:Int) {
-        Sys.sleep(timeMS/1000);
+    public static var current(get, never):Dynamic;
+    static function get_current():Dynamic {
+        #if cpp
+            return cpp.vm.Thread.current().handle;
+        #elseif cs
+            return cs.system.threading.Thread.CurrentThread;
+        #elseif flash
+            var worker = flash.system.Worker.current;
+            return worker == null ? "MainThread" : worker;
+        #elseif hl
+            return Std.string(hl.vm.Thread.current());
+        #elseif java
+            return java.vm.Thread.current();
+        #elseif neko
+            return neko.vm.Thread.current();
+        #elseif python
+            python.Syntax.pythonCode("import threading");
+            return python.Syntax.pythonCode("threading.current_thread()");
+        #else // javascript, lua
+            return "MainThread";
+        #end
     }
 
 
+    /**
+     * @return true if spawning threads is supported by current target
+     */
+    public static var isSupported(get, never):Bool;
     #if !python
     inline
     #end
-    public static function isSupported():Bool {
+    static function get_isSupported():Bool {
         #if threads
             #if python
                 try {
@@ -40,13 +66,68 @@ class Threads {
         #end
     }
 
+    #if (flash||sys)
+    /**
+     * Blocks the current thread until `condition` returns `true`.
+     *
+     * If <code>timeoutMS</code> is set 0, the function immediatly returns with the value returned by `condition`.
+     * If <code>timeoutMS</code> is set to value > 0, the function waits up to the given timespan for a new message.
+     * If <code>timeoutMS</code> is set to `-1`, the function waits indefinitely until a new message is available.
+     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+     */
+    public static function await(condition:Void->Bool, timeoutMS:Int, waitLoopSleepMS = 10):Bool {
+        if (timeoutMS < -1)
+            throw "[timeoutMS] must be >= -1";
+
+        if (timeoutMS == 0)
+            return condition();
+
+        #if flash
+        var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+        #else
+        var waitLoopSleepSecs = waitLoopSleepMS / 1000.0;
+        #end
+
+        var startAt = Dates.now();
+        while (!condition()) {
+            if (timeoutMS > 0) {
+                var elapsedMS = Dates.now() - startAt;
+                if (elapsedMS >= timeoutMS)
+                    return false;
+            }
+            // wait 1ms
+            #if flash
+                cond.wait(waitLoopSleepMS);
+            #else
+                Sys.sleep(waitLoopSleepSecs);
+
+            #end
+        }
+        return true;
+    }
+
+
+    /**
+     * Puts the current thread to sleep for the given milliseconds.
+     */
+    inline
+    public static function sleep(timeMS:Int):Void {
+        #if flash
+            var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+            cond.wait(timeMS);
+        #else
+            Sys.sleep(timeMS / 1000);
+        #end
+    }
+    #end
+
 
     #if threads
     /**
      * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.
      */
     inline
-    public static function spawn(func:Void->Void) {
+    public static function spawn(func:Void->Void):Void {
         #if cpp
             cpp.vm.Thread.create(func);
         #elseif cs
@@ -61,40 +142,12 @@ class Threads {
             var t = new python.lib.threading.Thread({target: func});
             t.daemon = true;
             t.start();
-        #else
+        #else // flash, javascript, lua
             throw "Unsupported operation.";
         #end
     }
     #end
 
-
-    /**
-     * Blocks the current thread until `condition` returns `true`.
-     *
-     * If <code>timeoutMS</code> is set 0, the function immediatly returns with the value returned by `condition`.
-     * If <code>timeoutMS</code> is set to value > 0, the function waits up to the given timespan for a new message.
-     * If <code>timeoutMS</code> is set to `-1`, the function waits indefinitely until a new message is available.
-     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
-     */
-    public static function wait(condition:Void->Bool, timeoutMS:Int, sleepSecs = 0.001):Bool {
-        if (timeoutMS < -1)
-            throw "[timeoutMS] must be >= -1";
-
-        if (timeoutMS == 0)
-            return condition();
-
-        var startAt = Dates.now();
-        while (!condition()) {
-            if (timeoutMS > 0) {
-                var elapsedMS = Dates.now() - startAt;
-                if (elapsedMS >= timeoutMS)
-                    return false;
-            }
-            // wait 1ms
-            Sys.sleep(sleepSecs);
-        }
-        return true;
-    }
 }
-#end
+
 

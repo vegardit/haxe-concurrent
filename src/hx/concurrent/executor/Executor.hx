@@ -27,7 +27,7 @@ class Executor extends ServiceBase {
      */
     public static function create(maxConcurrent:Int = 1, autostart = true):Executor {
         #if threads
-            if (Threads.isSupported())
+            if (Threads.isSupported)
                 return new ThreadPoolExecutor(maxConcurrent, autostart);
         #end
         return new TimerExecutor(autostart);
@@ -132,12 +132,12 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
 
     #if threads
     public function waitAndGet(timeoutMS:Int):FutureResult<T> {
-        Threads.wait(function() {
+        Threads.await(function() {
             return switch(this.result) {
                 case NONE(_): false;
                 default: true;
             };
-        }, timeoutMS, ThreadPoolExecutor.SCHEDULER_RESOLUTION_SEC);
+        }, timeoutMS, ThreadPoolExecutor.SCHEDULER_RESOLUTION_MS);
 
         return this.result;
     }
