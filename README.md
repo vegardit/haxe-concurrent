@@ -54,7 +54,7 @@ The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/
 
 ## <a name="executor-package"></a>The `hx.concurrent.executor` package
 
-The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains
+The [hx.concurrent.executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor) package contains
 [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) implementations that allow
 to execute functions concurrently and to schedule tasks for later/repeated execution.
 
