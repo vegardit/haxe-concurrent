@@ -15,6 +15,7 @@ env:
   - HAXE_TARGET=cpp
   - HAXE_TARGET=cs
   - HAXE_TARGET=flash
+  - HAXE_TARGET=hl
   - HAXE_TARGET=lua
   - HAXE_TARGET=neko
   - HAXE_TARGET=node
@@ -30,6 +31,7 @@ matrix:
     - haxe: development
     - env: HAXE_TARGET=flash # https://github.com/travis-ci/travis-ci/issues/8481
     - env: HAXE_TARGET=cs    # C# fails because of https://github.com/HaxeFoundation/haxe/issues/6533
+    - env: HAXE_TARGET=hl
     - os: osx
   exclude:
     - haxe: development

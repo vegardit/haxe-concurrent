@@ -5,6 +5,7 @@
 package hx.concurrent.internal;
 
 import haxe.macro.Compiler;
+import haxe.macro.Context;
 
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
@@ -13,8 +14,8 @@ class Macros {
 
     macro
     public static function addDefines() {
-        var def = haxe.macro.Context.getDefines();
-        if(def.exists("cpp") || def.exists("cs") || def.exists("hl") || def.exists("java") || def.exists("neko") || def.exists("python")) {
+        var def = Context.getDefines();
+        if(def.exists("cpp") || def.exists("cs") || (def.exists("hl") && Std.parseFloat(def["haxe_ver"]) >= 4) || def.exists("java") || def.exists("neko") || def.exists("python")) {
             trace("[INFO] Setting compiler define 'threads'.");
             Compiler.define("threads");
         } else {

@@ -28,7 +28,7 @@ class Threads {
         #elseif flash
             var worker = flash.system.Worker.current;
             return worker == null ? "MainThread" : worker;
-        #elseif hl
+        #elseif (hl && haxe_ver >= 4)
             return Std.string(hl.vm.Thread.current());
         #elseif java
             return java.vm.Thread.current();

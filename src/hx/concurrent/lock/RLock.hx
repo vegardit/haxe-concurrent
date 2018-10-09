@@ -31,7 +31,7 @@ class RLock implements Acquirable {
         // flash.concurrent.Mutex requries swf-version >= 11.4
         // flash.concurrent.Condition requries swf-version >= 11.5
         var _cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
-    #elseif hl
+    #elseif (hl && haxe_ver >= 4)
         var _rlock = new hl.vm.Mutex();
     #elseif java
         var _rlock = new java.util.concurrent.locks.ReentrantLock();
@@ -115,7 +115,7 @@ class RLock implements Acquirable {
     public function acquire():Void {
         #if cs
             cs.system.threading.Monitor.Enter(this);
-        #elseif (cpp||hl||neko||python)
+        #elseif (cpp||(hl && haxe_ver >= 4)||neko||python)
             _rlock.acquire();
         #elseif java
             _rlock.lock();
@@ -157,7 +157,7 @@ class RLock implements Acquirable {
     private function tryAcquireInternal(timeoutMS = 0):Bool {
         #if cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);
-        #elseif (cpp||hl||neko)
+        #elseif (cpp||(hl && haxe_ver >= 4)||neko)
             return Threads.await(function() return _rlock.tryAcquire(), timeoutMS);
         #elseif java
             return _rlock.tryLock(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
@@ -203,7 +203,7 @@ class RLock implements Acquirable {
 
         #if cs
             cs.system.threading.Monitor.Exit(this);
-        #elseif (cpp||hl||neko||python)
+        #elseif (cpp||(hl && haxe_ver >= 4)||neko||python)
             _rlock.release();
         #elseif java
             _rlock.unlock();
