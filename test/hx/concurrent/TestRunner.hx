@@ -558,7 +558,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
     function testTaskExecutor_schedule_RATE_DELAY() {
         var executor = Executor.create(2);
 
-        var intervalMS = 20;
+        var intervalMS = 40;
         var threadMS = 10;
 
         var fixedRateCounter  = new AtomicInt(0);

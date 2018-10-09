@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- class hx.concurrent.lock.RWLock not working on JS target
+
 
 ## [2.0.0] - 2018-09-20
 

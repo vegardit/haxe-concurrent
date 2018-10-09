@@ -19,14 +19,14 @@ class Ints {
             untyped __global__["int"].MAX_VALUE;
         #elseif java
             untyped __java__("Integer.MAX_VALUE");
-        #elseif js
+        #elseif nodejs
             untyped __js__("Number.MAX_SAFE_INTEGER");
         #elseif php
             untyped __php__("PHP_INT_MAX");
         #elseif python
             python.Syntax.pythonCode("import sys");
             python.Syntax.pythonCode("sys.maxsize");
-        #else // neko, cpp, lua, etc.
+        #else // neko, cpp, lua, js, etc.
             Std.int(Math.pow(2,31)-1);
         #end
     }
@@ -42,14 +42,14 @@ class Ints {
             untyped __global__["int"].MIN_VALUE;
         #elseif java
             untyped __java__("Integer.MIN_VALUE");
-        #elseif js
+        #elseif nodejs
             untyped __js__("Number.MIN_SAFE_INTEGER");
         #elseif php
             untyped __php__("PHP_INT_MIN");
         #elseif python
             python.Syntax.pythonCode("import sys");
             -python.Syntax.pythonCode("sys.maxsize") -1;
-        #else // neko, cpp, lua, etc.
+        #else // neko, cpp, lua, js, etc.
             -Std.int(Math.pow(2,31));
         #end
     }
