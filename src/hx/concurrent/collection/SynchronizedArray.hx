@@ -35,7 +35,7 @@ abstract SynchronizedArray<T>(SynchronizedArrayImpl<T>) from SynchronizedArrayIm
 
 
     /**
-     * >>> function(){var arr=new SynchronizedArray([1,2]); arr[2]=3; return arr.toArray(); }() == [1, 2, 3]
+     * >>> (function(){var arr=new SynchronizedArray([1,2]); arr[2]=3; return arr.toArray(); })() == [1, 2, 3]
      */
     @:arrayAccess
     inline function _set(idx:Int, x:T):T {
