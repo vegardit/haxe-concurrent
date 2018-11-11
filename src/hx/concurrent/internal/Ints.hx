@@ -5,6 +5,8 @@
 package hx.concurrent.internal;
 
 /**
+ * <b>IMPORTANT:</b> This class it not part of the API. Direct usage is discouraged.
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class Ints {
