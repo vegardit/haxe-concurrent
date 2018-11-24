@@ -87,14 +87,14 @@ class Queue<T> {
                 return msg != null;
             }, timeoutMS);
         }
-        if (msg != null)
-            _length--;
+        if (msg != null) _length--;
         return msg;
     }
     #else
     public function pop():Null<T> {
         _queueLock.acquire();
         var msg = _queue.pop();
+        if (msg != null) _length--;
         _queueLock.release();
         return msg;
     }
