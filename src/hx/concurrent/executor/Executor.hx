@@ -62,7 +62,7 @@ class Executor extends ServiceBase {
 
 
     /**
-     * Initiates a graceful shutdown of this executor. Canceling execution of all scheduled tasks.
+     * Initiates a graceful shutdown of this executor canceling execution of all queued and scheduled tasks.
      */
     override
     public function stop() {
