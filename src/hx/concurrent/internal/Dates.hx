@@ -10,7 +10,6 @@ package hx.concurrent.internal;
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 @:noDoc @:dox(hide)
-@:noCompletion
 class Dates {
 
     #if cs

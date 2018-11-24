@@ -9,6 +9,7 @@ package hx.concurrent.internal;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
+@:noDoc @:dox(hide)
 class Ints {
 
     /**

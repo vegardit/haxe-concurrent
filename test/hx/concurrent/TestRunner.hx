@@ -17,6 +17,7 @@ import hx.concurrent.internal.Dates;
 import hx.concurrent.lock.RLock;
 import hx.concurrent.lock.RWLock;
 import hx.concurrent.lock.Semaphore;
+import hx.concurrent.thread.BackgroundProcess;
 import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 
@@ -396,6 +397,26 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
     #if threads
+    function testBackgroundProcess() {
+        var p = new BackgroundProcess("dir");
+
+        assertEquals(p.exitCode, null);
+        assertTrue(p.isRunning);
+        #if !java
+            assertTrue(p.pid > 0);
+        #end
+
+        p.waitForExit();
+        trace(p.stdout.readAll());
+
+        assertEquals(p.exitCode, 0);
+        assertFalse(p.isRunning);
+        #if !java
+            assertTrue(p.pid > 0);
+        #end
+    }
+
+
     function testThreadPool() {
         var pool = new ThreadPool(2);
         var ids = [-1, -1];

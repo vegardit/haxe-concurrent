@@ -12,12 +12,19 @@ import haxe.macro.Context;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
+@:noDoc @:dox(hide)
 class Macros {
 
     macro
     public static function addDefines() {
         var def = Context.getDefines();
-        if(def.exists("cpp") || def.exists("cs") || (def.exists("hl") && Std.parseFloat(def["haxe_ver"]) >= 4) || def.exists("java") || def.exists("neko") || def.exists("python")) {
+        if (def.exists("cpp") ||
+            def.exists("cs") ||
+           (def.exists("hl") && Std.parseFloat(def["haxe_ver"]) >= 4) ||
+            def.exists("java") ||
+            def.exists("neko") ||
+            def.exists("python")
+        ) {
             trace("[INFO] Setting compiler define 'threads'.");
             Compiler.define("threads");
         } else {

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- class hx.concurrent.thread.BackgroundProcess
+
 
 ## [2.0.1] - 2018-10-23
 
