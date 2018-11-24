@@ -41,9 +41,10 @@ class RLock implements Acquirable {
         var _rlock = new python.lib.threading.RLock();
     #end
 
-
+    #if !java
     var _holder:Dynamic = null;
     var _holderEntranceCount = 0;
+    #end
 
 
     public var availablePermits(get, never):Int;
@@ -144,8 +145,10 @@ class RLock implements Acquirable {
         if (timeoutMS < 0) throw "[timeoutMS] must be >= 0";
 
         if (tryAcquireInternal(timeoutMS)) {
+            #if !java
             _holder = Threads.current;
             _holderEntranceCount++;
+            #end
             return true;
         }
 
