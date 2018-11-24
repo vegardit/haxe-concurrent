@@ -172,13 +172,18 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     function testQueue() {
         var q = new Queue<Int>();
+        assertEquals(0, q.length);
         assertEquals(null, q.pop());
         q.push(1);
         q.push(2);
         q.pushHead(3);
+        assertEquals(3, q.length);
         assertEquals(3, q.pop());
+        assertEquals(2, q.length);
         assertEquals(1, q.pop());
+        assertEquals(1, q.length);
         assertEquals(2, q.pop());
+        assertEquals(0, q.length);
 
         #if threads
         var q = new Queue<Int>();
@@ -425,9 +430,20 @@ class TestRunner extends hx.doctest.DocTestRunner {
                 Threads.sleep(50);
                 ids[j] = ctx.id;
             });
-        assertTrue(Threads.await(function() { return ids[0] != -1 && ids[1] != -1; }, 200));
-        pool.stop();
+        Threads.sleep(20);
+        assertEquals(pool.pendingTasks, 0);
+        assertEquals(pool.executingTasks, 2);
+        assertEquals( -1, ids[0]);
+        assertEquals( -1, ids[1]);
+
+        pool.awaitCompletion(200);
+        assertEquals(pool.pendingTasks, 0);
+        assertEquals(pool.executingTasks, 0);
+        assertNotEquals( -1, ids[0]);
+        assertNotEquals( -1, ids[1]);
         assertNotEquals(ids[0], ids[1]);
+
+        pool.stop();
     }
     #end
 
@@ -678,6 +694,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
         t.run = function() {
             if(_asyncTests.value == 0) {
                 t.stop();
+
                 var timeSpent = Std.int((Dates.now() - startTime) / 1000);
 
                 if (results.getSuccessCount() + results.getFailureCount() == 0) {

@@ -175,7 +175,31 @@ The [hx.concurrent.lock](https://github.com/vegardit/haxe-concurrent/blob/master
 The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread) package contains
 classes for platforms supporting threads:
 
-* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - very basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
+* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
+
+    ```haxe
+    import hx.concurrent.thread.*;
+
+    class Test {
+
+        static function main() {
+            var pool = new ThreadPool(4); // 4 concurrent threads
+
+            pool.submit(function(ctx:ThreadContext) {
+                // do some work here
+            });
+
+            pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submited tasks to be processed
+
+            pool.cancelPending(); // cancels execution of all currently queued tasks
+
+            // initiate graceful stop of all running threads, i.e. they finish the current tasks they process
+            // execution of all other queued tasks is canceled
+            pool.stop();
+        }
+    }
+    ```
+
 * [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
 
 

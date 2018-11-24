@@ -18,11 +18,23 @@ class ThreadPool extends ServiceBase {
 
     static var _threadIDs(default, never) = new AtomicInt();
 
-    var _numThreads:Int;
-    var _threadCount = new AtomicInt(0);
+    var _spawnedThreadCount = new AtomicInt(0);
+    var _workingThreadCount = new AtomicInt(0);
     var _workQueue = new Queue<Task>();
-    var _workQueueSize = new AtomicInt();
 
+    public var threadCount(default, null):Int;
+
+    /**
+     * Number of tasks currently executed in parallel.
+     */
+    public var executingTasks(get, never):Int;
+    inline function get_executingTasks():Int return _workingThreadCount;
+
+    /**
+     * Number of tasks waiting for execution.
+     */
+    public var pendingTasks(get, never):Int;
+    inline function get_pendingTasks():Int return _workQueue.length;
 
     public function new(numThreads:Int, autostart = true) {
         if (numThreads < 1)
@@ -30,11 +42,41 @@ class ThreadPool extends ServiceBase {
 
         super();
 
-        _numThreads = numThreads;
+        threadCount = numThreads;
 
         if (autostart)
             start();
     }
+
+
+    /**
+     * Waits for all submitted tasks being executed.
+     *
+     * If <code>timeoutMS</code> is set 0, the function immediatly returns.
+     * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
+     * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until a result is available.
+     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+     *
+     * @return <code>true</code> if all submitted tasks are done otherwise <code>false</code>.
+     */
+    public function awaitCompletion(timeoutMS:Int):Bool {
+        return Threads.await(function() return _workQueue.length == 0 && _workingThreadCount == 0, timeoutMS);
+    }
+
+
+    /**
+     * @return the number of cancelled tasks
+     */
+    public function cancelPendingTasks():Int {
+        var canceled = 0;
+        while (true) {
+            if (_workQueue.pop() == null)
+                break;
+            canceled++;
+        }
+        return canceled;
+    }
+
 
     override
     function onStart() {
@@ -44,13 +86,13 @@ class ThreadPool extends ServiceBase {
         /*
          * start worker threads
          */
-        for (i in 0..._numThreads) {
+        for (i in 0...threadCount) {
             Threads.spawn(function() {
-                _threadCount++;
+                _spawnedThreadCount++;
 
                 var context = new ThreadContext(_threadIDs.incrementAndGet());
 
-                trace('[$this] Spawned thread $_threadCount/$_numThreads with ID ${context.id}.');
+                trace('[$this] Spawned thread $_spawnedThreadCount/$threadCount with ID ${context.id}.');
 
                 while (true) {
                     var task = _workQueue.pop();
@@ -60,18 +102,20 @@ class ThreadPool extends ServiceBase {
                         Sys.sleep(0.001);
                     } else {
                         try {
+                            _workingThreadCount++;
                             task(context);
                         } catch (ex:Dynamic) {
                             trace(ex);
                         }
+                        _workingThreadCount--;
                     }
                 }
 
                 trace('[$this] Stopped thread with ID ${context.id}.');
 
-                _threadCount--;
+                _spawnedThreadCount--;
 
-                if (_threadCount == 0)
+                if (_spawnedThreadCount == 0)
                     _stateLock.execute(function() {
                         state = STOPPED;
                     });
@@ -87,15 +131,19 @@ class ThreadPool extends ServiceBase {
         if (task == null)
             throw "[task] must not be null";
 
-        _workQueue.push(task);
+        _stateLock.execute(function() {
+            if (state != RUNNING)
+                throw 'ThreadPool is not in requried state [RUNNING] but [$state]';
+            _workQueue.push(task);
+        });
     }
 
 
     /**
-     * Initiates a graceful shutdown of this executor. Canceling execution of all scheduled tasks.
+     * Initiates a graceful shutdown of this executor canceling execution of all queued tasks.
      */
     override
-    public function stop() {
+    public function stop():Void {
         _stateLock.execute(function() {
             if (state == RUNNING) {
                 state = STOPPING;

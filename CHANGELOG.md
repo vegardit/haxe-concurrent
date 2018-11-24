@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - class hx.concurrent.thread.BackgroundProcess
+- property Queue#length
+- method ThreadPool#awaitTermination()
+- method ThreadPool#cancelPendingTasks()
+- method ThreadPool#getExecutingTasks()
+- method ThreadPool#getPendingTasks()
 
 
 ## [2.0.1] - 2018-10-23
