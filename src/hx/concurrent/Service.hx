@@ -58,7 +58,7 @@ class ServiceBase implements Service<Int> {
     }
 
 
-    public function start() {
+    public function start():Void {
         _stateLock.execute(function() {
             switch(state) {
                 case STARTING:  {/*nothing to do*/};
@@ -79,7 +79,7 @@ class ServiceBase implements Service<Int> {
     }
 
 
-    public function stop() {
+    public function stop():Void {
         _stateLock.execute(function() {
             if (state == RUNNING) {
                 state = STOPPING;
