@@ -4,6 +4,7 @@
  */
 package hx.concurrent.collection;
 
+import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.lock.RLock;
 import hx.concurrent.thread.Threads;
 
@@ -29,6 +30,9 @@ class Queue<T> {
         var _queueLock = new RLock();
     #end
 
+    public var length(get, never):Int;
+    var _length = new AtomicInt(0);
+    inline function get_length():Int return _length;
 
     public function new() {
         #if python
@@ -83,6 +87,8 @@ class Queue<T> {
                 return msg != null;
             }, timeoutMS);
         }
+        if (msg != null)
+            _length--;
         return msg;
     }
     #else
@@ -115,6 +121,7 @@ class Queue<T> {
             _queue.push(msg);
             _queueLock.release();
         #end
+        _length++;
     }
 
 
@@ -138,5 +145,6 @@ class Queue<T> {
             _queue.add(msg);
             _queueLock.release();
         #end
+        _length++;
     }
 }
