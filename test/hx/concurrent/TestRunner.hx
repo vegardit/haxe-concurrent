@@ -403,7 +403,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
     #if threads
     function testBackgroundProcess() {
-        var p = new BackgroundProcess("dir");
+        // cannot use timout command on Windows because of "ERROR: Input redirection is not supported, exiting the process immediately."
+        var p = Sys.systemName() == "Windows" ?
+            new BackgroundProcess("ping", ["127.0.0.1", "-n", 2, "-w", 1000]) :
+            new BackgroundProcess("ping", ["127.0.0.1", "-c", 2, "-W", 1000]);
 
         assertEquals(p.exitCode, null);
         assertTrue(p.isRunning);
@@ -411,9 +414,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertTrue(p.pid > 0);
         #end
 
-        p.waitForExit();
-        trace(p.stdout.readAll());
+        p.awaitExit();
 
+        if(p.exitCode != 0)
+            trace(p.stderr.readAll());
+
+        assertTrue(p.stdout.readAll().indexOf("127.0.0.1") > -1);
         assertEquals(p.exitCode, 0);
         assertFalse(p.isRunning);
         #if !java

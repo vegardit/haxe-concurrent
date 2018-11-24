@@ -125,20 +125,20 @@ class BackgroundProcess {
         });
     }
 
+    public function awaitExit():Int {
+        while (true) {
+            if (exitCode != null)
+                return exitCode;
+            Threads.sleep(10);
+        }
+    }
+
     /**
      * Kills the process.
      */
     inline
     public function kill():Void {
         process.kill();
-    }
-
-    public function waitForExit():Int {
-        while (true) {
-            if (exitCode != null)
-                return exitCode;
-            Threads.sleep(10);
-        }
     }
 }
 
