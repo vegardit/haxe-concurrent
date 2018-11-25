@@ -36,7 +36,11 @@ class Queue<T> {
 
     public function new() {
         #if python
-            python.Syntax.pythonCode('import collections');
+            #if (haxe_ver >= 4)
+                python.Syntax.code("import collections");
+            #else
+                python.Syntax.pythonCode("import collections");
+            #end
             _queue = untyped collections.deque();
         #end
     }

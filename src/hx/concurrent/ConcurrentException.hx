@@ -36,7 +36,11 @@ class ConcurrentException {
             neko.Lib.rethrow(cause);  // Neko has proper support
         #elseif python
             //python.Syntax.pythonCode("raise"); // rethrows the last but not necessarily the captured exception
-            python.Syntax.pythonCode('raise Exception(self.toString()) from None');
+            #if (haxe_ver >= 4)
+                python.Syntax.code('raise Exception(self.toString()) from None');
+            #else
+                python.Syntax.pythonCode('raise Exception(self.toString()) from None');
+            #end
         #else
             // cpp.Lib.rethrow(cause);  // swallows stacktrace
             // cs.Lib.rethrow(this);    // throw/rethrow swallows complete stacktrace

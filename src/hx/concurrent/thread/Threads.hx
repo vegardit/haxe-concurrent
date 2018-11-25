@@ -35,8 +35,13 @@ class Threads {
         #elseif neko
             return neko.vm.Thread.current();
         #elseif python
-            python.Syntax.pythonCode("import threading");
-            return python.Syntax.pythonCode("threading.current_thread()");
+            #if (haxe_ver >= 4)
+                python.Syntax.code("import threading");
+                return python.Syntax.code("threading.current_thread()");
+            #else
+                python.Syntax.pythonCode("import threading");
+                return python.Syntax.pythonCode("threading.current_thread()");
+            #end
         #else // javascript, lua
             return "MainThread";
         #end
@@ -54,7 +59,11 @@ class Threads {
         #if threads
             #if python
                 try {
-                    python.Syntax.pythonCode("from threading import Thread");
+                    #if (haxe_ver >= 4)
+                        python.Syntax.code("from threading import Thread");
+                    #else
+                        python.Syntax.pythonCode("from threading import Thread");
+                    #end
                     return true;
                 } catch (ex:Dynamic) {
                     return false;
