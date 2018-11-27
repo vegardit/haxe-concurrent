@@ -18,5 +18,8 @@ set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%
 
-echo Testing...
-phantomjs "%~dp0..\target\js\TestRunner.js"
+::echo Testing [Direct Execution]...
+::phantomjs "%~dp0..\target\js\TestRunner.js"
+
+echo Testing [Execution in WebPage Context]...
+phantomjs "%~dp0phantomJS\phantom.js"
