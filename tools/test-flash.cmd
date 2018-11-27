@@ -33,8 +33,8 @@ set target_dir_absolute=%RETVAL%
 (
     echo %target_dir_absolute%\flash
 ) > "%HOME%\AppData\Roaming\Macromedia\Flash Player\#Security\FlashPlayerTrust\HaxeConcurrent.cfg"
-echo Testing...
 
+echo Testing...
 for /f "delims=" %%A in ('where flashplayer_*_sa_debug.exe') do set "flashplayer_path=%%A"
 %flashplayer_path% "%~dp0..\target\flash\TestRunner.swf"
 set rc=%errorlevel%
