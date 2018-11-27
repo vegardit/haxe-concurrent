@@ -13,12 +13,28 @@ import hx.concurrent.internal.*;
 import sys.io.Process;
 
 /**
+ * Similar to sys.io.Process but with non-blocking stderr/stdout to
+ * handle interactive prompts.
+ *
+ * Per BackgroundProcess two threads are spawned to handle the underlying
+ * blocking haxe.io.Input stderr/stdout streams.
+ *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class BackgroundProcess {
 
     public var cmd(default, null):String;
     public var args(default, null):ReadOnlyArray<String>;
+
+    /**
+     * the exit code or null if the process is still running or was killed
+     */
+    public var exitCode(default, null):Null<Int>;
+
+    /**
+     * the process ID or -1 on targets that have no support (e.g. Java < 9 on Windows)
+     */
+    public var pid(default, null):Int;
 
     /**
      * the process's standard input
@@ -29,18 +45,8 @@ class BackgroundProcess {
     public var stderr(default, never):NonBlockingInput = new NonBlockingInput();
     public var stdout(default, never):NonBlockingInput = new NonBlockingInput();
 
-    /**
-     * the process ID or -1 on targets that have no support (e.g. Java < 9 on Windows)
-     */
-    public var pid(default, null):Int;
-
-    /**
-     * the exit code or null if the process is still running or was killed
-     */
-    public var exitCode(default, null):Null<Int>;
-
     public var isRunning(get, never): Bool;
-    inline function get_isRunning() {
+    function get_isRunning() {
         if (exitCode != null)
             return false;
         try {
@@ -52,7 +58,6 @@ class BackgroundProcess {
     }
 
     var process:Process;
-
 
     /**
      * @throws an exception in case the process cannot be created
@@ -100,12 +105,8 @@ class BackgroundProcess {
                 trace(ex);
             }
 
-            try {
-                exitCode = process.exitCode();
-                process.close();
-            } catch (ex:Dynamic) {
-                // ignore
-            }
+            try exitCode = process.exitCode() catch (ex:Dynamic) { /* ignore */ }
+            try process.close()               catch (ex:Dynamic) { /* ignore */ }
         });
 
         Threads.spawn(function() {
@@ -116,21 +117,17 @@ class BackgroundProcess {
                 trace(ex);
             }
 
-            try {
-                exitCode = process.exitCode();
-                process.close();
-            } catch (ex:Dynamic) {
-                // ignore
-            }
+            try exitCode = process.exitCode() catch (ex:Dynamic) { /* ignore */ }
+            try process.close()               catch (ex:Dynamic) { /* ignore */ }
         });
     }
 
+    /**
+      * Blocks until the process exits.
+      */
     public function awaitExit():Int {
-        while (true) {
-            if (exitCode != null)
-                return exitCode;
-            Threads.sleep(10);
-        }
+        Threads.await(function() return exitCode != null, -1);
+        return exitCode;
     }
 
     /**
@@ -161,10 +158,9 @@ class NonBlockingInput {
             if (byte == null) {
                 if (Dates.now() > waitUntil)
                     break;
-                else {
-                    Threads.sleep(1);
-                    continue;
-                }
+
+                Threads.sleep(1);
+                continue;
             }
 
             result.addByte(byte);
@@ -189,13 +185,11 @@ class NonBlockingInput {
                 break;
 
             result.addByte(byte);
-
         }
         if (result.length == 0)
             return "";
 
         return result.getBytes().toString();
     }
-
 }
 #end
