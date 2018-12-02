@@ -19,8 +19,6 @@ if exist target\%1 (
 )
 shift
 
-goto :eof
-
 REM install common libs
 echo Checking required haxelibs...
 for %%i in (haxe-doctest) do (
@@ -31,6 +29,7 @@ for %%i in (haxe-doctest) do (
     )
 )
 
+goto :eof
 
 REM install additional libs
 :iterate

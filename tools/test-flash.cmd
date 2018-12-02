@@ -6,13 +6,7 @@ REM Author: Sebastian Thomschke, Vegard IT GmbH
 call %~dp0_test-prepare.cmd flash
 
 echo Compiling...
-haxe extraParams.hxml -main hx.concurrent.TestRunner ^
-  -lib haxe-doctest ^
-  -cp src ^
-  -cp test ^
-  -dce full ^
-  -debug ^
-  -D dump=pretty ^
+haxe %~dp0..\tests.hxml ^
   -D no-swf-compress ^
   -D swf-script-timeout=180 ^
   -swf-version 11.5 ^
@@ -32,7 +26,7 @@ call :normalize_path %~dp0..\target
 set target_dir_absolute=%RETVAL%
 (
     echo %target_dir_absolute%\flash
-) > "%HOME%\AppData\Roaming\Macromedia\Flash Player\#Security\FlashPlayerTrust\HaxeConcurrent.cfg"
+) > "%HOME%\AppData\Roaming\Macromedia\Flash Player\#Security\FlashPlayerTrust\HaxeDoctest.cfg"
 
 echo Testing...
 for /f "delims=" %%A in ('where flashplayer_*_sa_debug.exe') do set "flashplayer_path=%%A"

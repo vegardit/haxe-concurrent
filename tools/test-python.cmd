@@ -6,14 +6,7 @@ REM Author: Sebastian Thomschke, Vegard IT GmbH
 call %~dp0_test-prepare.cmd python
 
 echo Compiling...
-haxe extraParams.hxml -main hx.concurrent.TestRunner ^
-  -lib haxe-doctest ^
-  -cp src ^
-  -cp test ^
-  -dce full ^
-  -debug ^
-  -D dump=pretty ^
-  -python target\python\TestRunner.py
+haxe %~dp0..\tests.hxml -python target\python\TestRunner.py
 set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%

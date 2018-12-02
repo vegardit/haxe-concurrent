@@ -6,15 +6,7 @@ REM Author: Sebastian Thomschke, Vegard IT GmbH
 call %~dp0_test-prepare.cmd cpp hxcpp
 
 echo Compiling...
-haxe extraParams.hxml -main hx.concurrent.TestRunner ^
-  -lib haxe-doctest ^
-  -cp src ^
-  -cp test ^
-  -dce full ^
-  -debug ^
-  -D dump=pretty ^
-  -D HXCPP_CHECK_POINTER ^
-  -cpp target\cpp
+haxe %~dp0..\tests.hxml -D HXCPP_CHECK_POINTER -cpp target\cpp
 set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%

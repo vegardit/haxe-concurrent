@@ -6,14 +6,7 @@ REM Author: Sebastian Thomschke, Vegard IT GmbH
 call %~dp0_test-prepare.cmd neko
 
 echo Compiling...
-haxe extraParams.hxml -main hx.concurrent.TestRunner ^
-  -lib haxe-doctest ^
-  -cp src ^
-  -cp test ^
-  -dce full ^
-  -debug ^
-  -D dump=pretty ^
-  -neko target\neko\TestRunner.n
+haxe %~dp0..\tests.hxml -neko target\neko\TestRunner.n
 set rc=%errorlevel%
 popd
 if not %rc% == 0 exit /b %rc%
