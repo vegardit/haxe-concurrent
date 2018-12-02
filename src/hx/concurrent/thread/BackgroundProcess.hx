@@ -143,15 +143,16 @@ class BackgroundProcess {
 class NonBlockingInput {
 
     var bytes(default, never) = new Queue<Null<Int>>();
+    var linePreview = "";
+
 
     inline
     function new() { }
 
-    /**
-     * @return a line incl. new line separator or an empty string if no data
-     */
-    public function readLine(maxWaitMS:Int):String {
-        var result = new BytesBuffer();
+
+    inline
+    private function readLineInteral(maxWaitMS:Int):BytesBuffer {
+        var buffer = new BytesBuffer();
         var waitUntil = Dates.now() + maxWaitMS;
         while(true) {
             var byte = bytes.pop(0);
@@ -163,33 +164,84 @@ class NonBlockingInput {
                 continue;
             }
 
-            result.addByte(byte);
+            buffer.addByte(byte);
 
             if (byte == 10)
                 break;
         }
-        if (result.length == 0)
-            return "";
-
-        return result.getBytes().toString();
+        return buffer;
     }
+
+
+    /**
+     * Characters read through previewLine() will still be returned by readLine()
+     * when invoked.
+     *
+     * @return a line incl. new line separator or an empty string if no data
+     */
+    public function previewLine(maxWaitMS:Int):String {
+        if (StringTools.endsWith(linePreview, "\n"))
+            return linePreview;
+
+        var buffer = readLineInteral(maxWaitMS);
+        if (buffer.length == 0)
+            return linePreview;
+
+        linePreview = linePreview + buffer.getBytes().toString();
+        return linePreview;
+    }
+
+
+    /**
+     * @return a line incl. new line separator or an empty string if no data
+     */
+    public function readLine(maxWaitMS:Int):String {
+        if (linePreview.length > 0 && StringTools.endsWith(linePreview, "\n")) {
+            var line = linePreview;
+            linePreview = "";
+            return line;
+        }
+
+        var buffer = readLineInteral(maxWaitMS);
+
+        if (linePreview.length == 0) {
+            if (buffer.length == 0)
+                return "";
+
+            return buffer.getBytes().toString();
+        }
+
+        var line = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
+        linePreview = "";
+        return line;
+    }
+
 
     /**
      * @return all currently available ouput or an empty string if no data.
      */
     public function readAll():String {
-        var result = new BytesBuffer();
+        var buffer = new BytesBuffer();
         while(true) {
             var byte = bytes.pop(0);
             if (byte == null)
                 break;
 
-            result.addByte(byte);
+            buffer.addByte(byte);
         }
-        if (result.length == 0)
+        if (buffer.length == 0)
             return "";
 
-        return result.getBytes().toString();
+        if (linePreview.length == 0) {
+            if (buffer.length == 0)
+                return "";
+
+            return buffer.getBytes().toString();
+        }
+
+        var all = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
+        linePreview = "";
+        return all;
     }
 }
 #end

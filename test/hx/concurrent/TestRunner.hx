@@ -419,6 +419,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
         if(p.exitCode != 0)
             trace(p.stderr.readAll());
 
+        var linePreview = p.stdout.previewLine(0);
+        assertEquals(linePreview, p.stdout.readLine(0));
+        assertTrue(StringTools.endsWith(linePreview, "\n"));
+        assertNotEquals(linePreview, p.stdout.previewLine(0));
+
         assertTrue(p.stdout.readAll().indexOf("127.0.0.1") > -1);
         assertEquals(p.exitCode, 0);
         assertFalse(p.isRunning);
