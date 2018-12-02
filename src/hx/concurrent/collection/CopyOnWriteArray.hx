@@ -35,7 +35,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
 
 
     /**
-     * >>> (function(){var arr=new CopyOnWriteArray([1,2]); arr[2]=3; return arr.toArray(); })() == [1, 2, 3]
+     * >>> ({var arr=new CopyOnWriteArray([1,2]); arr[2]=3; arr; }).toArray() == [1, 2, 3]
      */
     @:arrayAccess
     inline function _set(idx:Int, x:T):T {
