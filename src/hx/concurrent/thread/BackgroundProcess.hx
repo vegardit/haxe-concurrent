@@ -123,11 +123,37 @@ class BackgroundProcess {
     }
 
     /**
-      * Blocks until the process exits.
-      */
-    public function awaitExit():Int {
-        Threads.await(function() return exitCode != null, -1);
+     * Blocks until the process exits or timeoutMS is reached.
+     *
+     * If <code>timeoutMS</code> is set 0, immediatly returns with the null or the exit code.
+     * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns either null or the exit code.
+     * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+     */
+    public function awaitExit(timeoutMS:Int):Null<Int> {
+        Threads.await(function() return exitCode != null, timeoutMS);
         return exitCode;
+    }
+
+    /**
+     * Blocks until the process exits or timeoutMS is reached.
+     *
+     * If <code>timeoutMS</code> is set 0, immediatly returns.
+     * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns.
+     * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+     *
+     * @throws if exitCode != 0
+     */
+    public function awaitSuccess(timeoutMS:Int, includeStdErr = true):Void {
+        var exitCode = awaitExit(timeoutMS);
+        if (exitCode == 0)
+            return;
+
+        if (includeStdErr)
+            throw 'Process failed with exit code $exitCode and error message: ${stderr.readAll()}';
+
+        throw 'Process failed with exit code $exitCode';
     }
 
     /**
@@ -223,7 +249,7 @@ class NonBlockingInput {
     public function readAll():String {
         var buffer = new BytesBuffer();
         while(true) {
-            var byte = bytes.pop(0);
+            var byte = bytes.pop(5);
             if (byte == null)
                 break;
 
