@@ -414,7 +414,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             assertTrue(p.pid > 0);
         #end
 
-        p.awaitExit();
+        p.awaitExit(30000);
 
         if(p.exitCode != 0)
             trace(p.stderr.readAll());
