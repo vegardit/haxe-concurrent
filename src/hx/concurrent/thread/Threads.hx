@@ -21,15 +21,15 @@ class Threads {
      */
     public static var current(get, never):Dynamic;
     static function get_current():Dynamic {
-        #if cpp
+        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            return sys.thread.Thread.current();
+        #elseif cpp
             return cpp.vm.Thread.current().handle;
         #elseif cs
             return cs.system.threading.Thread.CurrentThread;
         #elseif flash
             var worker = flash.system.Worker.current;
             return worker == null ? "MainThread" : worker;
-        #elseif (hl && haxe_ver >= 4)
-            return Std.string(hl.vm.Thread.current());
         #elseif java
             return java.vm.Thread.current();
         #elseif neko
@@ -137,7 +137,9 @@ class Threads {
      */
     inline
     public static function spawn(func:Void->Void):Void {
-        #if cpp
+        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            sys.thread.Thread.create(func);
+        #elseif cpp
             cpp.vm.Thread.create(func);
         #elseif cs
             new cs.system.threading.Thread(cs.system.threading.ThreadStart.FromHaxeFunction(func)).Start();
