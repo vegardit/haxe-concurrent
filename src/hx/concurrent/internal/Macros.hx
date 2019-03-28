@@ -21,6 +21,7 @@ class Macros {
         if (def.exists("cpp") ||
             def.exists("cs") ||
            (def.exists("hl") && Std.parseFloat(def["haxe_ver"]) >= 4) ||
+           (def.exists("eval") && Std.parseFloat(def["haxe_ver"]) >= 4) ||
             def.exists("java") ||
             def.exists("neko") ||
             def.exists("python")

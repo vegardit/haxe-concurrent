@@ -15,7 +15,7 @@ import hx.concurrent.thread.Threads;
  */
 class Queue<T> {
 
-    #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+    #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
         var _queue = new sys.thread.Deque<T>();
     #elseif cpp
         var _queue = new cpp.vm.Deque<T>();
@@ -66,7 +66,7 @@ class Queue<T> {
             throw "[timeoutMS] must be >= -1";
 
         if (timeoutMS == 0) {
-            #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
                 msg = _queue.pop(false);
             #elseif (cpp||neko)
                 msg = _queue.pop(false);
@@ -81,7 +81,7 @@ class Queue<T> {
             #end
         } else {
             Threads.await(function() {
-                #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+                #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
                     msg = _queue.pop(false);
                 #elseif (cpp||neko)
                     msg = _queue.pop(false);
@@ -120,7 +120,7 @@ class Queue<T> {
         if (msg == null)
             throw "[msg] must not be null";
 
-        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
             _queue.push(msg);
         #elseif (cpp||neko)
             _queue.push(msg);
@@ -146,7 +146,7 @@ class Queue<T> {
         if (msg == null)
             throw "[msg] must not be null";
 
-        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
             _queue.add(msg);
         #elseif (cpp||neko)
             _queue.add(msg);

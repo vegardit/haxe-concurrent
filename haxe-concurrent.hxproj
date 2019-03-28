@@ -23,7 +23,7 @@
     <option directives="" />
     <option flashStrict="True" />
     <option noInlineOnDebug="True" />
-    <option mainClass="hx.concurrent.TestRunner" />
+    <option mainClass="" />
     <option enabledebug="True" />
     <option additional="" />
   </build>
@@ -33,7 +33,7 @@
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="test\hx\concurrent\TestRunner.hx" />
+    <!-- example: <compile path="..." /> -->
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>
