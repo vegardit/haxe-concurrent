@@ -21,9 +21,11 @@ class RLock implements Acquirable {
      * Indicates if this class will have any effect on the current target.
      * Currently: CPP, CS, Flash, HashLink, Java, Neko, Python.
      */
-    public static inline var isSupported = #if (cpp||cs||flash||hl||java||neko||python) true #else false #end;
+    public static inline var isSupported = #if (interp||cpp||cs||flash||hl||java||neko||python) true #else false #end;
 
-    #if cpp
+    #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+        var _rlock = new sys.thread.Mutex();
+    #elseif cpp
         var _rlock = new cpp.vm.Mutex();
     #elseif cs
         // nothing to do
@@ -31,8 +33,6 @@ class RLock implements Acquirable {
         // flash.concurrent.Mutex requries swf-version >= 11.4
         // flash.concurrent.Condition requries swf-version >= 11.5
         var _cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
-    #elseif (hl && haxe_ver >= 4)
-        var _rlock = new hl.vm.Mutex();
     #elseif java
         var _rlock = new java.util.concurrent.locks.ReentrantLock();
     #elseif neko
@@ -41,10 +41,8 @@ class RLock implements Acquirable {
         var _rlock = new python.lib.threading.RLock();
     #end
 
-    #if !java
     var _holder:Dynamic = null;
     var _holderEntranceCount = 0;
-    #end
 
 
     public var availablePermits(get, never):Int;
@@ -56,23 +54,22 @@ class RLock implements Acquirable {
      */
     public var isAcquiredByAnyThread(get, null):Bool;
     inline function get_isAcquiredByAnyThread():Bool {
-        #if java
-            return _rlock.isLocked();
-        #else
+        #if (((haxe_ver >= 4) && java) || !java)
             return _holder != null;
+        #else
+            return _rlock.isLocked();
         #end
     }
-
 
     /**
      * Indicates if the lock is acquired by the current thread
      */
     public var isAcquiredByCurrentThread(get, null):Bool;
     inline function get_isAcquiredByCurrentThread():Bool {
-        #if java
-            return _rlock.isHeldByCurrentThread();
-        #else
+        #if (((haxe_ver >= 4) && java) || !java)
             return _holder == Threads.current;
+        #else
+            return _rlock.isHeldByCurrentThread();
         #end
     }
 
@@ -114,9 +111,11 @@ class RLock implements Acquirable {
      * Blocks until lock can be acquired.
      */
     public function acquire():Void {
-        #if cs
+        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            _rlock.acquire();
+        #elseif cs
             cs.system.threading.Monitor.Enter(this);
-        #elseif (cpp||(hl && haxe_ver >= 4)||neko||python)
+        #elseif (cpp||neko||python)
             _rlock.acquire();
         #elseif java
             _rlock.lock();
@@ -126,10 +125,8 @@ class RLock implements Acquirable {
             // single-threaded targets: js,lua,php
         #end
 
-        #if !java
-            _holder = Threads.current;
-            _holderEntranceCount++;
-        #end
+        _holder = Threads.current;
+        _holderEntranceCount++;
     }
 
 
@@ -145,7 +142,7 @@ class RLock implements Acquirable {
         if (timeoutMS < 0) throw "[timeoutMS] must be >= 0";
 
         if (tryAcquireInternal(timeoutMS)) {
-            #if !java
+            #if (((haxe_ver >= 4) && java) || !java)
             _holder = Threads.current;
             _holderEntranceCount++;
             #end
@@ -158,9 +155,11 @@ class RLock implements Acquirable {
 
     #if !flash inline #end
     private function tryAcquireInternal(timeoutMS = 0):Bool {
-        #if cs
+        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            return Threads.await(function() return _rlock.tryAcquire(), timeoutMS);
+        #elseif cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);
-        #elseif (cpp||(hl && haxe_ver >= 4)||neko)
+        #elseif (cpp||neko)
             return Threads.await(function() return _rlock.tryAcquire(), timeoutMS);
         #elseif java
             return _rlock.tryLock(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
@@ -193,7 +192,7 @@ class RLock implements Acquirable {
      */
     public function release():Void {
         if (isAcquiredByCurrentThread) {
-            #if !java
+            #if (((haxe_ver >= 4) && java) || !java)
                 _holderEntranceCount--;
                 if (_holderEntranceCount == 0)
                     _holder = null;
@@ -204,9 +203,11 @@ class RLock implements Acquirable {
         else
             throw "Lock was not aquired by any thread!";
 
-        #if cs
+        #if ((haxe_ver >= 4) && (interp || neko || cpp || hl || java))
+            _rlock.release();
+        #elseif cs
             cs.system.threading.Monitor.Exit(this);
-        #elseif (cpp||(hl && haxe_ver >= 4)||neko||python)
+        #elseif (cpp||neko||python)
             _rlock.release();
         #elseif java
             _rlock.unlock();
