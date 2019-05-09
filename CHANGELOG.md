@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+
+## [2.1.0] - 2019-05-09
+
 ### Added
 - class hx.concurrent.thread.BackgroundProcess
 - property Queue#length
@@ -15,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - method ThreadPool#cancelPendingTasks()
 - method ThreadPool#getExecutingTasks()
 - method ThreadPool#getPendingTasks()
+
+### Changed
+- [PR-3](https://github.com/vegardit/haxe-concurrent/pull/3) Use new `sys.thread `package when possible on Haxe 4
 
 
 ## [2.0.1] - 2018-10-23
