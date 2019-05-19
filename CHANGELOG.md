@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+
+## [2.1.1] - 2019-05-19
+
 ### Fixed
-- [python] Compile error "Ints.hx:46: lines 46-68 : Float should be Int"
+- [haxe4+python] Compile error "Ints.hx:46: lines 46-68 : Float should be Int"
 
 
 ## [2.1.0] - 2019-05-09
