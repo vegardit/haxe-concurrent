@@ -29,7 +29,7 @@ class Ints {
         #elseif python
             #if (haxe_ver >= 4)
                 python.Syntax.code("import sys");
-                python.Syntax.code("sys.maxsize");
+                Std.int(python.Syntax.code("sys.maxsize"));
             #else
                 python.Syntax.pythonCode("import sys");
                 python.Syntax.pythonCode("sys.maxsize");
@@ -57,10 +57,10 @@ class Ints {
         #elseif python
             #if (haxe_ver >= 4)
                 python.Syntax.code("import sys");
-                -python.Syntax.code("sys.maxsize") -1;
+                -Std.int(python.Syntax.code("sys.maxsize")) - 1;
             #else
                 python.Syntax.pythonCode("import sys");
-                -python.Syntax.pythonCode("sys.maxsize") -1;
+                -python.Syntax.pythonCode("sys.maxsize") - 1;
             #end
         #else // neko, cpp, lua, js, etc.
             -Std.int(Math.pow(2,31));
