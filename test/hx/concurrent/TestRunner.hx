@@ -25,7 +25,7 @@ import hx.concurrent.thread.Threads;
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-@:build(hx.doctest.DocTestGenerator.generateDocTests("src", ".*\\.hx"))
+@:build(hx.doctest.DocTestGenerator.generateDocTests())
 class TestRunner extends hx.doctest.DocTestRunner {
 
     #if threads
