@@ -23,7 +23,9 @@ class Threads {
     static function get_current():Dynamic {
         #if ((haxe_ver >= 4) && eval)
             return sys.thread.Thread.current().id();
-        #elseif ((haxe_ver >= 4) && (neko || cpp || hl || java))
+        #elseif ((haxe_ver >= 4) && hl)
+            return Std.string(sys.thread.Thread.current());
+        #elseif ((haxe_ver >= 4) && (neko || cpp || java))
             return sys.thread.Thread.current();
         #elseif cpp
             return cpp.vm.Thread.current().handle;

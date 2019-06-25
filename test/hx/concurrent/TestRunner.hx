@@ -207,15 +207,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
     function testScheduleTools() {
         var now = Dates.now();
         var in2sDate = Date.fromTime(now + 2000);
-        var runInMS = ScheduleTools.firstRunAt(HOURLY(in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
-        assertTrue(runInMS > 1000);
-        assertTrue(runInMS < 3000);
-        var runInMS = ScheduleTools.firstRunAt(DAILY(in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
-        assertTrue(runInMS > 1000);
-        assertTrue(runInMS < 3000);
-        var runInMS = ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now;
-        assertTrue(runInMS > 1000);
-        assertTrue(runInMS < 3000);
+        var runInMS = Std.int(ScheduleTools.firstRunAt(HOURLY(in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+        assertInRange(runInMS, 1000, 3000);
+        var runInMS = Std.int(ScheduleTools.firstRunAt(DAILY(in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+        assertInRange(runInMS, 1000, 3000);
+        var runInMS = Std.int(ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+        assertInRange(runInMS, 1000, 3000);
     }
 
 
