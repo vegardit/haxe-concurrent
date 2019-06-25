@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [2.1.2] - 2019-06-25
+
+### Fixed
+- [Issue #4](https://github.com/vegardit/haxe-concurrent/issues/4) [haxe4+hl] "Lock was aquired by another thread!"
+- [haxe4+hl] ScheduleTools.firstRunAt() returns wrong values
+
+
 ## [2.1.1] - 2019-05-19
 
 ### Fixed
