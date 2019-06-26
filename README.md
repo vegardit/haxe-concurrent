@@ -62,7 +62,8 @@ On platform with the thread support (C++, C#, Neko, Python, Java) threads are us
 platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
-import hx.concurrent.executor.*;
+import hx.concurrent.executor.Schedule;
+import hx.concurrent.executor.Executor;
 
 class Test {
 
@@ -95,7 +96,7 @@ class Test {
         switch(future.result) {
             case SUCCESS(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
             case FAILURE(ex, time, _):    trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
-            case NONE:                    trace("No result yet...");
+            case NONE(_):                 trace("No result yet...");
         }
 
         // check if the task is scheduled to be executed (again) in the future
@@ -114,8 +115,10 @@ class Test {
 The [hx.current.event](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
 
 ```haxe
-import hx.concurrent.executor.*;
-import hx.concurrent.event.*;
+import hx.concurrent.event.AsyncEventDispatcher;
+import hx.concurrent.event.SyncEventDispatcher;
+import hx.concurrent.Future;
+import hx.concurrent.executor.Executor;
 
 class Test {
 
@@ -142,17 +145,25 @@ class Test {
         var executor = Executor.create(5); // thread-pool with 5 threads
         var asyncDispatcher = new AsyncEventDispatcher<String>(executor);
 
+        // create event listener
+        var onAsyncEvent = function(event:String):Void {
+            trace('Received event: $event');
+        }
+        
         // notify all registered listeners asynchronously,
         // meaning this method call returns immediately
         asyncDispatcher.fire("Hey there");
 
         // fire another event and get notified when all listeners where notified
-        var future = asyncDipatcher.fire("Boom");
-
-        future.onResult = function(result:Future.FutureResult<Int>) {
+        var future = asyncDispatcher.fire("Boom");
+        
+        asyncDispatcher.subscribe(onAsyncEvent);
+        
+        future.onResult = function(result:FutureResult<Dynamic>) {
             switch(result) {
                 case SUCCESS(count, _): trace('$count listeners were successfully notified');
                 case FAILURE(ex, _): trace('Event could not be delivered because of: $ex');
+                case NONE(_): trace("Nothing is happening");
             }
         };
 
