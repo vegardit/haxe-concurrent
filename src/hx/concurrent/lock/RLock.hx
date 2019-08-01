@@ -23,7 +23,7 @@ class RLock implements Acquirable {
      */
     public static inline var isSupported = #if (eval||cpp||cs||flash||hl||java||neko||python) true #else false #end;
 
-    #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
+    #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
         var _rlock = new sys.thread.Mutex();
     #elseif cpp
         var _rlock = new cpp.vm.Mutex();
@@ -111,7 +111,7 @@ class RLock implements Acquirable {
      * Blocks until lock can be acquired.
      */
     public function acquire():Void {
-        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
             _rlock.acquire();
         #elseif cs
             cs.system.threading.Monitor.Enter(this);
@@ -155,7 +155,7 @@ class RLock implements Acquirable {
 
     #if !flash inline #end
     private function tryAcquireInternal(timeoutMS = 0):Bool {
-        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
             return Threads.await(function() return _rlock.tryAcquire(), timeoutMS);
         #elseif cs
             return cs.system.threading.Monitor.TryEnter(this, timeoutMS);
@@ -203,7 +203,7 @@ class RLock implements Acquirable {
         else
             throw "Lock was not aquired by any thread!";
 
-        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
             _rlock.release();
         #elseif cs
             cs.system.threading.Monitor.Exit(this);
