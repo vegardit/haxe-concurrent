@@ -21,11 +21,9 @@ class Threads {
      */
     public static var current(get, never):Dynamic;
     static function get_current():Dynamic {
-        #if ((haxe_ver >= 4) && eval)
-            return sys.thread.Thread.current().id();
-        #elseif ((haxe_ver >= 4) && hl)
+        #if ((haxe_ver >= 4) && hl)
             return Std.string(sys.thread.Thread.current());
-        #elseif ((haxe_ver >= 4) && (neko || cpp || java))
+        #elseif ((haxe_ver >= 4) && (neko || cpp || java || eval || cs))
             return sys.thread.Thread.current();
         #elseif cpp
             return cpp.vm.Thread.current().handle;
@@ -141,7 +139,7 @@ class Threads {
      */
     inline
     public static function spawn(func:Void->Void):Void {
-        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java))
+        #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
             sys.thread.Thread.create(func);
         #elseif cpp
             cpp.vm.Thread.create(func);
