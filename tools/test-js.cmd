@@ -1,5 +1,5 @@
 @echo off
-REM Copyright (c) 2016-2018 Vegard IT GmbH, https://vegardit.com
+REM Copyright (c) 2016-2020 Vegard IT GmbH (https://vegardit.com) and contributors.
 REM SPDX-License-Identifier: Apache-2.0
 REM Author: Sebastian Thomschke, Vegard IT GmbH
 
