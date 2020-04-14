@@ -1,7 +1,13 @@
-/.project
-/.settings
-/.svn
-/bin
+# ---> Eclipse
+.settings/
+.project
+**/.*.md.html
+
+
+# ---> Temp files
+*.tmp
+*.bak
+*.swp
 /dump
 /target
 /tools/dump

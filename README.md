@@ -1,8 +1,9 @@
 # haxe-concurrent - cross-platform concurrency support
 
-[![Build Status](https://travis-ci.org/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.org/vegardit/haxe-concurrent)
+[![Build Status](https://travis-ci.com/vegardit/haxe-concurrent.svg?branch=master)](https://travis-ci.com/vegardit/haxe-concurrent)
 [![Release](https://img.shields.io/github/release/vegardit/haxe-concurrent.svg)](http://lib.haxe.org/p/haxe-concurrent)
 [![License](https://img.shields.io/github/license/vegardit/haxe-concurrent.svg?label=license)](#license)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 1. [What is it?](#what-is-it)
 1. [`hx.concurrent.atomic` package](#atomic-package)
@@ -149,16 +150,16 @@ class Test {
         var onAsyncEvent = function(event:String):Void {
             trace('Received event: $event');
         }
-        
+
         // notify all registered listeners asynchronously,
         // meaning this method call returns immediately
         asyncDispatcher.fire("Hey there");
 
         // fire another event and get notified when all listeners where notified
         var future = asyncDispatcher.fire("Boom");
-        
+
         asyncDispatcher.subscribe(onAsyncEvent);
-        
+
         future.onResult = function(result:FutureResult<Dynamic>) {
             switch(result) {
                 case SUCCESS(count, _): trace('$count listeners were successfully notified');
@@ -262,7 +263,7 @@ haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent master D
 
 ## <a name="license"></a>License
 
-All files are released under the [Apache License 2.0](https://github.com/vegardit/haxe-concurrent/blob/master/LICENSE.txt).
+All files are released under the [Apache License 2.0](LICENSE.txt).
 
 
 ## <a name="alternatives"></a>Alternatives
