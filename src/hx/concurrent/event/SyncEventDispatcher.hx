@@ -9,7 +9,7 @@ import hx.concurrent.Future.ConstantFuture;
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class SyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
+class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
    public function new() {
    }

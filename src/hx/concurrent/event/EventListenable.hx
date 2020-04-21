@@ -24,7 +24,7 @@ interface EventListenable<EVENT> {
 
 
 @:abstract
-class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
+class AbstractEventListenable<EVENT> implements EventListenable<EVENT> {
 
    final _eventListeners = new CopyOnWriteArray<EVENT->Void>();
 

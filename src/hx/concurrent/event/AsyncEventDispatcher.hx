@@ -10,7 +10,7 @@ import hx.concurrent.executor.Executor;
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
+class AsyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
    final _executor:Executor;
 
