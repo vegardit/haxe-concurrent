@@ -56,10 +56,10 @@ enum FutureResult<T> {
 
 class FutureBase<T> implements Future<T> {
 
-   public var result(default, null):FutureResult<T>;
+   public var result(default, null):Null<FutureResult<T>>;
 
-   public var onResult(default, set):FutureResult<T>->Void;
-   inline function set_onResult(fn:FutureResult<T>->Void) {
+   public var onResult(default, set):(FutureResult<T>) -> Void;
+   inline function set_onResult(fn:(FutureResult<T>) -> Void) {
       // immediately invoke the callback function in case a result is already present
       if (fn != null) {
          final result = this.result;

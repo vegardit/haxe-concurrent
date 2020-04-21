@@ -33,7 +33,7 @@ class RLock implements Acquirable {
       final _rlock = new python.lib.threading.RLock();
    #end
 
-   var _holder:Dynamic = null;
+   var _holder:Null<Dynamic> = null;
    var _holderEntranceCount = 0;
 
 
@@ -75,8 +75,8 @@ class RLock implements Acquirable {
     * Executes the given function while the lock is acquired.
     */
    public function execute<T>(func:Void->T, swallowExceptions = false):T {
-      var ex:ConcurrentException = null;
-      var result:T = null;
+      var ex:Null<ConcurrentException> = null;
+      var result:Null<T> = null;
 
       acquire();
       try {

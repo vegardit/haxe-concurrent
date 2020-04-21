@@ -15,37 +15,54 @@ import hx.concurrent.thread.Threads;
 abstract CountDownLatch(java.util.concurrent.CountDownLatch) {
 
    public var count(get, never):Int;
-   inline function get_count():Int return haxe.Int64.toInt(this.getCount());
+   inline function get_count():Int
+      return haxe.Int64.toInt(this.getCount());
 
-   inline public function new(count:Int) this = new java.util.concurrent.CountDownLatch(count);
-   inline public function countDown():Void this.countDown();
-   inline public function await():Void this.await();
-   inline public function tryAwait(timeoutMS:Int):Bool return this.await(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+   inline
+   public function new(count:Int) {
+      this = new java.util.concurrent.CountDownLatch(count);
+   }
+
+
+   inline
+   public function countDown():Void
+      this.countDown();
+
+
+   inline
+   public function await():Void
+      this.await();
+
+
+   inline
+   public function tryAwait(timeoutMS:Int):Bool
+      return this.await(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
 }
-
 #elseif threads
 class CountDownLatch {
 
    public var count(get, null):Int;
-   inline function get_count():Int return _count;
+   inline function get_count():Int
+      return _count;
 
    var _count:AtomicInt;
 
 
    inline
    public function new(count:Int) {
-       _count = new AtomicInt(count);
+      _count = new AtomicInt(count);
    }
 
 
    inline
    public function countDown():Void
-       _count--;
+      _count--;
 
 
    public function await():Void
-       while(_count > 0)
-           Threads.sleep(10);
+      while(_count > 0)
+         Threads.sleep(10);
 
 
    public function tryAwait(timeoutMS:Int):Bool

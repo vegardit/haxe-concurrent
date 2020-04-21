@@ -69,7 +69,7 @@ class Threads {
     * If <code>timeoutMS</code> is set to `-1`, the function waits indefinitely until a new message is available.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     */
-   public static function await(condition:Void->Bool, timeoutMS:Int, waitLoopSleepMS = 10):Bool {
+   public static function await(condition:()->Bool, timeoutMS:Int, waitLoopSleepMS = 10):Bool {
       if (timeoutMS < -1)
          throw "[timeoutMS] must be >= -1";
 
@@ -121,7 +121,7 @@ class Threads {
     * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.
     */
    inline
-   public static function spawn(func:Void->Void):Void {
+   public static function spawn(func:()->Void):Void {
       #if (cpp || cs || eval || java || neko || hl)
          sys.thread.Thread.create(func);
       #elseif python

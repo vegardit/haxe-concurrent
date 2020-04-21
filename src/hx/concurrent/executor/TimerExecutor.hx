@@ -98,7 +98,7 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
          }
       }
 
-      var result:FutureResult<T> = null;
+      var result:Null<FutureResult<T>> = null;
       try {
          var resultValue:T = switch(_task.value) {
             case a(fn): fn();

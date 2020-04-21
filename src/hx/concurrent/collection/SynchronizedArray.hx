@@ -256,7 +256,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function get(idx:Int, throwIfOutOfRange:Bool = false):Null<T>
-      return _sync.execute(function() {
+      return _sync.execute(function():Null<T> {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
                throw "Index out of range.";

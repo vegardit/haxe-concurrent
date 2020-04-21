@@ -130,7 +130,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
    public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void {
       _sync.execute(function() {
-         var items:Array<T> = null;
+         var items:Null<Array<T>> = null;
          switch(coll.value) {
             case a(coll):
                items = _items.copy();

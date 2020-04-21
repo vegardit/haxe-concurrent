@@ -177,7 +177,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>
-      return _sync.execute(function() {
+      return _sync.execute(function():Null<T> {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
                throw "Index out of range.";
@@ -186,7 +186,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
          final items = new List<T>();
          var i = 0;
-         var removed:T = null;
+         var removed:Null<T> = null;
          for (item in _items) {
             if(i == idx)
                removed = item;
@@ -226,7 +226,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function removeLast(throwIfEmpty:Bool = false):Null<T>
-      return _sync.execute(function() {
+      return _sync.execute(function():Null<T> {
          if(_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
@@ -286,7 +286,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function get(idx:Int, throwIfOutOfRange:Bool = false):Null<T>
-      return _sync.execute(function() {
+      return _sync.execute(function():Null<T> {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
                throw "Index out of range.";
