@@ -4,8 +4,7 @@
  */
 package hx.concurrent.internal;
 
-import haxe.macro.Compiler;
-import haxe.macro.Context;
+import haxe.macro.*;
 
 /**
  * <b>IMPORTANT:</b> This class it not part of the API. Direct usage is discouraged.
@@ -13,7 +12,14 @@ import haxe.macro.Context;
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 @:noDoc @:dox(hide)
+@:noCompletion
 class Macros {
+
+   static var __static_init = {
+      #if (haxe_ver < 4)
+         throw 'ERROR: As of haxe-concurrent 3.0.0, Haxe 4.x or higher is required!';
+      #end
+   };
 
     macro
     public static function addDefines() {

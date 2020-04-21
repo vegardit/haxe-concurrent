@@ -24,14 +24,20 @@ A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides some
 
 All classes are located in the package `hx.concurrent` or below.
 
-The library has been successfully tested on the targets C++, C#, Flash, HashLink, Java, JavaScript (Node.js and PhantomJS), Lua,
-Neko, PHP 5, PHP 7 and Python 3.
-
-Requires Haxe 3.4 or higher.
+The library has been extensively unit tested on the targets C++, C#, Flash, [HashLink](https://hashlink.haxe.org/),
+Java, JavaScript ([Node.js](https://nodejs.org) and PhantomJS), Lua, [Neko](https://nekovm.org/), [PHP](https://www.php.net/) 7 and [Python](https://www.python.org/) 3.
 
 **Note:**
-* When compiling for Flash the option `-swf-version 11.5` (or higher) must be specified, otherwise you will get `Class flash.concurrent::Condition could not be found.`
-* When compiling for C# the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
+* When targeting Flash the option `-swf-version 11.5` (or higher) must be specified, otherwise you will get `Class flash.concurrent::Condition could not be found.`
+* When targeting C# the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
+
+### Haxe compatiblity
+
+|haxe-concurrent |Haxe           |
+|----------------|---------------|
+|1.0.0 to 1.2.0  |3.2.1 or higher|
+|2.0.0 to 2.1.3  |3.4.2 or higher|
+|3.0.0 or higher |4.0.5 or higher|
 
 
 ## <a name="atomic-package"></a>The `hx.concurrent.atomic` package
@@ -264,6 +270,13 @@ haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent master D
 ## <a name="license"></a>License
 
 All files are released under the [Apache License 2.0](LICENSE.txt).
+
+Individual files contain the following tag instead of the full license text:
+```
+SPDX-License-Identifier: Apache-2.0
+```
+
+This enables machine processing of license information based on the SPDX License Identifiers that are available here: https://spdx.org/licenses/.
 
 
 ## <a name="alternatives"></a>Alternatives
