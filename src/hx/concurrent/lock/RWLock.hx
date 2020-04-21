@@ -94,8 +94,9 @@ class ReadLock implements Acquirable {
 
 
    inline
-   function new(rwLock:RWLock)
+   function new(rwLock:RWLock) {
        this.rwLock = rwLock;
+   }
 
 
    public function acquire():Void {

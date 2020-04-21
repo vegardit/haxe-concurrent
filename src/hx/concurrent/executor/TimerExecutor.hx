@@ -32,8 +32,7 @@ class TimerExecutor extends Executor {
 
 
    override
-   public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
-
+   public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T>
       return _stateLock.execute(function() {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
@@ -49,13 +48,11 @@ class TimerExecutor extends Executor {
          }
          return future;
       });
-   }
 
 
    override
-   function onStart() {
+   function onStart()
       _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
-   }
 
 
    override

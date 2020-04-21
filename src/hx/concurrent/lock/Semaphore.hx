@@ -71,13 +71,12 @@ class Semaphore implements Acquirable {
 
 
    inline
-   public function tryAcquire(timeoutMS = 0):Bool {
+   public function tryAcquire(timeoutMS = 0):Bool
       #if threads
          return Threads.await(tryAcquireInternal, timeoutMS);
       #else
          return tryAcquireInternal();
       #end
-   }
 
 
    /**

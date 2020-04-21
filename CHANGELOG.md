@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - minimum required Haxe version is now 4.x
 - removed support for old PHP5 target
+- renamed `DefaultEventListenable` to `AbstractEventListenable`
 
 
 ## [2.1.3] - 2019-08-02

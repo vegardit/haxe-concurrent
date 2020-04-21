@@ -50,6 +50,7 @@ class BackgroundProcess {
    function get_isRunning() {
       if (exitCode != null)
          return false;
+
       try {
          stdin.flush();
          return true;
@@ -75,19 +76,17 @@ class BackgroundProcess {
          try {
             pid = process.getPid();
          } catch (ex:Dynamic) {
-            /* process.getPid() results into an Exception on Java 11:
+            /* sys.io.Process#getPid() results into an Exception on Java 11:
              *   Exception in thread "main" java.lang.ClassCastException: class haxe.lang.Closure cannot be cast to class java.lang.Number (haxe.lang.Closure is in unnamed module of loader 'app'; java.lang.Number is in module java.base of loader 'bootstrap')
              *     at haxe.lang.Runtime.toInt(Runtime.java:127)
              *     at sys.io.Process.getPid(Process.java:218)
-             *     at hx.concurrent.thread.BackgroundProcess.__hx_ctor_hx_concurrent_thread_BackgroundProcess(BackgroundProcess.java:43)
-             *     at hx.concurrent.thread.BackgroundProcess.<init>(BackgroundProcess.java:17)
              */
             pid = -1;
          }
 
          if (pid == -1) {
             try {
-               // Java 9+
+               // Java 9+ https://docs.oracle.com/javase/9/docs/api/java/lang/ProcessHandle.html#pid--
                var pidMethod = Reflect.field(process.proc, "pid");
                pid = Reflect.callMethod(process.proc, pidMethod, []);
             } catch (ex:Dynamic) {
@@ -106,8 +105,8 @@ class BackgroundProcess {
             trace(ex);
          }
 
-         try exitCode = process.exitCode() catch (ex:Dynamic) { /* ignore */ }
-         try process.close()               catch (ex:Dynamic) { /* ignore */ }
+         exitCode = process.exitCode();
+         process.close();
       });
 
       Threads.spawn(function() {
@@ -118,8 +117,8 @@ class BackgroundProcess {
             trace(ex);
          }
 
-         try exitCode = process.exitCode() catch (ex:Dynamic) { /* ignore */ }
-         try process.close()               catch (ex:Dynamic) { /* ignore */ }
+         exitCode = process.exitCode();
+         process.close();
       });
    }
 

@@ -65,7 +65,7 @@ The [hx.concurrent.executor](https://github.com/vegardit/haxe-concurrent/blob/ma
 [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) implementations that allow
 to execute functions concurrently and to schedule tasks for later/repeated execution.
 
-On platform with the thread support (C++, C#, Neko, Python, Java) threads are used to realize true concurrent execution, on other
+On platform with the thread support (C++, C#, Eval, HashLink, Neko, Python, Java) threads are used to realize true concurrent execution, on other
 platforms `haxe.Timer` is used to at least realize async execution.
 
 ```haxe
@@ -74,46 +74,46 @@ import hx.concurrent.executor.Executor;
 
 class Test {
 
-    static function main() {
-        var executor = Executor.create(3);  // <- 3 means to use a thread pool of 3 threads on platforms that support threads
-        // depending on the platform either a thread-based or timer-based implementation is returned
+   static function main() {
+      var executor = Executor.create(3);  // <- 3 means to use a thread pool of 3 threads on platforms that support threads
+      // depending on the platform either a thread-based or timer-based implementation is returned
 
-        // define a function to be executed concurrently/async/scheduled (return type can also be Void)
-        var myTask=function():Date {
-            trace("Executing...");
-            return Date.now();
-        }
+      // define a function to be executed concurrently/async/scheduled (return type can also be Void)
+      var myTask=function():Date {
+         trace("Executing...");
+         return Date.now();
+      }
 
-        // submit 10 tasks each to be executed once asynchronously/concurrently as soon as possible
-        for(i in 0...10) {
-            executor.submit(myTask);
-        }
+      // submit 10 tasks each to be executed once asynchronously/concurrently as soon as possible
+      for(i in 0...10) {
+         executor.submit(myTask);
+      }
 
-        executor.submit(myTask, ONCE(2000));            // async one-time execution with a delay of 2 seconds
-        executor.submit(myTask, FIXED_RATE(200));       // repeated async execution every 200ms
-        executor.submit(myTask, FIXED_DELAY(200));      // repeated async execution 200ms after the last execution
-        executor.submit(myTask, HOURLY(30));            // async execution 30min after each full hour
-        executor.submit(myTask, DAILY(3, 30));          // async execution daily at 3:30
-        executor.submit(myTask, WEEKLY(SUNDAY, 3, 30)); // async execution sundays at 3:30
+      executor.submit(myTask, ONCE(2000));            // async one-time execution with a delay of 2 seconds
+      executor.submit(myTask, FIXED_RATE(200));       // repeated async execution every 200ms
+      executor.submit(myTask, FIXED_DELAY(200));      // repeated async execution 200ms after the last execution
+      executor.submit(myTask, HOURLY(30));            // async execution 30min after each full hour
+      executor.submit(myTask, DAILY(3, 30));          // async execution daily at 3:30
+      executor.submit(myTask, WEEKLY(SUNDAY, 3, 30)); // async execution sundays at 3:30
 
-        // submit a task and keep a reference to it
-        var future = executor.submit(myTask, FIXED_RATE(200));
+      // submit a task and keep a reference to it
+      var future = executor.submit(myTask, FIXED_RATE(200));
 
-        // check if a result is already available
-        switch(future.result) {
-            case SUCCESS(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
-            case FAILURE(ex, time, _):    trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
-            case NONE(_):                 trace("No result yet...");
-        }
+      // check if a result is already available
+      switch(future.result) {
+         case SUCCESS(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
+         case FAILURE(ex, time, _):    trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
+         case NONE(_):                 trace("No result yet...");
+      }
 
-        // check if the task is scheduled to be executed (again) in the future
-        if(!future.isStopped) {
-            trace('The task is scheduled for further executions with schedule: ${future.schedule}');
-        }
+      // check if the task is scheduled to be executed (again) in the future
+      if(!future.isStopped) {
+         trace('The task is scheduled for further executions with schedule: ${future.schedule}');
+      }
 
-        // cancel any future execution of the task
-        future.cancel();
-    }
+      // cancel any future execution of the task
+      future.cancel();
+   }
 ```
 
 
@@ -129,52 +129,52 @@ import hx.concurrent.executor.Executor;
 
 class Test {
 
-    static function main() {
-        /**
-         * create a dispatcher that notifies listeners/callbacks synchronously in the current thread
-         */
-        var syncDispatcher = new SyncEventDispatcher<String>(); // events are of type string
+   static function main() {
+      /**
+       * create a dispatcher that notifies listeners/callbacks synchronously in the current thread
+       */
+      var syncDispatcher = new SyncEventDispatcher<String>(); // events are of type string
 
-        // create event listener
-        var onEvent = function(event:String):Void {
-            trace('Received event: $event');
-        }
+      // create event listener
+      var onEvent = function(event:String):Void {
+         trace('Received event: $event');
+      }
 
-        syncDispatcher.subscribe(onEvent);
+      syncDispatcher.subscribe(onEvent);
 
-        // notify all registered listeners synchronously,
-        // meaning this method call blocks until all listeners are finished executing
-        syncDispatcher.fire("Hey there");
+      // notify all registered listeners synchronously,
+      // meaning this method call blocks until all listeners are finished executing
+      syncDispatcher.fire("Hey there");
 
-        /**
-         * create a dispatcher that notifies listeners ansychronously using an execturo
-         */
-        var executor = Executor.create(5); // thread-pool with 5 threads
-        var asyncDispatcher = new AsyncEventDispatcher<String>(executor);
+      /**
+       * create a dispatcher that notifies listeners ansychronously using an execturo
+       */
+      var executor = Executor.create(5); // thread-pool with 5 threads
+      var asyncDispatcher = new AsyncEventDispatcher<String>(executor);
 
-        // create event listener
-        var onAsyncEvent = function(event:String):Void {
-            trace('Received event: $event');
-        }
+      // create event listener
+      var onAsyncEvent = function(event:String):Void {
+         trace('Received event: $event');
+      }
 
-        // notify all registered listeners asynchronously,
-        // meaning this method call returns immediately
-        asyncDispatcher.fire("Hey there");
+      // notify all registered listeners asynchronously,
+      // meaning this method call returns immediately
+      asyncDispatcher.fire("Hey there");
 
-        // fire another event and get notified when all listeners where notified
-        var future = asyncDispatcher.fire("Boom");
+      // fire another event and get notified when all listeners where notified
+      var future = asyncDispatcher.fire("Boom");
 
-        asyncDispatcher.subscribe(onAsyncEvent);
+      asyncDispatcher.subscribe(onAsyncEvent);
 
-        future.onResult = function(result:FutureResult<Dynamic>) {
-            switch(result) {
-                case SUCCESS(count, _): trace('$count listeners were successfully notified');
-                case FAILURE(ex, _): trace('Event could not be delivered because of: $ex');
-                case NONE(_): trace("Nothing is happening");
-            }
-        };
+      future.onResult = function(result:FutureResult<Dynamic>) {
+         switch(result) {
+            case SUCCESS(count, _): trace('$count listeners were successfully notified');
+            case FAILURE(ex, _): trace('Event could not be delivered because of: $ex');
+            case NONE(_): trace("Nothing is happening");
+          }
+      };
 
-    }
+   }
 }
 ```
 
@@ -195,27 +195,27 @@ classes for platforms supporting threads:
 
 * [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
 
-    ```haxe
-    import hx.concurrent.thread.*;
+   ```haxe
+   import hx.concurrent.thread.*;
 
-    class Test {
+   class Test {
 
-        static function main() {
-            var pool = new ThreadPool(4); // 4 concurrent threads
+      static function main() {
+         var pool = new ThreadPool(4); // 4 concurrent threads
 
-            pool.submit(function(ctx:ThreadContext) {
-                // do some work here
-            });
+         pool.submit(function(ctx:ThreadContext) {
+            // do some work here
+         });
 
-            pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submited tasks to be processed
+         pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submited tasks to be processed
 
-            pool.cancelPending(); // cancels execution of all currently queued tasks
+         pool.cancelPending(); // cancels execution of all currently queued tasks
 
-            // initiate graceful stop of all running threads, i.e. they finish the current tasks they process
-            // execution of all other queued tasks is canceled
-            pool.stop();
-        }
-    }
+         // initiate graceful stop of all running threads, i.e. they finish the current tasks they process
+         // execution of all other queued tasks is canceled
+         pool.stop();
+      }
+   }
     ```
 
 * [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
