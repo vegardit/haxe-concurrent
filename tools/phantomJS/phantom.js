@@ -13,18 +13,18 @@ page.onConsoleMessage = function(msg) {
 };
 
 page.onCallback = function(data) {
-    if(!data) return;
-    switch (data.cmd) {
-        case 'doctest:exit':
-            phantom.exit(data.exitCode);
-            break;
-        default:
-            // ignore
-            break;
-    }
+   if(!data) return;
+   switch (data.cmd) {
+      case 'doctest:exit':
+         phantom.exit(data.exitCode);
+         break;
+      default:
+         // ignore
+         break;
+   }
 }
 
 page.open("phantom.html", function (status) {
-    if(status != "success")
-        console.log("Loading " + url + "faild: " + status);
+   if(status != "success")
+      console.log("Loading " + url + "faild: " + status);
 });

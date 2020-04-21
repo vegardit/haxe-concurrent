@@ -11,41 +11,40 @@ import hx.concurrent.collection.CopyOnWriteArray;
  */
 interface EventListenable<EVENT> {
 
-    /**
-     * @return false if was subscribed already
-     */
-    function subscribe(listener:EVENT->Void):Bool;
+   /**
+    * @return false if was subscribed already
+    */
+   function subscribe(listener:EVENT->Void):Bool;
 
-    /**
-     * @return false if was not subscribed
-     */
-    function unsubscribe(listener:EVENT->Void):Bool;
+   /**
+    * @return false if was not subscribed
+    */
+   function unsubscribe(listener:EVENT->Void):Bool;
 }
 
 
 @:abstract
 class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
 
-    var _eventListeners = new CopyOnWriteArray<EVENT->Void>();
+   var _eventListeners = new CopyOnWriteArray<EVENT->Void>();
 
 
-    public function subscribe(listener:EVENT->Void):Bool  {
-        if (listener == null)
-            throw "[listener] must not be null";
+   public function subscribe(listener:EVENT->Void):Bool {
+      if (listener == null)
+         throw "[listener] must not be null";
 
-        return _eventListeners.addIfAbsent(listener);
-    }
-
-
-    public function unsubscribe(listener:EVENT->Void):Bool {
-        if (listener == null)
-            throw "[listener] must not be null";
-
-        return _eventListeners.remove(listener);
-    }
+      return _eventListeners.addIfAbsent(listener);
+   }
 
 
-    function unsubscribeAll():Void {
-        _eventListeners.clear();
-    }
+   public function unsubscribe(listener:EVENT->Void):Bool {
+      if (listener == null)
+         throw "[listener] must not be null";
+
+      return _eventListeners.remove(listener);
+   }
+
+
+   function unsubscribeAll():Void
+      _eventListeners.clear();
 }

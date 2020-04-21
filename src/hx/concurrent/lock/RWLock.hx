@@ -23,16 +23,16 @@ import hx.concurrent.thread.Threads;
 @:allow(hx.concurrent.lock.WriteLock)
 class RWLock {
 
-    public var readLock(default, null):ReadLock;
-    public var writeLock(default, null):WriteLock;
+   public var readLock(default, null):ReadLock;
+   public var writeLock(default, null):WriteLock;
 
-    var sync(default, null) = new RLock();
+   var sync(default, null) = new RLock();
 
-    inline
-    public function new() {
-        readLock = new ReadLock(this);
-        writeLock = new WriteLock(this);
-    }
+   inline
+   public function new() {
+      readLock = new ReadLock(this);
+      writeLock = new WriteLock(this);
+   }
 }
 
 
@@ -40,101 +40,98 @@ class RWLock {
 @:allow(hx.concurrent.lock.WriteLock)
 class ReadLock implements Acquirable {
 
-    public var availablePermits(get, never):Int;
-    function get_availablePermits():Int {
-        if (rwLock.writeLock.isAcquiredByOtherThread)
-            return 0;
+   public var availablePermits(get, never):Int;
+   function get_availablePermits():Int {
+      if (rwLock.writeLock.isAcquiredByOtherThread)
+         return 0;
 
-        return rwLock.sync.execute(function() {
-            return Ints.MAX_VALUE - holders.length;
-        });
-    }
-
-
-    /**
-     * Indicates if the lock is acquired by any thread
-     */
-    public var isAcquiredByAnyThread(get, null):Bool;
-    inline function get_isAcquiredByAnyThread():Bool {
-        return rwLock.sync.execute(function() {
-            return holders.length > 0;
-        });
-    }
+      return rwLock.sync.execute(function() {
+         return Ints.MAX_VALUE - holders.length;
+      });
+   }
 
 
-    /**
-     * Indicates if the lock is acquired by the current thread
-     */
-    public var isAcquiredByCurrentThread(get, null):Bool;
-    inline function get_isAcquiredByCurrentThread():Bool {
-        return rwLock.sync.execute(function() {
-            return holders.indexOf(Threads.current) > -1;
-        });
-    }
+   /**
+    * Indicates if the lock is acquired by any thread
+    */
+   public var isAcquiredByAnyThread(get, null):Bool;
+   inline function get_isAcquiredByAnyThread():Bool
+      return rwLock.sync.execute(function() {
+         return holders.length > 0;
+      });
 
 
-    /**
-     * Indicates if the lock is acquired by any other thread
-     */
-    public var isAcquiredByOtherThread(get, null):Bool;
-    inline function get_isAcquiredByOtherThread():Bool {
-        var requestor = Threads.current;
-        return rwLock.sync.execute(function() {
-            if (holders.length == 0)
-                return false;
+   /**
+    * Indicates if the lock is acquired by the current thread
+    */
+   public var isAcquiredByCurrentThread(get, null):Bool;
+   inline function get_isAcquiredByCurrentThread():Bool
+      return rwLock.sync.execute(function() {
+         return holders.indexOf(Threads.current) > -1;
+      });
 
-            for (holder in holders)
-                if (holder != requestor)
-                    return true;
+
+   /**
+    * Indicates if the lock is acquired by any other thread
+    */
+   public var isAcquiredByOtherThread(get, null):Bool;
+   inline function get_isAcquiredByOtherThread():Bool {
+      var requestor = Threads.current;
+      return rwLock.sync.execute(function() {
+         if (holders.length == 0)
             return false;
-        });
-    }
+
+         for (holder in holders)
+            if (holder != requestor)
+               return true;
+         return false;
+      });
+   }
 
 
-    var rwLock:RWLock;
-    var holders = new Array<Dynamic>();
+   var rwLock:RWLock;
+   var holders = new Array<Dynamic>();
 
 
-    inline function new(rwLock:RWLock) {
-        this.rwLock = rwLock;
-    }
+   inline
+   function new(rwLock:RWLock)
+       this.rwLock = rwLock;
 
 
-    public function acquire():Void {
-        while (true) {
-            if (tryAcquire(Ints.MAX_VALUE))
-                return;
-        }
-    }
+   public function acquire():Void {
+      while (true) {
+         if (tryAcquire(Ints.MAX_VALUE))
+            return;
+      }
+   }
 
 
-    public function tryAcquire(timeoutMS:Int = 0):Bool {
-        var requestor = Threads.current;
+   public function tryAcquire(timeoutMS:Int = 0):Bool {
+      var requestor = Threads.current;
 
-        var startAt = Dates.now();
-        while (true) {
-            if (rwLock.sync.execute(function() {
-                if(rwLock.writeLock.isAcquiredByOtherThread)
-                    return false;
+      var startAt = Dates.now();
+      while (true) {
+         if (rwLock.sync.execute(function() {
+            if(rwLock.writeLock.isAcquiredByOtherThread)
+               return false;
 
-                holders.push(requestor);
-                return true;
-            }))
-                return true;
+            holders.push(requestor);
+            return true;
+         }))
+            return true;
 
-            var elapsedMS = Dates.now() - startAt;
-            if (elapsedMS >= timeoutMS)
-                return false;
-        }
-    }
+         var elapsedMS = Dates.now() - startAt;
+         if (elapsedMS >= timeoutMS)
+            return false;
+      }
+   }
 
 
-    public function release():Void {
-        rwLock.sync.execute(function() {
-            if (!holders.remove(Threads.current))
-                throw "This lock was not acquired by the current thread!";
-        });
-    }
+   public function release():Void
+      rwLock.sync.execute(function() {
+         if (!holders.remove(Threads.current))
+            throw "This lock was not acquired by the current thread!";
+      });
 }
 
 
@@ -142,76 +139,75 @@ class ReadLock implements Acquirable {
 @:allow(hx.concurrent.lock.ReadLock)
 class WriteLock extends RLock {
 
-    var rwLock:RWLock;
+   var rwLock:RWLock;
 
-    inline function new(rwLock:RWLock) {
-        super();
-        this.rwLock = rwLock;
-    }
+   inline function new(rwLock:RWLock) {
+      super();
+      this.rwLock = rwLock;
+   }
 
-    override
-    function get_availablePermits():Int {
-        if (isAcquiredByAnyThread)
-            return 0;
+   override
+   function get_availablePermits():Int {
+      if (isAcquiredByAnyThread)
+         return 0;
 
-        return rwLock.sync.execute(function() {
-            var readLockHolders = rwLock.readLock.holders;
+      return rwLock.sync.execute(function() {
+         var readLockHolders = rwLock.readLock.holders;
 
-            // no read locks?
-            if (readLockHolders.length == 0)
-                return 1;
-
-            // read locks held by other threads?
-            var requestor = Threads.current;
-            for (holder in readLockHolders)
-                if (holder != requestor)
-                    return 0;
+         // no read locks?
+         if (readLockHolders.length == 0)
             return 1;
-        });
-    }
+
+         // read locks held by other threads?
+         var requestor = Threads.current;
+         for (holder in readLockHolders)
+            if (holder != requestor)
+               return 0;
+         return 1;
+      });
+   }
 
 
-    override
-    public function acquire():Void {
-        while (true) {
-            if (tryAcquire(Ints.MAX_VALUE))
-                return;
-        }
-    }
+   override
+   public function acquire():Void {
+      while (true) {
+         if (tryAcquire(Ints.MAX_VALUE))
+            return;
+      }
+   }
 
 
-    override
-    public function tryAcquire(timeoutMS = 0):Bool {
-        var requestor = Threads.current;
-        var readLockHolders = rwLock.readLock.holders;
+   override
+   public function tryAcquire(timeoutMS = 0):Bool {
+      var requestor = Threads.current;
+      var readLockHolders = rwLock.readLock.holders;
 
-        #if (flash||sys)
-        return Threads.await(function() {
-            return rwLock.sync.execute(function() {
-        #end
-                if (readLockHolders.length > 0) {
-                    // read locks held by other threads?
-                    for (holder in readLockHolders) {
-                        if (holder != requestor)
-                            return false;
-                    }
-                }
-                return super_tryAcquire(50);
-        #if (flash||sys)
-            });
-        }, timeoutMS);
-        #end
-    }
-
-
-    override
-    public function release():Void {
-        rwLock.sync.execute(function() {
-            super_release();
-        });
-    }
+      #if (flash||sys)
+      return Threads.await(function() {
+         return rwLock.sync.execute(function() {
+      #end
+            if (readLockHolders.length > 0) {
+               // read locks held by other threads?
+               for (holder in readLockHolders) {
+                  if (holder != requestor)
+                     return false;
+               }
+            }
+            return super_tryAcquire(50);
+      #if (flash||sys)
+         });
+      }, timeoutMS);
+      #end
+   }
 
 
-    function super_tryAcquire(timeoutMS = 0):Bool return super.tryAcquire(timeoutMS);
-    function super_release():Void return super.release();
+   override
+   public function release():Void
+      rwLock.sync.execute(function() {
+         super_release();
+      });
+
+
+   function super_tryAcquire(timeoutMS = 0):Bool return super.tryAcquire(timeoutMS);
+   function super_release():Void return super.release();
 }

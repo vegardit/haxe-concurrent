@@ -21,22 +21,22 @@ class Macros {
       #end
    };
 
-    macro
-    public static function addDefines() {
-        var def = Context.getDefines();
-        if (def.exists("cpp") ||
-            def.exists("cs") ||
-           (def.exists("hl") && Std.parseFloat(def["haxe_ver"]) >= 4) ||
-           (def.exists("eval") && Std.parseFloat(def["haxe_ver"]) >= 4) ||
-            def.exists("java") ||
-            def.exists("neko") ||
-            def.exists("python")
-        ) {
-            trace("[INFO] Setting compiler define 'threads'.");
-            Compiler.define("threads");
-        } else {
-            trace("[INFO] NOT setting compiler define 'threads'.");
-        }
-        return macro {}
-    }
+   macro
+   public static function addDefines() {
+      var def = Context.getDefines();
+      if (def.exists("cpp") ||
+          def.exists("cs") ||
+          def.exists("hl") ||
+          def.exists("eval") ||
+          def.exists("java") ||
+          def.exists("neko") ||
+          def.exists("python")
+      ) {
+         trace("[INFO] Setting compiler define 'threads'.");
+         Compiler.define("threads");
+      } else {
+         trace("[INFO] NOT setting compiler define 'threads'.");
+      }
+      return macro {}
+   }
 }

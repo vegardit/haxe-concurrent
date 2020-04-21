@@ -11,15 +11,15 @@ import hx.concurrent.internal.Either3;
  */
 interface OrderedCollection<T> extends Collection<T> {
 
-    var first(get, never):Null<T>;
-    var last(get, never):Null<T>;
+   var first(get, never):Null<T>;
+   var last(get, never):Null<T>;
 
-    function insertAt(idx:Int, x:T):Void;
-    function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
-    function removeFirst(throwIfEmpty:Bool=false):Null<T>;
-    function removeLast(throwIfEmpty:Bool=false):Null<T>;
+   function insertAt(idx:Int, x:T):Void;
+   function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
+   function removeFirst(throwIfEmpty:Bool=false):Null<T>;
+   function removeLast(throwIfEmpty:Bool=false):Null<T>;
 
-    function get(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
-    function indexOf(x:T, startAt:Int=0):Int;
-    function lastIndexOf(x:T, ?startAt:Int):Int;
+   function get(idx:Int, throwIfOutOfRange:Bool=false):Null<T>;
+   function indexOf(x:T, startAt:Int=0):Int;
+   function lastIndexOf(x:T, ?startAt:Int):Int;
 }

@@ -13,3 +13,6 @@ if not %rc% == 0 exit /b %rc%
 
 echo Testing [Direct Execution]...
 phantomjs "%~dp0..\target\js\TestRunner.js"
+
+echo Testing [Execution in WegPage Context]...
+phantomjs "%~dp0phantomJS\phantom.js"

@@ -13,60 +13,59 @@ import hx.concurrent.lock.RLock;
  */
 class AtomicValue<T> {
 
-    var _lock:RLock;
+   var _lock:RLock;
 
-    /**
-     * <pre><code>
-     * >>> new AtomicValue(null).value   == null
-     * >>> new AtomicValue(true).value   == true
-     * >>> new AtomicValue("cat").value  == "cat"
-     * </code></pre>
-     */
-    public var value(get, never):T;
-    var _value:T;
-    function get_value():T {
-        _lock.acquire();
-        var result = _value;
-        _lock.release();
-        return result;
-    }
-
-
-    public function new(initialValue:T) {
-        _lock = new RLock();
-        this._value = initialValue;
-    }
+   /**
+    * <pre><code>
+    * >>> new AtomicValue(null).value   == null
+    * >>> new AtomicValue(true).value   == true
+    * >>> new AtomicValue("cat").value  == "cat"
+    * </code></pre>
+    */
+   public var value(get, never):T;
+   var _value:T;
+   function get_value():T {
+      _lock.acquire();
+      var result = _value;
+      _lock.release();
+      return result;
+   }
 
 
-    /**
-     * <pre><code>
-     * >>> new AtomicValue("cat").getAndSet("dog") == "cat"
-     * </code></pre>
-     */
-    public function getAndSet(value:T):T {
-        _lock.acquire();
-        var old = _value;
-        _value = value;
-        _lock.release();
-        return old;
-    }
+   public function new(initialValue:T) {
+      _lock = new RLock();
+      this._value = initialValue;
+   }
 
 
-    public function set(value:T):Void {
-        _lock.acquire();
-        this._value = value;
-        _lock.release();
-    }
+   /**
+    * <pre><code>
+    * >>> new AtomicValue("cat").getAndSet("dog") == "cat"
+    * </code></pre>
+    */
+   public function getAndSet(value:T):T {
+      _lock.acquire();
+      var old = _value;
+      _value = value;
+      _lock.release();
+      return old;
+   }
 
 
-    /**
-     * <pre><code>
-     * >>> new AtomicValue(true).toString()  == "true"
-     * >>> new AtomicValue(false).toString() == "false"
-     * </code></pre>
-     */
-    inline
-    public function toString() {
-        return Std.string(value);
-    }
+   public function set(value:T):Void {
+      _lock.acquire();
+      this._value = value;
+      _lock.release();
+   }
+
+
+   /**
+    * <pre><code>
+    * >>> new AtomicValue(true).toString()  == "true"
+    * >>> new AtomicValue(false).toString() == "false"
+    * </code></pre>
+    */
+   inline
+   public function toString()
+      return Std.string(value);
 }

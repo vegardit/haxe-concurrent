@@ -16,140 +16,140 @@ import hx.concurrent.thread.Threads;
 #if threads
 class ThreadPool extends ServiceBase {
 
-    static var _threadIDs(default, never) = new AtomicInt();
+   static var _threadIDs(default, never) = new AtomicInt();
 
-    var _spawnedThreadCount = new AtomicInt(0);
-    var _workingThreadCount = new AtomicInt(0);
-    var _workQueue = new Queue<Task>();
+   var _spawnedThreadCount = new AtomicInt(0);
+   var _workingThreadCount = new AtomicInt(0);
+   var _workQueue = new Queue<Task>();
 
-    public var threadCount(default, null):Int;
+   public var threadCount(default, null):Int;
 
-    /**
-     * Number of tasks currently executed in parallel.
-     */
-    public var executingTasks(get, never):Int;
-    inline function get_executingTasks():Int return _workingThreadCount;
+   /**
+    * Number of tasks currently executed in parallel.
+    */
+   public var executingTasks(get, never):Int;
+   inline function get_executingTasks():Int return _workingThreadCount;
 
-    /**
-     * Number of tasks waiting for execution.
-     */
-    public var pendingTasks(get, never):Int;
-    inline function get_pendingTasks():Int return _workQueue.length;
+   /**
+    * Number of tasks waiting for execution.
+    */
+   public var pendingTasks(get, never):Int;
+   inline function get_pendingTasks():Int return _workQueue.length;
 
-    public function new(numThreads:Int, autostart = true) {
-        if (numThreads < 1)
-            throw "[numThreads] must be > 0";
+   public function new(numThreads:Int, autostart = true) {
+      if (numThreads < 1)
+         throw "[numThreads] must be > 0";
 
-        super();
+      super();
 
-        threadCount = numThreads;
+      threadCount = numThreads;
 
-        if (autostart)
-            start();
-    }
-
-
-    /**
-     * Waits for all submitted tasks being executed.
-     *
-     * If <code>timeoutMS</code> is set 0, the function immediatly returns.
-     * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
-     * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until a result is available.
-     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
-     *
-     * @return <code>true</code> if all submitted tasks are done otherwise <code>false</code>.
-     */
-    public function awaitCompletion(timeoutMS:Int):Bool {
-        return Threads.await(function() return _workQueue.length == 0 && _workingThreadCount == 0, timeoutMS);
-    }
+      if (autostart)
+         start();
+   }
 
 
-    /**
-     * @return the number of cancelled tasks
-     */
-    public function cancelPendingTasks():Int {
-        var canceled = 0;
-        while (true) {
-            if (_workQueue.pop() == null)
-                break;
-            canceled++;
-        }
-        return canceled;
-    }
+   /**
+    * Waits for all submitted tasks being executed.
+    *
+    * If <code>timeoutMS</code> is set 0, the function immediatly returns.
+    * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
+    * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until a result is available.
+    * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+    *
+    * @return <code>true</code> if all submitted tasks are done otherwise <code>false</code>.
+    */
+   public function awaitCompletion(timeoutMS:Int):Bool
+      return Threads.await(function()
+         return _workQueue.length == 0 && _workingThreadCount == 0, timeoutMS
+      );
 
 
-    override
-    function onStart() {
-
-        state = RUNNING;
-
-        /*
-         * start worker threads
-         */
-        for (i in 0...threadCount) {
-            Threads.spawn(function() {
-                _spawnedThreadCount++;
-
-                var context = new ThreadContext(_threadIDs.incrementAndGet());
-
-                trace('[$this] Spawned thread $_spawnedThreadCount/$threadCount with ID ${context.id}.');
-
-                while (true) {
-                    var task = _workQueue.pop();
-                    if (task == null) {
-                        if(state != RUNNING)
-                            break;
-                        Sys.sleep(0.001);
-                    } else {
-                        try {
-                            _workingThreadCount++;
-                            task(context);
-                        } catch (ex:Dynamic) {
-                            trace(ex);
-                        }
-                        _workingThreadCount--;
-                    }
-                }
-
-                trace('[$this] Stopped thread with ID ${context.id}.');
-
-                _spawnedThreadCount--;
-
-                if (_spawnedThreadCount == 0)
-                    _stateLock.execute(function() {
-                        state = STOPPED;
-                    });
-            });
-        }
-    }
+   /**
+    * @return the number of cancelled tasks
+    */
+   public function cancelPendingTasks():Int {
+      var canceled = 0;
+      while (true) {
+          if (_workQueue.pop() == null)
+              break;
+          canceled++;
+      }
+      return canceled;
+   }
 
 
-    /**
-     * Submits a task for immediate execution in a thread.
-     */
-    public function submit(task:Task):Void {
-        if (task == null)
-            throw "[task] must not be null";
+   override
+   function onStart() {
 
-        _stateLock.execute(function() {
-            if (state != RUNNING)
-                throw 'ThreadPool is not in requried state [RUNNING] but [$state]';
-            _workQueue.push(task);
-        });
-    }
+      state = RUNNING;
 
+      /*
+       * start worker threads
+       */
+      for (i in 0...threadCount) {
+         Threads.spawn(function() {
+            _spawnedThreadCount++;
 
-    /**
-     * Initiates a graceful shutdown of this executor canceling execution of all queued tasks.
-     */
-    override
-    public function stop():Void {
-        _stateLock.execute(function() {
-            if (state == RUNNING) {
-                state = STOPPING;
+            var context = new ThreadContext(_threadIDs.incrementAndGet());
+
+            trace('[$this] Spawned thread $_spawnedThreadCount/$threadCount with ID ${context.id}.');
+
+            while (true) {
+               var task = _workQueue.pop();
+               if (task == null) {
+                  if(state != RUNNING)
+                     break;
+                  Sys.sleep(0.001);
+               } else {
+                  try {
+                     _workingThreadCount++;
+                     task(context);
+                  } catch (ex:Dynamic) {
+                     trace(ex);
+                  }
+                  _workingThreadCount--;
+               }
             }
-        });
-    }
+
+            trace('[$this] Stopped thread with ID ${context.id}.');
+
+            _spawnedThreadCount--;
+
+            if (_spawnedThreadCount == 0)
+               _stateLock.execute(function() {
+                  state = STOPPED;
+               });
+         });
+      }
+   }
+
+
+   /**
+    * Submits a task for immediate execution in a thread.
+    */
+   public function submit(task:Task):Void {
+      if (task == null)
+         throw "[task] must not be null";
+
+      _stateLock.execute(function() {
+         if (state != RUNNING)
+            throw 'ThreadPool is not in requried state [RUNNING] but [$state]';
+         _workQueue.push(task);
+      });
+   }
+
+
+   /**
+    * Initiates a graceful shutdown of this executor canceling execution of all queued tasks.
+    */
+   override
+   public function stop():Void
+      _stateLock.execute(function() {
+         if (state == RUNNING) {
+            state = STOPPING;
+         }
+      });
 }
 
 
@@ -157,15 +157,15 @@ typedef Task=ThreadContext->Void;
 
 
 class ThreadContext {
-    /**
-     * ID of the current thread
-     */
-    public var id(default, null):Int;
-    public var vars(default, never) = new StringMap<Dynamic>();
+   /**
+    * ID of the current thread
+    */
+   public var id(default, null):Int;
+   public var vars(default, never) = new StringMap<Dynamic>();
 
-    inline
-    public function new(id:Int) {
-        this.id = id;
-    }
+   inline
+   public function new(id:Int) {
+      this.id = id;
+   }
 }
 #end

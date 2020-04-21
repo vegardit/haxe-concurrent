@@ -11,7 +11,7 @@ import hx.concurrent.Future;
  */
 interface EventDispatcher<EVENT> extends EventListenable<EVENT> {
 
-    function fire(event:EVENT):Future<Int>;
+   function fire(event:EVENT):Future<Int>;
 
-    function unsubscribeAll():Void;
+   function unsubscribeAll():Void;
 }

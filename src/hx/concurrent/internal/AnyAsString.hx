@@ -13,11 +13,9 @@ package hx.concurrent.internal;
 @:noCompletion
 abstract AnyAsString(String) from String to String {
 
-  @:from
-  inline
-  static function fromBool(value:Bool):AnyAsString return value ? "true" : "false";
+   @:from inline
+   static function fromBool(value:Bool):AnyAsString return value ? "true" : "false";
 
-  @:from
-  inline
-  static function fromAny<T>(value:T):AnyAsString return Std.string(value);
+   @:from inline
+   static function fromAny<T>(value:T):AnyAsString return Std.string(value);
 }

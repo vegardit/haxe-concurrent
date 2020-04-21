@@ -12,38 +12,36 @@ import hx.concurrent.executor.Executor;
  */
 class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
-    var _executor:Executor;
+   var _executor:Executor;
 
 
-    public function new(executor:Executor) {
-        if (executor == null)
-            throw "[executor] must not be null";
+   public function new(executor:Executor) {
+      if (executor == null)
+         throw "[executor] must not be null";
 
-        this._executor = executor;
-    }
+      this._executor = executor;
+   }
 
 
-    /**
-     * @return the number of listeners notified successfully
-     */
-    public function fire(event:EVENT):Future<Int> {
-        return _executor.submit(function():Int {
-            var count = 0;
-            for (listener in _eventListeners.iterator()) {
-                try {
-                    listener(event);
-                    count++;
-                } catch (ex:Dynamic) {
-                    trace(ex);
-                }
+   /**
+    * @return the number of listeners notified successfully
+    */
+   public function fire(event:EVENT):Future<Int>
+      return _executor.submit(function():Int {
+         var count = 0;
+         for (listener in _eventListeners.iterator()) {
+            try {
+               listener(event);
+               count++;
+            } catch (ex:Dynamic) {
+                trace(ex);
             }
-            return count;
-        });
-    }
+         }
+         return count;
+      });
 
 
-    inline override
-    public function unsubscribeAll():Void {
-        super.unsubscribeAll();
-    }
+    override
+   public function unsubscribeAll():Void
+      super.unsubscribeAll();
 }

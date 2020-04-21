@@ -19,75 +19,75 @@ import hx.concurrent.thread.Threads;
  */
 class Semaphore implements Acquirable {
 
-    public var availablePermits(get, never):Int;
+   public var availablePermits(get, never):Int;
 
 #if java
 
-    var _sem:java.util.concurrent.Semaphore;
+   var _sem:java.util.concurrent.Semaphore;
 
-    inline function get_availablePermits():Int return _sem.availablePermits();
+   inline
+   function get_availablePermits():Int return _sem.availablePermits();
 
-    inline
-    public function new(initialPermits:Int) {
-        _sem = new java.util.concurrent.Semaphore(initialPermits);
-    }
+   inline
+   public function new(initialPermits:Int) {
+      _sem = new java.util.concurrent.Semaphore(initialPermits);
+   }
 
 
-    inline public function acquire():Void _sem.acquire();
-    inline public function tryAcquire(timeoutMS = 0):Bool return _sem.tryAcquire(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
-    /**
-     * Increases availablePermits by one.
-     */
-    inline public function release():Void _sem.release();
+   inline public function acquire():Void _sem.acquire();
+   inline public function tryAcquire(timeoutMS = 0):Bool return _sem.tryAcquire(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
+   /**
+    * Increases availablePermits by one.
+    */
+   inline public function release():Void _sem.release();
 
 #else
-    var _availablePermits:Int;
-    inline function get_availablePermits():Int return _availablePermits;
+   var _availablePermits:Int;
+   inline
+   function get_availablePermits():Int return _availablePermits;
 
-    var permitLock = new RLock();
-
-
-    inline
-    public function new(initialPermits:Int) {
-        _availablePermits = initialPermits;
-    }
+   var permitLock = new RLock();
 
 
-    inline
-    public function acquire():Void {
-        while (tryAcquire(500) == false) { };
-    }
+   inline
+   public function new(initialPermits:Int) {
+      _availablePermits = initialPermits;
+   }
 
 
-    private function tryAcquireInternal():Bool {
-        return permitLock.execute(function() {
-            if (_availablePermits > 0) {
-                _availablePermits--;
-                return true;
-            }
-            return false;
-        });
-    }
+   inline
+   public function acquire():Void
+      while (tryAcquire(500) == false) { };
 
 
-    inline
-    public function tryAcquire(timeoutMS = 0):Bool {
-        #if threads
-            return Threads.await(tryAcquireInternal, timeoutMS);
-        #else
-            return tryAcquireInternal();
-        #end
-    }
+   private function tryAcquireInternal():Bool
+      return permitLock.execute(function() {
+         if (_availablePermits > 0) {
+            _availablePermits--;
+            return true;
+         }
+         return false;
+      });
 
 
-    /**
-     * Increases availablePermits by one.
-     */
-    public function release():Void {
-        permitLock.acquire();
-        _availablePermits++;
-        permitLock.release();
-    }
+   inline
+   public function tryAcquire(timeoutMS = 0):Bool {
+      #if threads
+         return Threads.await(tryAcquireInternal, timeoutMS);
+      #else
+         return tryAcquireInternal();
+      #end
+   }
+
+
+   /**
+    * Increases availablePermits by one.
+    */
+   public function release():Void {
+      permitLock.acquire();
+      _availablePermits++;
+      permitLock.release();
+   }
 #end
 }
 

@@ -13,7 +13,7 @@ package hx.concurrent.internal;
 @:forward(concat, copy, filter, indexOf, iterator, join, lastIndexOf, length, map, slice, toString)
 abstract ReadOnlyArray<T>(Array<T>) from Array<T> {
 
-    @:arrayAccess
-    inline function get(i:Int):T return this[i];
+   @:arrayAccess
+   inline function get(i:Int):T return this[i];
 
 }

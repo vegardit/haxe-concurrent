@@ -11,28 +11,27 @@ import hx.concurrent.Future.ConstantFuture;
  */
 class SyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
-    public function new() {
-    }
+   public function new() {
+   }
 
-    /**
-     * @return the number of listeners notified successfully
-     */
-    public function fire(event:EVENT):ConstantFuture<Int> {
-        var count = 0;
-        for (listener in _eventListeners.iterator()) {
-            try {
-                listener(event);
-                count++;
-            } catch (ex:Dynamic) {
-                trace(ex);
-            }
-        }
-        return new ConstantFuture(count);
-    }
+   /**
+    * @return the number of listeners notified successfully
+    */
+   public function fire(event:EVENT):ConstantFuture<Int> {
+      var count = 0;
+      for (listener in _eventListeners.iterator()) {
+         try {
+            listener(event);
+            count++;
+         } catch (ex:Dynamic) {
+            trace(ex);
+         }
+      }
+      return new ConstantFuture(count);
+   }
 
 
-    override
-    public function unsubscribeAll():Void {
-        super.unsubscribeAll();
-    }
+   override
+   public function unsubscribeAll():Void
+      super.unsubscribeAll();
 }

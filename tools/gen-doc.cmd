@@ -42,14 +42,14 @@ set PROJECT_DESCRIPTION=%PROJECT_DESCRIPTION:"=%
 
 haxelib list | findstr dox >NUL
 if %errorlevel% neq 0 (
-    echo Installing [dox]...
-    haxelib install dox
+   echo Installing [dox]...
+   haxelib install dox
 )
 
 if exist target\site (
-    echo Cleaning target\site...
-    del target\doc.xml >NUL
-    rd /s /q target\site
+   echo Cleaning target\site...
+   del target\doc.xml >NUL
+   rd /s /q target\site
 )
 
 echo Analyzing source code...
@@ -58,16 +58,16 @@ haxe -cp src --no-output -D doc-gen -xml target\doc.xml --macro include('%TOP_LE
 REM https://github.com/HaxeFoundation/dox/wiki/Commandline-arguments-overview
 echo Generating HTML files...
 haxelib run dox ^
- --title "%PROJECT_NAME% %PROJECT_VERSION% API documentation" ^
- --toplevel-package "%TOP_LEVEL_PACKAGE%" ^
- -D description "%PROJECT_NAME%: %PROJECT_DESCRIPTION%" ^
- -D source-path "%REPO_URL%/tree/master/src" ^
- -D themeColor 0x1690CC ^
- -D version "%PROJECT_VERSION%" ^
- -D website "%OWNER%" ^
- -ex "^%TOP_LEVEL_PACKAGE:.=\.%\.internal" ^
- -i target\doc.xml ^
- -o target\site || goto :eof
+   --title "%PROJECT_NAME% %PROJECT_VERSION% API documentation" ^
+   --toplevel-package "%TOP_LEVEL_PACKAGE%" ^
+   -D description "%PROJECT_NAME%: %PROJECT_DESCRIPTION%" ^
+   -D source-path "%REPO_URL%/tree/master/src" ^
+   -D themeColor 0x1690CC ^
+   -D version "%PROJECT_VERSION%" ^
+   -D website "%OWNER%" ^
+   -ex "^%TOP_LEVEL_PACKAGE:.=\.%\.internal" ^
+   -i target\doc.xml ^
+   -o target\site || goto :eof
 
 set INDEX_HTML=%CD%\target\site\index.html
 
