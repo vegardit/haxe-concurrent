@@ -14,6 +14,9 @@ class Ints {
 
    /**
     * Maximum value Int type can hold depending on target platform
+    * <pre><code>
+    * >>> Ints.MAX_VALUE > 0
+    * </code></pre>
     */
    public static var MAX_VALUE(default, never):Int = {
       #if cs
@@ -29,6 +32,8 @@ class Ints {
       #elseif python
          python.Syntax.code("import sys");
          Std.int(python.Syntax.code("sys.maxsize"));
+      #elseif eval
+         2147483647;
       #else // neko, cpp, lua, js, etc.
          Std.int(Math.pow(2,31)-1);
       #end
@@ -37,6 +42,9 @@ class Ints {
 
    /**
     * Maximum negative value Int type can hold depending on target platform
+    * <pre><code>
+    * >>> Ints.MIN_VALUE < 0
+    * </code></pre>
     */
    public static var MIN_VALUE(default, never):Int = {
       #if cs
@@ -52,6 +60,8 @@ class Ints {
       #elseif python
          python.Syntax.code("import sys");
          -Std.int(python.Syntax.code("sys.maxsize")) - 1;
+      #elseif eval
+         -2147483648;
       #else // neko, cpp, lua, js, etc.
          -Std.int(Math.pow(2,31));
       #end

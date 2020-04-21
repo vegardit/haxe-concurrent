@@ -22,7 +22,9 @@ class Threads {
    static function get_current():Dynamic {
       #if hl
          return Std.string(sys.thread.Thread.current());
-      #elseif (cpp || cs || eval || java || neko)
+      #elseif eval
+         return cast(sys.thread.Thread.current(), eval.vm.NativeThread).id();
+      #elseif (cpp || cs || java || neko)
          return sys.thread.Thread.current();
       #elseif flash
          var worker = flash.system.Worker.current;

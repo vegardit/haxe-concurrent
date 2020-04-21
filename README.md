@@ -24,7 +24,7 @@ A [haxelib](http://lib.haxe.org/documentation/using-haxelib/) that provides some
 
 All classes are located in the package `hx.concurrent` or below.
 
-The library has been extensively unit tested on the targets C++, C#, Flash, [HashLink](https://hashlink.haxe.org/),
+The library has been extensively unit tested (over 400 individual test cases) on the targets C++, C#, Flash, [HashLink](https://hashlink.haxe.org/),
 Java, JavaScript ([Node.js](https://nodejs.org) and PhantomJS), Lua, [Neko](https://nekovm.org/), [PHP](https://www.php.net/) 7 and [Python](https://www.python.org/) 3.
 
 **Note:**

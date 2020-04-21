@@ -257,6 +257,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
    function testRWLock() {
       var lock = new RWLock();
 
+      assertMin(lock.readLock.availablePermits, 1);
+      assertEquals(lock.writeLock.availablePermits, 1);
+
       try {
          lock.readLock.release();
          fail("Exception expected!");
@@ -267,7 +270,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
          fail("Exception expected!");
       } catch (ex:Dynamic) { /* expected */ }
 
-      assertMin(lock.readLock.availablePermits, 0);
+      assertMin(lock.readLock.availablePermits, 1);
       assertEquals(lock.writeLock.availablePermits, 1);
       assertFalse(lock.readLock.isAcquiredByAnyThread);
       assertFalse(lock.readLock.isAcquiredByCurrentThread);
