@@ -13,16 +13,16 @@ package hx.concurrent.internal;
 class Dates {
 
    #if cs
-      static var epochTicks = new cs.system.DateTime(1970, 1, 1).Ticks;
-      static var ticksPerMS = cast cs.system.TimeSpan.TicksPerMillisecond;
+      static final epochTicks = new cs.system.DateTime(1970, 1, 1).Ticks;
+      static final ticksPerMS = cast cs.system.TimeSpan.TicksPerMillisecond;
    #elseif flash
-      static var inizializedTimeMS = Date.now().getTime();
-      static var initializedStampMS = flash.Lib.getTimer();
+      static final inizializedTimeMS = Date.now().getTime();
+      static final initializedStampMS = flash.Lib.getTimer();
    #elseif js
    #elseif sys
    #else
-      static var inizializedTimeMS = Date.now().getTime();
-      static var initializedStampSecs = haxe.Timer.stamp();
+      static final inizializedTimeMS = Date.now().getTime();
+      static final initializedStampSecs = haxe.Timer.stamp();
    #end
 
    /**

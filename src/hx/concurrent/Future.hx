@@ -62,7 +62,7 @@ class FutureBase<T> implements Future<T> {
    inline function set_onResult(fn:FutureResult<T>->Void) {
       // immediately invoke the callback function in case a result is already present
       if (fn != null) {
-         var result = this.result;
+         final result = this.result;
          switch(result) {
             case NONE(_):
             default: fn(result);

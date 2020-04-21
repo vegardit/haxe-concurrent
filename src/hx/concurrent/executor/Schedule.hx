@@ -63,9 +63,9 @@ abstract ScheduleWeekday(Int) from Int to Int {
 
 class ScheduleTools {
 
-   public static inline var HOUR_IN_MS = 60 * 60 * 1000;
-   public static inline var DAY_IN_MS = 24 * HOUR_IN_MS;
-   public static inline var WEEK_IN_MS = 7 * DAY_IN_MS;
+   public static inline final HOUR_IN_MS = 60 * 60 * 1000;
+   public static inline final DAY_IN_MS = 24 * HOUR_IN_MS;
+   public static inline final WEEK_IN_MS = 7 * DAY_IN_MS;
 
 
    public static function applyDefaults(schedule:Schedule):Schedule {
@@ -165,32 +165,32 @@ class ScheduleTools {
          case FIXED_RATE(intervalMS, initialDelayMS):  return Dates.now() + initialDelayMS;
 
          case HOURLY(minute, second):
-            var nowMS:Float = Dates.now();
-            var now = Date.fromTime(nowMS);
+            final nowMS:Float = Dates.now();
+            final now = Date.fromTime(nowMS);
 
-            var runAtSecondOfHour = minute * 60 + second;
-            var elapsedSecondsThisHour = now.getMinutes() * 60 + now.getSeconds();
+            final runAtSecondOfHour = minute * 60 + second;
+            final elapsedSecondsThisHour = now.getMinutes() * 60 + now.getSeconds();
 
             return nowMS + (runAtSecondOfHour - elapsedSecondsThisHour) * 1000 + (elapsedSecondsThisHour > runAtSecondOfHour ? HOUR_IN_MS : 0);
 
          case DAILY(hour, minute, second):
-            var nowMS:Float = Dates.now();
-            var now = Date.fromTime(nowMS);
+            final nowMS:Float = Dates.now();
+            final now = Date.fromTime(nowMS);
 
-            var runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
-            var elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
+            final runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
+            final elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
             return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000  + (elapsedSecondsToday > runAtSecondOfDay ? DAY_IN_MS : 0);
 
 
          case WEEKLY(day, hour, minute, second):
-            var nowMS:Float = Dates.now();
-            var now = Date.fromTime(nowMS);
+            final nowMS:Float = Dates.now();
+            final now = Date.fromTime(nowMS);
 
-            var runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
-            var elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
+            final runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
+            final elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
-            var dayIndex:Int = day;
+            final dayIndex:Int = day;
             if (dayIndex == now.getDay())
                return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000 + (elapsedSecondsToday > runAtSecondOfDay ? WEEK_IN_MS : 0);
             else if (now.getDate() < dayIndex)

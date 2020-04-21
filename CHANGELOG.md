@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- minimum required Haxe version is now 4.x
+- removed support for old PHP5 target
+
 
 ## [2.1.3] - 2019-08-02
 

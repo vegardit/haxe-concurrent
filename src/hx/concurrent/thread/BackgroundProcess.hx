@@ -6,6 +6,7 @@ package hx.concurrent.thread;
 
 #if threads
 
+import haxe.ds.ReadOnlyArray;
 import haxe.io.BytesBuffer;
 import haxe.io.Eof;
 import hx.concurrent.collection.Queue;
@@ -23,8 +24,8 @@ import sys.io.Process;
  */
 class BackgroundProcess {
 
-   public var cmd(default, null):String;
-   public var args(default, null):ReadOnlyArray<String>;
+   public final cmd:String;
+   public final args:ReadOnlyArray<String>;
 
    /**
     * the exit code or null if the process is still running or was killed
@@ -146,7 +147,7 @@ class BackgroundProcess {
     * @throws if exitCode != 0
     */
    public function awaitSuccess(timeoutMS:Int, includeStdErr = true):Void {
-      var exitCode = awaitExit(timeoutMS);
+      final exitCode = awaitExit(timeoutMS);
       if (exitCode == 0)
          return;
 
@@ -168,7 +169,7 @@ class BackgroundProcess {
 @:allow(hx.concurrent.thread.BackgroundProcess)
 class NonBlockingInput {
 
-   var bytes(default, never) = new Queue<Null<Int>>();
+   final bytes = new Queue<Null<Int>>();
    var linePreview = "";
 
 
@@ -178,10 +179,10 @@ class NonBlockingInput {
 
    inline
    private function readLineInteral(maxWaitMS:Int):BytesBuffer {
-      var buffer = new BytesBuffer();
-      var waitUntil = Dates.now() + maxWaitMS;
+      final buffer = new BytesBuffer();
+      final waitUntil = Dates.now() + maxWaitMS;
       while(true) {
-         var byte = bytes.pop(0);
+         final byte = bytes.pop(0);
          if (byte == null) {
             if (Dates.now() > waitUntil)
                break;
@@ -209,7 +210,7 @@ class NonBlockingInput {
       if (StringTools.endsWith(linePreview, "\n"))
          return linePreview;
 
-      var buffer = readLineInteral(maxWaitMS);
+      final buffer = readLineInteral(maxWaitMS);
       if (buffer.length == 0)
          return linePreview;
 
@@ -223,12 +224,12 @@ class NonBlockingInput {
     */
    public function readLine(maxWaitMS:Int):String {
       if (linePreview.length > 0 && StringTools.endsWith(linePreview, "\n")) {
-         var line = linePreview;
+         final line = linePreview;
          linePreview = "";
          return line;
       }
 
-      var buffer = readLineInteral(maxWaitMS);
+      final buffer = readLineInteral(maxWaitMS);
 
       if (linePreview.length == 0) {
          if (buffer.length == 0)
@@ -237,7 +238,7 @@ class NonBlockingInput {
          return buffer.getBytes().toString();
       }
 
-      var line = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
+      final line = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
       linePreview = "";
       return line;
    }
@@ -247,9 +248,9 @@ class NonBlockingInput {
     * @return all currently available ouput or an empty string if no data.
     */
    public function readAll():String {
-      var buffer = new BytesBuffer();
+      final buffer = new BytesBuffer();
       while(true) {
-         var byte = bytes.pop(5);
+         final byte = bytes.pop(5);
          if (byte == null)
             break;
 
@@ -265,7 +266,7 @@ class NonBlockingInput {
          return buffer.getBytes().toString();
       }
 
-      var all = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
+      final all = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
       linePreview = "";
       return all;
    }

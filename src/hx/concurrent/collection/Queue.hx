@@ -14,22 +14,13 @@ import hx.concurrent.thread.Threads;
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class Queue<T> {
-
-   #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
-      var _queue = new sys.thread.Deque<T>();
-   #elseif cpp
-      var _queue = new cpp.vm.Deque<T>();
-   #elseif (hl && (haxe_ver >= 4))
-      var _queue = new hl.vm.Deque<T>();
-   #elseif neko
-      var _queue = new neko.vm.Deque<T>();
-   #elseif java
-      var _queue = new java.util.concurrent.ConcurrentLinkedDeque<T>();
+   #if (cpp || cs || eval || java || neko || hl)
+      final _queue = new sys.thread.Deque<T>();
    #elseif python
-      var _queue:Dynamic;
+      final _queue:Dynamic;
    #else
-      var _queue = new List<T>();
-      var _queueLock = new RLock();
+      final _queue = new List<T>();
+      final _queueLock = new RLock();
    #end
 
    public var length(get, never):Int;
@@ -38,11 +29,7 @@ class Queue<T> {
 
    public function new() {
       #if python
-         #if (haxe_ver >= 4)
-            python.Syntax.code("import collections");
-         #else
-            python.Syntax.pythonCode("import collections");
-         #end
+          python.Syntax.code("import collections");
          _queue = untyped collections.deque();
       #end
    }
@@ -66,12 +53,8 @@ class Queue<T> {
          throw "[timeoutMS] must be >= -1";
 
       if (timeoutMS == 0) {
-         #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
+         #if (cpp || cs || eval || java || neko || hl)
             msg = _queue.pop(false);
-         #elseif (cpp||neko)
-            msg = _queue.pop(false);
-         #elseif java
-            msg = _queue.poll();
          #elseif python
             msg = try _queue.pop() catch(e:Dynamic) null;
          #else
@@ -81,12 +64,8 @@ class Queue<T> {
          #end
       } else {
           Threads.await(function() {
-            #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
+            #if (cpp || cs || eval || java || neko || hl)
                msg = _queue.pop(false);
-            #elseif (cpp||neko)
-               msg = _queue.pop(false);
-            #elseif java
-               msg = _queue.poll();
             #elseif python
                msg = try _queue.pop() catch(e:Dynamic) null;
             #else
@@ -103,7 +82,7 @@ class Queue<T> {
    #else
    public function pop():Null<T> {
       _queueLock.acquire();
-      var msg = _queue.pop();
+      final msg = _queue.pop();
       if (msg != null) _length--;
       _queueLock.release();
       return msg;
@@ -120,12 +99,8 @@ class Queue<T> {
       if (msg == null)
          throw "[msg] must not be null";
 
-      #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
+      #if (cpp || cs || eval || java || neko || hl)
          _queue.push(msg);
-      #elseif (cpp||neko)
-         _queue.push(msg);
-      #elseif java
-         _queue.addFirst(msg);
       #elseif python
          _queue.append(msg);
       #else
@@ -146,12 +121,8 @@ class Queue<T> {
       if (msg == null)
          throw "[msg] must not be null";
 
-      #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
+      #if (cpp || cs || eval || java || neko || hl)
          _queue.add(msg);
-      #elseif (cpp||neko)
-         _queue.add(msg);
-      #elseif java
-         _queue.addLast(msg);
       #elseif python
          _queue.appendleft(msg);
       #else

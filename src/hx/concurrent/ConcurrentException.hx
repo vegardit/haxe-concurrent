@@ -11,7 +11,7 @@ import haxe.CallStack;
  */
 class ConcurrentException {
 
-   static inline var INDENT:String = #if java "\t" #else "  " #end;
+   static inline final INDENT = #if java "\t" #else "  " #end;
 
 
    inline
@@ -20,8 +20,8 @@ class ConcurrentException {
    }
 
 
-   public var cause(default, null):Dynamic;
-   public var causeStackTrace(default, null):Array<StackItem>;
+   public final cause:Dynamic;
+   public final causeStackTrace:Array<StackItem>;
 
 
    function new(cause:Dynamic) {
@@ -36,11 +36,7 @@ class ConcurrentException {
          neko.Lib.rethrow(cause);  // Neko has proper support
       #elseif python
          //python.Syntax.pythonCode("raise"); // rethrows the last but not necessarily the captured exception
-         #if (haxe_ver >= 4)
-            python.Syntax.code('raise Exception(self.toString()) from None');
-         #else
-            python.Syntax.pythonCode('raise Exception(self.toString()) from None');
-         #end
+         python.Syntax.code('raise Exception(self.toString()) from None');
       #else
          // cpp.Lib.rethrow(cause);  // swallows stacktrace
          // cs.Lib.rethrow(this);    // throw/rethrow swallows complete stacktrace
@@ -53,7 +49,7 @@ class ConcurrentException {
 
    #if python @:keep #end
    public function toString():String {
-      var sb = new StringBuf();
+      final sb = new StringBuf();
       sb.add("rethrown exception:\n");
       sb.add(INDENT); sb.add("--------------------\n");
       sb.add(INDENT); sb.add("| Exception : "); sb.add(cause); sb.add("\n");

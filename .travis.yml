@@ -9,24 +9,29 @@ os:
 git:
   depth: 2
 
+cache:
+  directories:
+    - $HOME/haxe/lib
+    - $HOME/.cache/luarocks
+
 haxe:
-  - "3.4.7"
   - "4.0.5"
   - development
 
 env:
   - HAXE_TARGET=cpp
   - HAXE_TARGET=cs
+  - HAXE_TARGET="interp -D eval-stack"
   - HAXE_TARGET=flash
   - HAXE_TARGET=hl
+  - HAXE_TARGET=java
+  - HAXE_TARGET="java -D jvm"
+  - HAXE_TARGET=js
   - HAXE_TARGET=lua
   - HAXE_TARGET=neko
   - HAXE_TARGET=node
-  - HAXE_TARGET=php
   - HAXE_TARGET=php7
   - HAXE_TARGET=python
-  - HAXE_TARGET=js
-  - HAXE_TARGET=java
 
 matrix:
   fast_finish: true
@@ -48,6 +53,14 @@ install:
   - haxelib dev haxe-concurrent .
   - haxelib install haxe-doctest
   - haxelib install travix
+  # install node 12 LTS as workaround for https://github.com/back2dos/travix/issues/120
+  - |- 
+    if [ "$HAXE_TARGET" == "js" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash && \
+      source $HOME/.nvm/nvm.sh && \
+      nvm install --lts && \
+      nvm use --lts
+    fi
 
 script:
   - haxelib run travix $HAXE_TARGET

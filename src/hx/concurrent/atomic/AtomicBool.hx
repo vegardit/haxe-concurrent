@@ -117,7 +117,7 @@ abstract AtomicBool(AB) from AB to AB {
 
 private class AtomicBoolImpl {
 
-   var _lock:RLock;
+   final _lock = new RLock();
 
    public var value(get, never):Bool;
    var _value:Bool;
@@ -130,7 +130,6 @@ private class AtomicBoolImpl {
 
 
    public function new(initialValue:Bool=false) {
-      _lock = new RLock();
       this._value = initialValue;
    }
 

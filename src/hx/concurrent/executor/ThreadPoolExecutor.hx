@@ -24,13 +24,13 @@ import hx.concurrent.thread.Threads;
 #if threads
 class ThreadPoolExecutor extends Executor {
 
-   public inline static var SCHEDULER_RESOLUTION_MS = 10;
-   public inline static var SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
+   public inline static final SCHEDULER_RESOLUTION_MS = 10;
+   public inline static final SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
 
-   var _threadPool:ThreadPool;
+   final _threadPool:ThreadPool;
 
-   var _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
-   var _newScheduledTasks = new Queue<TaskFutureImpl<Dynamic>>();
+   final _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
+   final _newScheduledTasks = new Queue<TaskFutureImpl<Dynamic>>();
 
 
    public function new(threadPoolSize:Int, autostart = true) {
@@ -55,7 +55,7 @@ class ThreadPoolExecutor extends Executor {
         */
        Threads.spawn(function() {
 
-            var doneTasks = new Array<TaskFutureImpl<Dynamic>>();
+            final doneTasks = new Array<TaskFutureImpl<Dynamic>>();
 
             while (state == RUNNING) {
                /*
@@ -78,13 +78,13 @@ class ThreadPoolExecutor extends Executor {
                /*
                 * process newly scheduled tasks or sleep
                 */
-               var t = _newScheduledTasks.pop();
+               final t = _newScheduledTasks.pop();
                if (t == null) {
                   Sys.sleep(SCHEDULER_RESOLUTION_SEC);
                   continue;
                }
 
-               var startAt = Dates.now();
+               final startAt = Dates.now();
                _scheduledTasks.push(t);
 
                while (true) {
@@ -92,7 +92,7 @@ class ThreadPoolExecutor extends Executor {
                   if (Dates.now() - startAt > SCHEDULER_RESOLUTION_MS)
                      break;
 
-                  var t = _newScheduledTasks.pop();
+                  final t = _newScheduledTasks.pop();
                   if (t == null)
                      break;
                   _scheduledTasks.push(t);
@@ -105,7 +105,7 @@ class ThreadPoolExecutor extends Executor {
             for (t in _scheduledTasks)
                t.cancel();
             while (true) {
-               var t = _newScheduledTasks.pop();
+               final t = _newScheduledTasks.pop();
                if (t == null) break;
                t.cancel();
             }
@@ -124,7 +124,7 @@ class ThreadPoolExecutor extends Executor {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
 
-         var future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+         final future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
 
          // skip round-trip via scheduler for one-shot tasks that should be executed immediately
          switch(schedule) {
@@ -190,7 +190,7 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
       var result:FutureResult<T> = null;
       try {
-         var resultValue:T = switch(_task.value) {
+         final resultValue:T = switch(_task.value) {
             case a(fn): fn();
             case b(fn): fn(); null;
          }
@@ -207,9 +207,9 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
       this.result = result;
 
-      var fn = this.onResult;
+      final fn = this.onResult;
       if (fn != null) try fn(result) catch (ex:Dynamic) trace(ex);
-      var fn = _executor.onResult;
+      final fn = _executor.onResult;
       if (fn != null) try fn(result) catch (ex:Dynamic) trace(ex);
    }
 }

@@ -47,7 +47,7 @@ abstract SynchronizedArray<T>(SynchronizedArrayImpl<T>) from SynchronizedArrayIm
 private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    var _items = new Array<T>();
-   var _sync = new RLock();
+   final _sync = new RLock();
 
 
    @:allow(hx.concurrent.collection.SynchronizedArray)
@@ -174,7 +174,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
                throw "Index out of range.";
             return null;
          }
-         var removed = _items.splice(idx, 1);
+         final removed = _items.splice(idx, 1);
          return removed.length == 0 ? null : removed[0];
       });
 

@@ -36,9 +36,9 @@ enum ServiceState {
 @:abstract
 class ServiceBase implements Service<Int> {
 
-   static var _ids = new AtomicInt();
+   static final _ids = new AtomicInt();
 
-   public var id(default, never):Int = _ids.incrementAndGet();
+   public final id = _ids.incrementAndGet();
 
    public var state(default, set):ServiceState = STOPPED;
    function set_state(s:ServiceState) {
@@ -50,7 +50,7 @@ class ServiceBase implements Service<Int> {
       }
       return state = s;
    }
-   var _stateLock:RLock = new RLock();
+   final _stateLock:RLock = new RLock();
 
 
    function new() {

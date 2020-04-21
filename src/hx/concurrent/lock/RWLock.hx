@@ -23,10 +23,10 @@ import hx.concurrent.thread.Threads;
 @:allow(hx.concurrent.lock.WriteLock)
 class RWLock {
 
-   public var readLock(default, null):ReadLock;
-   public var writeLock(default, null):WriteLock;
+   public final readLock:ReadLock;
+   public final writeLock:WriteLock;
 
-   var sync(default, null) = new RLock();
+   final sync = new RLock();
 
    inline
    public function new() {
@@ -89,8 +89,8 @@ class ReadLock implements Acquirable {
    }
 
 
-   var rwLock:RWLock;
-   var holders = new Array<Dynamic>();
+   final rwLock:RWLock;
+   final holders = new Array<Dynamic>();
 
 
    inline
@@ -139,7 +139,7 @@ class ReadLock implements Acquirable {
 @:allow(hx.concurrent.lock.ReadLock)
 class WriteLock extends RLock {
 
-   var rwLock:RWLock;
+   final rwLock:RWLock;
 
    inline function new(rwLock:RWLock) {
       super();
@@ -152,7 +152,7 @@ class WriteLock extends RLock {
          return 0;
 
       return rwLock.sync.execute(function() {
-         var readLockHolders = rwLock.readLock.holders;
+         final readLockHolders = rwLock.readLock.holders;
 
          // no read locks?
          if (readLockHolders.length == 0)
@@ -179,8 +179,8 @@ class WriteLock extends RLock {
 
    override
    public function tryAcquire(timeoutMS = 0):Bool {
-      var requestor = Threads.current;
-      var readLockHolders = rwLock.readLock.holders;
+      final requestor = Threads.current;
+      final readLockHolders = rwLock.readLock.holders;
 
       #if (flash||sys)
       return Threads.await(function() {
@@ -203,9 +203,7 @@ class WriteLock extends RLock {
 
    override
    public function release():Void
-      rwLock.sync.execute(function() {
-         super_release();
-      });
+      rwLock.sync.execute(() -> super_release());
 
 
    function super_tryAcquire(timeoutMS = 0):Bool return super.tryAcquire(timeoutMS);

@@ -42,7 +42,7 @@ class TimerExecutor extends Executor {
          var i = _scheduledTasks.length;
          while (i-- > 0) if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
 
-         var future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+         final future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
          switch(schedule) {
             case ONCE(0):
             default: _scheduledTasks.push(future);

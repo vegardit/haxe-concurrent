@@ -20,29 +20,16 @@ class Threads {
     */
    public static var current(get, never):Dynamic;
    static function get_current():Dynamic {
-      #if ((haxe_ver >= 4) && hl)
+      #if hl
          return Std.string(sys.thread.Thread.current());
-      #elseif ((haxe_ver >= 4) && (neko || cpp || java || eval || cs))
+      #elseif (cpp || cs || eval || java || neko)
          return sys.thread.Thread.current();
-      #elseif cpp
-         return cpp.vm.Thread.current().handle;
-      #elseif cs
-         return cs.system.threading.Thread.CurrentThread;
       #elseif flash
          var worker = flash.system.Worker.current;
          return worker == null ? "MainThread" : worker;
-      #elseif java
-         return java.vm.Thread.current();
-      #elseif neko
-         return neko.vm.Thread.current();
       #elseif python
-         #if (haxe_ver >= 4)
-            python.Syntax.code("import threading");
-            return python.Syntax.code("threading.current_thread()");
-         #else
-            python.Syntax.pythonCode("import threading");
-            return python.Syntax.pythonCode("threading.current_thread()");
-         #end
+         python.Syntax.code("import threading");
+         return python.Syntax.code("threading.current_thread()");
       #else // javascript, lua
          return "MainThread";
       #end
@@ -58,11 +45,7 @@ class Threads {
       #if threads
          #if python
             try {
-               #if (haxe_ver >= 4)
-                  python.Syntax.code("from threading import Thread");
-               #else
-                  python.Syntax.pythonCode("from threading import Thread");
-               #end
+               python.Syntax.code("from threading import Thread");
                return true;
             } catch (ex:Dynamic) {
                return false;
@@ -73,6 +56,7 @@ class Threads {
          return false;
       #end
    }
+
 
    #if (flash||sys)
    /**
@@ -91,15 +75,15 @@ class Threads {
          return condition();
 
       #if flash
-      var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+      final cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
       #else
-      var waitLoopSleepSecs = waitLoopSleepMS / 1000.0;
+      final waitLoopSleepSecs = waitLoopSleepMS / 1000.0;
       #end
 
-      var startAt = Dates.now();
+      final startAt = Dates.now();
       while (!condition()) {
          if (timeoutMS > 0) {
-            var elapsedMS = Dates.now() - startAt;
+            final elapsedMS = Dates.now() - startAt;
             if (elapsedMS >= timeoutMS)
                return false;
          }
@@ -121,7 +105,7 @@ class Threads {
    inline
    public static function sleep(timeMS:Int):Void {
       #if flash
-         var cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
+         final cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
          cond.wait(timeMS);
       #else
          Sys.sleep(timeMS / 1000);
@@ -136,18 +120,8 @@ class Threads {
     */
    inline
    public static function spawn(func:Void->Void):Void {
-      #if ((haxe_ver >= 4) && (eval || neko || cpp || hl || java || cs))
+      #if (cpp || cs || eval || java || neko || hl)
          sys.thread.Thread.create(func);
-      #elseif cpp
-         cpp.vm.Thread.create(func);
-      #elseif cs
-         new cs.system.threading.Thread(cs.system.threading.ThreadStart.FromHaxeFunction(func)).Start();
-      #elseif hl
-         hl.vm.Thread.create(func);
-      #elseif java
-         java.vm.Thread.create(func);
-      #elseif neko
-         neko.vm.Thread.create(func);
       #elseif python
          var t = new python.lib.threading.Thread({target: func});
          t.daemon = true;

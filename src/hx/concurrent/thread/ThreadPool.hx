@@ -16,13 +16,13 @@ import hx.concurrent.thread.Threads;
 #if threads
 class ThreadPool extends ServiceBase {
 
-   static var _threadIDs(default, never) = new AtomicInt();
+   static final _threadIDs = new AtomicInt();
 
    var _spawnedThreadCount = new AtomicInt(0);
    var _workingThreadCount = new AtomicInt(0);
-   var _workQueue = new Queue<Task>();
+   final _workQueue = new Queue<Task>();
 
-   public var threadCount(default, null):Int;
+   public final threadCount:Int;
 
    /**
     * Number of tasks currently executed in parallel.

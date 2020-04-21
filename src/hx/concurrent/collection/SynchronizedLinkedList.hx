@@ -37,7 +37,7 @@ abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from Synchroni
 private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
    var _items = new List<T>();
-   var _sync = new RLock();
+   final _sync = new RLock();
 
 
    /**
@@ -126,7 +126,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
    public function insertAt(idx:Int, x:T):Void
       _sync.execute(function() {
-         var items = new List<T>();
+         final items = new List<T>();
 
          if (idx < 0) {
             idx = length + idx;
@@ -184,7 +184,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return null;
          }
 
-         var items = new List<T>();
+         final items = new List<T>();
          var i = 0;
          var removed:T = null;
          for (item in _items) {
@@ -233,10 +233,10 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             return null;
          }
 
-         var it = _items.iterator();
+         final it = _items.iterator();
          _items = new List<T>();
          while(true) {
-            var item = it.next();
+            final item = it.next();
             if (it.hasNext())
                _items.add(item);
              else
@@ -247,7 +247,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
    public function copy():SynchronizedLinkedList<T>
       return _sync.execute(function() {
-         var copy = new List<T>();
+         final copy = new List<T>();
          for (item in _items)
             copy.add(item);
          return new SynchronizedLinkedList<T>(copy);
@@ -404,7 +404,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public function toArray():Array<T>
       return _sync.execute(function() {
-         var arr = new Array<T>();
+         final arr = new Array<T>();
          for (item in _items)
             arr.push(item);
          return arr;

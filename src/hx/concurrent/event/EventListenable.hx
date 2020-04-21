@@ -26,7 +26,7 @@ interface EventListenable<EVENT> {
 @:abstract
 class DefaultEventListenable<EVENT> implements EventListenable<EVENT> {
 
-   var _eventListeners = new CopyOnWriteArray<EVENT->Void>();
+   final _eventListeners = new CopyOnWriteArray<EVENT->Void>();
 
 
    public function subscribe(listener:EVENT->Void):Bool {

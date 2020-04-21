@@ -23,7 +23,7 @@ class Semaphore implements Acquirable {
 
 #if java
 
-   var _sem:java.util.concurrent.Semaphore;
+   final _sem:java.util.concurrent.Semaphore;
 
    inline
    function get_availablePermits():Int return _sem.availablePermits();
@@ -46,7 +46,7 @@ class Semaphore implements Acquirable {
    inline
    function get_availablePermits():Int return _availablePermits;
 
-   var permitLock = new RLock();
+   final permitLock = new RLock();
 
 
    inline

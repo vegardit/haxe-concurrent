@@ -27,13 +27,8 @@ class Ints {
       #elseif php
          untyped __php__("PHP_INT_MAX");
       #elseif python
-         #if (haxe_ver >= 4)
-            python.Syntax.code("import sys");
-            Std.int(python.Syntax.code("sys.maxsize"));
-         #else
-            python.Syntax.pythonCode("import sys");
-            python.Syntax.pythonCode("sys.maxsize");
-         #end
+         python.Syntax.code("import sys");
+         Std.int(python.Syntax.code("sys.maxsize"));
       #else // neko, cpp, lua, js, etc.
          Std.int(Math.pow(2,31)-1);
       #end
@@ -55,13 +50,8 @@ class Ints {
       #elseif php
          untyped __php__("PHP_INT_MIN");
       #elseif python
-         #if (haxe_ver >= 4)
-            python.Syntax.code("import sys");
-            -Std.int(python.Syntax.code("sys.maxsize")) - 1;
-         #else
-            python.Syntax.pythonCode("import sys");
-            -python.Syntax.pythonCode("sys.maxsize") - 1;
-         #end
+         python.Syntax.code("import sys");
+         -Std.int(python.Syntax.code("sys.maxsize")) - 1;
       #else // neko, cpp, lua, js, etc.
          -Std.int(Math.pow(2,31));
       #end

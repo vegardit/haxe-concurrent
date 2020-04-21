@@ -15,7 +15,7 @@ import haxe.macro.*;
 @:noCompletion
 class Macros {
 
-   static var __static_init = {
+   static final __static_init = {
       #if (haxe_ver < 4)
          throw 'ERROR: As of haxe-concurrent 3.0.0, Haxe 4.x or higher is required!';
       #end
@@ -23,7 +23,7 @@ class Macros {
 
    macro
    public static function addDefines() {
-      var def = Context.getDefines();
+      final def = Context.getDefines();
       if (def.exists("cpp") ||
           def.exists("cs") ||
           def.exists("hl") ||

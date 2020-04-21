@@ -30,12 +30,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
    #if threads
    @:keep
-   static var __static_init = {
+   static final __static_init = {
       /*
        * synchronize trace calls
        */
-      var sync = new RLock();
-      var old = haxe.Log.trace;
+      final sync = new RLock();
+      final old = haxe.Log.trace;
       haxe.Log.trace = function(v:Dynamic, ?pos: haxe.PosInfos ):Void {
          sync.execute(function() old(v, pos));
       }
@@ -44,7 +44,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    public static function main() {
-      var runner = new TestRunner();
+      final runner = new TestRunner();
       runner.runAndExit(300);
    }
 
@@ -438,7 +438,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             Threads.sleep(50);
             ids[j] = ctx.id;
          });
-      Threads.sleep(20);
+      Threads.sleep(10);
       assertEquals(pool.pendingTasks, 0);
       assertEquals(pool.executingTasks, 2);
       assertEquals(-1, ids[0]);
@@ -681,11 +681,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
    }
 
 
-   var _asyncExecutor = Executor.create(10);
+   final _asyncExecutor = Executor.create(10);
    var _asyncTests = new AtomicInt(0);
    function _later(delayMS:Int, fn:Void->Void) {
       _asyncTests++;
-      var future:TaskFuture<Dynamic> = _asyncExecutor.submit(function() {
+      final future:TaskFuture<Dynamic> = _asyncExecutor.submit(function() {
          try fn() catch (ex:Dynamic) trace(ex);
          _asyncTests--;
       }, ONCE(delayMS));
@@ -694,15 +694,15 @@ class TestRunner extends hx.doctest.DocTestRunner {
    override
    function runAndExit(expectedMinNumberOfTests = 0):Void {
       results = new ThreadSafeDocTestResults(this);
-      var startTime = Dates.now();
+      final startTime = Dates.now();
       run(expectedMinNumberOfTests, true, false);
 
-      var t = new haxe.Timer(100);
+      final t = new haxe.Timer(100);
       t.run = function() {
          if(_asyncTests.value == 0) {
             t.stop();
 
-            var timeSpent = Std.int((Dates.now() - startTime) / 1000);
+            final timeSpent = Std.int((Dates.now() - startTime) / 1000);
 
             if (results.testsPassed + results.testsFailed == 0) {
                // no tests defined, DocTestRunner will display warning
@@ -716,7 +716,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
                results.logFailures();
             }
 
-            var exitCode = results.testsFailed == 0 ? 0 : 1;
+            final exitCode = results.testsFailed == 0 ? 0 : 1;
             hx.doctest.DocTestRunner.exit(exitCode);
          }
       };
@@ -725,7 +725,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 private class ThreadSafeDocTestResults extends hx.doctest.DocTestRunner.DefaultDocTestResults {
 
-    var _sync = new RLock();
+   final _sync = new RLock();
 
    function super_add(success:Bool, msg:String, pos:haxe.PosInfos):Void
       super.add(success, msg, pos);
@@ -735,9 +735,9 @@ private class ThreadSafeDocTestResults extends hx.doctest.DocTestRunner.DefaultD
 
    override
    public function add(success:Bool, msg:String, pos:haxe.PosInfos):Void
-      _sync.execute(function() super_add(success, msg, pos));
+      _sync.execute(() -> super_add(success, msg, pos));
 
    override
    public function logFailures():Void
-      return _sync.execute(function() super_logFailures());
+      _sync.execute(() -> super_logFailures());
 }

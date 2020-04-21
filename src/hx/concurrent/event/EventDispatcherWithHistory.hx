@@ -12,8 +12,8 @@ import hx.concurrent.lock.RLock;
  */
 class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
    var _eventHistory = new Array<EVENT>();
-   var _eventHistoryLock = new RLock();
-   var _wrapped:EventDispatcher<EVENT>;
+   final _eventHistoryLock = new RLock();
+   final _wrapped:EventDispatcher<EVENT>;
 
 
    public function new(wrapped:EventDispatcher<EVENT>) {

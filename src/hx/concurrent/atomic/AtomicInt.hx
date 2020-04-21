@@ -107,12 +107,12 @@ private class AtomicIntImpl {
    inline public function incrementAndGet(amount:Int=1):Int return cs.system.threading.Interlocked.Add(_value, amount);
 
 #else
-   var lock:RLock;
+   final lock = new RLock();
    var _value:Int;
 
    function get_value():Int {
       lock.acquire();
-      var result = _value;
+      final result = _value;
       lock.release();
       return result;
    }
@@ -126,7 +126,6 @@ private class AtomicIntImpl {
 
    inline
    public function new(initialValue:Int=0) {
-      lock = new RLock();
       _value = initialValue;
    }
 
@@ -139,7 +138,7 @@ private class AtomicIntImpl {
     */
    public function getAndIncrement(amount:Int=1):Int {
       lock.acquire();
-      var old = _value;
+      final old = _value;
       _value += amount;
       lock.release();
       return old;
@@ -154,7 +153,7 @@ private class AtomicIntImpl {
     */
    public function incrementAndGet(amount:Int=1):Int {
       lock.acquire();
-      var result = _value += amount;
+      final result = _value += amount;
       lock.release();
       return result;
    }

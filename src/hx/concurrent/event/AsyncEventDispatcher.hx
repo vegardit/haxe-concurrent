@@ -12,7 +12,7 @@ import hx.concurrent.executor.Executor;
  */
 class AsyncEventDispatcher<EVENT> extends EventListenable.DefaultEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
-   var _executor:Executor;
+   final _executor:Executor;
 
 
    public function new(executor:Executor) {

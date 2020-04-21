@@ -18,7 +18,7 @@ import hx.concurrent.thread.Threads;
  */
 class Executor extends ServiceBase {
 
-   static var NOW_ONCE = Schedule.ONCE(0);
+   static final NOW_ONCE = Schedule.ONCE(0);
 
    /**
     * Creates a new target specific task executor instance.
@@ -110,8 +110,8 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
    public var schedule(default, null):Schedule;
    public var isStopped(default, null) = false;
 
-   var _executor:Executor;
-   var _task:Task<T>;
+   final _executor:Executor;
+   final _task:Task<T>;
 
 
    function new(executor:Executor, task:Task<T>, schedule:Schedule) {

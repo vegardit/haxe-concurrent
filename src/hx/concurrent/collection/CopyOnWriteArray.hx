@@ -46,12 +46,12 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
 private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
    var _items = new Array<T>();
-   var _sync = new RLock();
+   final _sync = new RLock();
 
    @:allow(hx.concurrent.collection.CopyOnWriteArray)
    function _set(idx:Int, x:T):Void {
       _sync.execute(function() {
-         var items = _items.copy();
+         final items = _items.copy();
          items[idx] = x;
          _items = items;
       });
@@ -66,7 +66,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     */
    public var first(get, never):Null<T>;
    inline function get_first():Null<T> {
-      var items = _items;
+      final items = _items;
       return items.length == 0 ? null : items[0];
    }
 
@@ -79,7 +79,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     */
    public var last(get, never):Null<T>;
    inline function get_last():Null<T> {
-      var items = _items;
+      final items = _items;
       return items.length == 0 ? null : items[items.length - 1];
    }
 
@@ -95,14 +95,14 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
        return _items.length;
 
 
-    inline
-    public function new() {
-    }
+   inline
+   public function new() {
+   }
 
 
    public function add(x:T):Void {
       _sync.execute(function() {
-         var items = _items.copy();
+         final items = _items.copy();
          items.push(x);
          _items = items;
       });
@@ -120,7 +120,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
          if (_items.indexOf(x) > -1)
             return false;
 
-         var items = _items.copy();
+         final items = _items.copy();
          items.push(x);
          _items = items;
          return true;
@@ -155,7 +155,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
    public function insertAt(idx:Int, x:T):Void {
       _items = _sync.execute(function() {
-         var items = _items.copy();
+         final items = _items.copy();
          items.insert(idx, x);
          return items;
       });
@@ -174,8 +174,8 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
          if (_items.indexOf(x) == -1)
             return false;
 
-         var items = _items.copy();
-         var removed = items.remove(x);
+         final items = _items.copy();
+         final removed = items.remove(x);
          _items = items;
          return removed;
       });
@@ -196,8 +196,8 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
                throw "Index out of range.";
             return null;
          }
-         var items = _items.copy();
-         var removed = items.splice(idx, 1);
+         final items = _items.copy();
+         final removed = items.splice(idx, 1);
          _items = items;
          return removed.length == 0 ? null : removed[0];
       });
@@ -219,8 +219,8 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return null;
          }
 
-         var items = _items.copy();
-         var removed = items.shift();
+         final items = _items.copy();
+         final removed = items.shift();
          _items = items;
          return removed;
       });
@@ -242,8 +242,8 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
             return null;
          }
 
-         var items = _items.copy();
-         var removed = items.pop();
+         final items = _items.copy();
+         final removed = items.pop();
          _items = items;
          return removed;
       });
@@ -320,7 +320,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
    inline
    public function lastIndexOf(x:T, ?startAt:Int):Int {
       #if (flash||js)
-         var items = _items;
+         final items = _items;
          return items.lastIndexOf(x, startAt == null ? items.length - 1 : startAt);
       #else
          return _items.lastIndexOf(x, startAt);

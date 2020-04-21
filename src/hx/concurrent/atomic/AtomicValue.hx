@@ -13,7 +13,7 @@ import hx.concurrent.lock.RLock;
  */
 class AtomicValue<T> {
 
-   var _lock:RLock;
+   final _lock = new RLock();
 
    /**
     * <pre><code>
@@ -33,7 +33,6 @@ class AtomicValue<T> {
 
 
    public function new(initialValue:T) {
-      _lock = new RLock();
       this._value = initialValue;
    }
 
