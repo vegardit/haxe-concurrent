@@ -51,7 +51,7 @@ The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/mast
 
 ## <a name="collection-package"></a>The `hx.concurrent.collection` package
 
-The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of differnt types of collections:
+The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of different types of collections:
 
 * [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/CopyOnWriteArray.hx)
 * [Queue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/Queue.hx)
@@ -207,12 +207,12 @@ classes for platforms supporting threads:
             // do some work here
          });
 
-         pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submited tasks to be processed
+         pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submitted tasks to be processed
 
          pool.cancelPending(); // cancels execution of all currently queued tasks
 
          // initiate graceful stop of all running threads, i.e. they finish the current tasks they process
-         // execution of all other queued tasks is canceled
+         // execution of all other queued tasks is cancelled
          pool.stop();
       }
    }
@@ -286,6 +286,6 @@ This enables machine processing of license information based on the SPDX License
 * https://github.com/thomasuster/haxe-threadpool - thread pool implementation for C++, Neko, Java, C# and Python
 * https://github.com/Blank101/haxe-concurrency
 * https://github.com/kevinresol/filelock
-* http://hamaluik.com/posts/a-platform-agnostic-thread-pool-for-haxe-openfl/ - cross platform API but only uses real threads on C++ and Neko, otherwise single threaded blocking execution
+* https://gist.github.com/hamaluik/80fb81f84ecedbe2a6af - cross platform API but only uses real threads on C++ and Neko, otherwise single threaded blocking execution
 * https://github.com/Rezmason/Golems
 * https://github.com/zjnue/hxworker
