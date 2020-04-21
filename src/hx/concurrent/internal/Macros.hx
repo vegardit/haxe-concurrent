@@ -37,6 +37,11 @@ class Macros {
       } else {
          trace("[INFO] NOT setting compiler define 'threads'.");
       }
+
+      if (def.exists("java") && !def.exists("jvm")) {
+         trace("[INFO] Setting compiler define 'java_src'.");
+         Compiler.define("java_src");
+      }
       return macro {}
    }
 }

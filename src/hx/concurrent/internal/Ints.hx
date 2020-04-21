@@ -21,7 +21,7 @@ class Ints {
       #elseif flash
          untyped __global__["int"].MAX_VALUE;
       #elseif java
-         untyped __java__("Integer.MAX_VALUE");
+         java.lang.Integer.MAX_VALUE;
       #elseif nodejs
          untyped __js__("Number.MAX_SAFE_INTEGER");
       #elseif php
@@ -48,8 +48,8 @@ class Ints {
          untyped __cs__("int.MinValue");
       #elseif flash
          untyped __global__["int"].MIN_VALUE;
-      #elseif java
-         untyped __java__("Integer.MIN_VALUE");
+      #elseif java_src
+         java.lang.Integer.MIN_VALUE;
       #elseif nodejs
          untyped __js__("Number.MIN_SAFE_INTEGER");
       #elseif php
