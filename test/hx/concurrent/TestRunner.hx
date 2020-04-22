@@ -694,6 +694,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       }, ONCE(delayMS));
    }
 
+
    override
    function runAndExit(expectedMinNumberOfTests = 0):Void {
       results = new ThreadSafeDocTestResults(this);
@@ -725,6 +726,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       };
    }
 }
+
 
 private class ThreadSafeDocTestResults extends hx.doctest.DocTestRunner.DefaultDocTestResults {
 
