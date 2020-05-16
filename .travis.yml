@@ -16,6 +16,7 @@ cache:
 
 haxe:
   - "4.0.5"
+  - "4.1.0"
   - development
 
 env:
