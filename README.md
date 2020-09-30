@@ -209,7 +209,7 @@ classes for platforms supporting threads:
 
          pool.awaitCompletion(30 * 1000); // wait 30 seconds for all submitted tasks to be processed
 
-         pool.cancelPending(); // cancels execution of all currently queued tasks
+         pool.cancelPendingTasks(); // cancels execution of all currently queued tasks
 
          // initiate graceful stop of all running threads, i.e. they finish the current tasks they process
          // execution of all other queued tasks is cancelled
