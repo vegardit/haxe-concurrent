@@ -11,6 +11,7 @@ import haxe.io.BytesBuffer;
 import haxe.io.Eof;
 import hx.concurrent.collection.Queue;
 import hx.concurrent.internal.*;
+import hx.concurrent.lock.RLock;
 import sys.io.Process;
 
 /**
@@ -97,6 +98,7 @@ class BackgroundProcess {
          pid = process.getPid();
       #end
 
+      final exitLock = new RLock();
       Threads.spawn(function() {
          try {
             while (true)
@@ -105,8 +107,12 @@ class BackgroundProcess {
             trace(ex);
          }
 
-         exitCode = process.exitCode();
-         process.close();
+         exitLock.execute(function():Void {
+            if (exitCode == null){
+               exitCode = process.exitCode();
+               process.close();
+            }
+         });
       });
 
       Threads.spawn(function() {
@@ -117,8 +123,12 @@ class BackgroundProcess {
             trace(ex);
          }
 
-         exitCode = process.exitCode();
-         process.close();
+         exitLock.execute(function():Void {
+            if (exitCode == null){
+               exitCode = process.exitCode();
+               process.close();
+            }
+         });
       });
    }
 
