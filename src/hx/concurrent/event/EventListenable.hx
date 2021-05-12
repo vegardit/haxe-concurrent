@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.event;
@@ -26,7 +26,10 @@ interface EventListenable<EVENT> {
 @:abstract
 class AbstractEventListenable<EVENT> implements EventListenable<EVENT> {
 
-   final _eventListeners = new CopyOnWriteArray<EVENT->Void>();
+   /* explicitly specifying type of variable to prevent on Haxe 4.2+:
+    * EventListenable.hx:40: characters 30-41 : { remove : (hx.concurrent.event.AbstractEventListenable.EVENT -> Void) -> Bool } has no field addIfAbsen
+    */
+   final _eventListeners:CopyOnWriteArray<EVENT->Void> = new CopyOnWriteArray<EVENT->Void>();
 
 
    public function subscribe(listener:EVENT->Void):Bool {

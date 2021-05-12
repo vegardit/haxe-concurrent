@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.thread;
@@ -20,18 +20,18 @@ class Threads {
     */
    public static var current(get, never):Dynamic;
    static function get_current():Dynamic {
-      #if hl
+      #if (haxe_ver < 4.2 && hl)
          return Std.string(sys.thread.Thread.current());
+      #elseif (haxe_ver < 4.2 && python)
+         python.Syntax.code("import threading");
+         return python.Syntax.code("threading.current_thread()");
       #elseif eval
          return cast(sys.thread.Thread.current(), eval.vm.NativeThread).id();
-      #elseif (cpp || cs || java || neko)
+      #elseif threads
          return sys.thread.Thread.current();
       #elseif flash
          var worker = flash.system.Worker.current;
          return worker == null ? "MainThread" : worker;
-      #elseif python
-         python.Syntax.code("import threading");
-         return python.Syntax.code("threading.current_thread()");
       #else // javascript, lua
          return "MainThread";
       #end

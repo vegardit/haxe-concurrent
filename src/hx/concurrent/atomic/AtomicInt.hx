@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.atomic;
@@ -58,8 +58,6 @@ abstract AtomicInt(AtomicIntImpl) from AtomicIntImpl to AtomicIntImpl {
 
    @:op(-A)  inline function op_negate():Int          return -this.value;
 
-   @:op(A+=B) static inline function op_add_assign3(a:Int, b:AtomicInt):Int return a + b.value;
-   @:op(A-=B) static inline function op_sub_assign3(a:Int, b:AtomicInt):Int return a - b.value;
    @:op(A+B)  static inline function op_add3(a:Int, b:AtomicInt):Int return a + b.value;
    @:op(A-B)  static inline function op_sub3(a:Int, b:AtomicInt):Int return a - b.value;
 
