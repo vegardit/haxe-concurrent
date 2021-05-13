@@ -43,9 +43,9 @@ jobs:
       with:
         path: $RUNNER_TOOL_CACHE/haxe/${{ matrix.haxe }}/x64/lib
         # https://github.com/actions/cache/issues/342#issuecomment-673371329
-        key: ${{ runner.os }}-haxelib-${{ github.run_id }}
+        key: ${{ runner.os }}-haxelib-${{ matrix.haxe }}-${{ github.run_id }}
         restore-keys: |
-          ${{ runner.os }}-haxelib-
+          ${{ runner.os }}-haxelib-${{ matrix.haxe }}-
 
     - name: Upgrade brew
       if: runner.os == 'macOS'
