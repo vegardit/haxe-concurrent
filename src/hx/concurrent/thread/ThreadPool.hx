@@ -91,12 +91,12 @@ class ThreadPool extends ServiceBase {
          Threads.spawn(function() {
             _spawnedThreadCount++;
 
-            var context = new ThreadContext(_threadIDs.incrementAndGet());
+            final context = new ThreadContext(_threadIDs.incrementAndGet());
 
             trace('[$this] Spawned thread $_spawnedThreadCount/$threadCount with ID ${context.id}.');
 
             while (true) {
-               var task = _workQueue.pop();
+               final task = _workQueue.pop();
                if (task == null) {
                   if(state != RUNNING)
                      break;

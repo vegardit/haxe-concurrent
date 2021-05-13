@@ -76,7 +76,7 @@ class ReadLock implements Acquirable {
     */
    public var isAcquiredByOtherThread(get, null):Bool;
    inline function get_isAcquiredByOtherThread():Bool {
-      var requestor = Threads.current;
+      final requestor = Threads.current;
       return rwLock.sync.execute(function() {
          if (holders.length == 0)
             return false;
@@ -108,9 +108,9 @@ class ReadLock implements Acquirable {
 
 
    public function tryAcquire(timeoutMS:Int = 0):Bool {
-      var requestor = Threads.current;
+      final requestor = Threads.current;
 
-      var startAt = Dates.now();
+      final startAt = Dates.now();
       while (true) {
          if (rwLock.sync.execute(function() {
             if(rwLock.writeLock.isAcquiredByOtherThread)
@@ -121,7 +121,7 @@ class ReadLock implements Acquirable {
          }))
             return true;
 
-         var elapsedMS = Dates.now() - startAt;
+         final elapsedMS = Dates.now() - startAt;
          if (elapsedMS >= timeoutMS)
             return false;
       }
@@ -160,7 +160,7 @@ class WriteLock extends RLock {
             return 1;
 
          // read locks held by other threads?
-         var requestor = Threads.current;
+         final requestor = Threads.current;
          for (holder in readLockHolders)
             if (holder != requestor)
                return 0;

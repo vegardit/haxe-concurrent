@@ -123,7 +123,7 @@ private class AtomicBoolImpl {
    var _value:Bool;
    function get_value():Bool {
       _lock.acquire();
-      var result = _value;
+      final result = _value;
       _lock.release();
       return result;
    }
@@ -136,7 +136,7 @@ private class AtomicBoolImpl {
 
    public function getAndSet(value:Bool):Bool {
       _lock.acquire();
-      var old = _value;
+      final old = _value;
       _value = value;
       _lock.release();
       return old;
@@ -145,7 +145,7 @@ private class AtomicBoolImpl {
 
    public function getAndNegate():Bool {
       _lock.acquire();
-      var oldValue = _value;
+      final oldValue = _value;
       _value = !oldValue;
       _lock.release();
       return oldValue;
@@ -154,7 +154,7 @@ private class AtomicBoolImpl {
 
    public function negate():Bool {
       _lock.acquire();
-      var newValue = !_value;
+      final newValue = !_value;
       _value = newValue;
       _lock.release();
       return newValue;

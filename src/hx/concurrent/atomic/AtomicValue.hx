@@ -26,7 +26,7 @@ class AtomicValue<T> {
    var _value:T;
    function get_value():T {
       _lock.acquire();
-      var result = _value;
+      final result = _value;
       _lock.release();
       return result;
    }
@@ -44,7 +44,7 @@ class AtomicValue<T> {
     */
    public function getAndSet(value:T):T {
       _lock.acquire();
-      var old = _value;
+      final old = _value;
       _value = value;
       _lock.release();
       return old;

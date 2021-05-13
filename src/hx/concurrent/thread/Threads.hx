@@ -125,7 +125,7 @@ class Threads {
       #if (cpp || cs || eval || java || neko || hl)
          sys.thread.Thread.create(func);
       #elseif python
-         var t = new python.lib.threading.Thread({target: func});
+         final t = new python.lib.threading.Thread({target: func});
          t.daemon = true;
          t.start();
       #else // flash, javascript, lua
