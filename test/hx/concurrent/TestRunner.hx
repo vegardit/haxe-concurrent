@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent;
@@ -20,6 +20,7 @@ import hx.concurrent.lock.Semaphore;
 import hx.concurrent.thread.BackgroundProcess;
 import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
+import hx.doctest.internal.Logger;
 
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
@@ -29,15 +30,24 @@ import hx.concurrent.thread.Threads;
 class TestRunner extends hx.doctest.DocTestRunner {
 
    #if threads
+   static final logQueue = new Queue<{level:Level, msg:String, ?pos:haxe.PosInfos}>();
    @:keep
    static final __static_init = {
       /*
-       * synchronize trace calls
+       * async logging
        */
-      final sync = new RLock();
-      final old = haxe.Log.trace;
-      haxe.Log.trace = function(v:Dynamic, ?pos: haxe.PosInfos ):Void {
-         sync.execute(function() old(v, pos));
+      final log = Logger.log;
+      Threads.spawn(function():Void {
+         while (true) {
+            final logEntry = logQueue.pop(500);
+            if (logEntry != null) {
+               log(logEntry.level, logEntry.msg, logEntry.pos);
+            }
+         }
+      });
+
+      Logger.log = function(level:Level, msg:String, ?pos:haxe.PosInfos):Void {
+         logQueue.push({level: level, msg: msg, pos: pos});
       }
    }
    #end
@@ -263,12 +273,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
       try {
          lock.readLock.release();
          fail("Exception expected!");
-      } catch (ex:Dynamic) { /* expected */ }
+      } catch (ex:Dynamic) { } // expected
 
       try {
          lock.writeLock.release();
          fail("Exception expected!");
-      } catch (ex:Dynamic) { /* expected */ }
+      } catch (ex:Dynamic) { } // expected
 
       assertMin(lock.readLock.availablePermits, 1);
       assertEquals(lock.writeLock.availablePermits, 1);
@@ -421,10 +431,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
       var linePreview = p.stdout.previewLine(0);
       assertEquals(linePreview, p.stdout.readLine(0));
-      assertTrue(StringTools.endsWith(linePreview, "\n"));
+      assertEndsWith(linePreview, "\n");
       assertNotEquals(linePreview, p.stdout.previewLine(0));
 
-      assertMin(p.stdout.readAll().indexOf("127.0.0.1"), 0);
+      assertContains(p.stdout.readAll(), "127.0.0.1");
       assertEquals(p.exitCode, 0);
       assertFalse(p.isRunning);
       #if !java
@@ -438,16 +448,16 @@ class TestRunner extends hx.doctest.DocTestRunner {
       var ids = [-1, -1];
       for (j in 0...2)
          pool.submit(function(ctx:ThreadContext) {
-            Threads.sleep(50);
+            Threads.sleep(200);
             ids[j] = ctx.id;
          });
-      Threads.sleep(10);
+      Threads.sleep(50);
       assertEquals(pool.pendingTasks, 0);
       assertEquals(pool.executingTasks, 2);
       assertEquals(-1, ids[0]);
       assertEquals(-1, ids[1]);
 
-      pool.awaitCompletion(200);
+      pool.awaitCompletion(500);
       assertEquals(pool.pendingTasks, 0);
       assertEquals(pool.executingTasks, 0);
       assertNotEquals(-1, ids[0]);
@@ -535,12 +545,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertEquals(1, listener1Count.value);
    }
 
-
    function testTaskExecutor_shutdown() {
       var executor = Executor.create(2);
       assertEquals(executor.state, ServiceState.RUNNING);
       executor.stop();
-      _later(200, function() {
+      _later(300, function() {
          assertEquals(executor.state, ServiceState.STOPPED);
       });
    }
@@ -560,7 +569,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       _later(220, function() {
          executor.stop();
       });
-      _later(400, function() {
+      _later(500, function() {
          assertTrue(future.isStopped);
          assertEquals(executor.state, ServiceState.STOPPED);
       });
@@ -575,9 +584,13 @@ class TestRunner extends hx.doctest.DocTestRunner {
       var flag3 = new AtomicBool(false);
       var startAt = Dates.now();
       var future1 = executor.submit(function():Void flag1.negate(), ONCE(0));
-      var future2 = executor.submit(function():Void flag2.negate(), ONCE(140));
-      var future3 = executor.submit(function():Void flag3.negate(), ONCE(140));
-      _later(30, function() {
+      var future2 = executor.submit(function():Void flag2.negate(), ONCE(500));
+      var future3 = executor.submit(function():Void flag3.negate(), ONCE(500));
+
+      assertFalse(flag2.value);
+      assertFalse(flag3.value);
+
+      _later(100, function() {
          assertTrue(flag1.value);
          assertTrue(future1.isStopped);
 
@@ -590,7 +603,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
          assertFalse(flag3.value);
          assertTrue(future3.isStopped);
       });
-      _later(200, function() {
+      _later(1000, function() {
          assertTrue(flag2.value);
          assertTrue(future2.isStopped);
 
@@ -605,11 +618,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
    function testTaskExecutor_schedule_RATE_DELAY() {
       var executor = Executor.create(2);
 
-      var intervalMS = 40;
-      var threadMS = 10;
+      var intervalMS = 100;
+      var threadMS = 200;
 
       var fixedRateCounter  = new AtomicInt(0);
+      var future1_first_execution:Float = 0;
       var future1 = executor.submit(function() {
+         if (future1_first_execution == 0)
+            future1_first_execution = Dates.now();
          fixedRateCounter.increment();
          #if threads
          Threads.sleep(threadMS);
@@ -619,29 +635,40 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
       #if threads
       var fixedDelayCounter = new AtomicInt(0);
+      var future2_first_execution:Float = 0;
       var future2 = executor.submit(function() {
+         if (future2_first_execution == 0)
+            future2_first_execution = Dates.now();
          fixedDelayCounter.increment();
          Threads.sleep(threadMS);
       }, FIXED_DELAY(intervalMS));
       var v2 = new AtomicInt(0);
       #end
 
-      var waitMS = intervalMS * 10;
-      _later(waitMS, function() {
+      _later(intervalMS * 10, function() {
          future1.cancel();
+         #if threads
+         Threads.await(() -> future1.isStopped, 1000);
+         #end
+         var future1_elapsed = Dates.now() - future1_first_execution;
          v1.value = fixedRateCounter.value;
-         assertTrue(v1.value <= (waitMS / intervalMS) * 1.6);
-         assertTrue(v1.value >= (waitMS / intervalMS) * 0.4);
+         var v1_expected_value = future1_elapsed / intervalMS;
+         assertMin(v1.value, Math.round(v1_expected_value * 0.5));
+         assertMax(v1.value, Math.round(v1_expected_value * 1.5));
 
          #if threads
          future2.cancel();
+         Threads.await(() -> future2.isStopped, 1000);
+         var future2_elapsed = Dates.now() - future2_first_execution;
          v2.value = fixedDelayCounter.value;
-         assertTrue(v2.value <= (waitMS / (intervalMS + threadMS)) * 1.6);
-         assertTrue(v2.value >= (waitMS / (intervalMS + threadMS)) * 0.4);
+         var v2_expected_value = future2_elapsed / (intervalMS + threadMS);
+         assertMin(v2.value, Math.round(v2_expected_value * 0.5));
+         assertMax(v2.value, Math.round(v2_expected_value * 1.5));
+
          assertTrue(v1 > v2);
          #end
       });
-      _later(waitMS + 2 * intervalMS, function() {
+      _later(intervalMS * 12, function() {
          assertEquals(v1.value, fixedRateCounter.value);
          #if threads
          assertEquals(v2.value, fixedDelayCounter.value);
@@ -721,10 +748,21 @@ class TestRunner extends hx.doctest.DocTestRunner {
             }
 
             final exitCode = results.testsFailed == 0 ? 0 : 1;
+            #if threads
+               Threads.await(() -> logQueue.length == 0, 10000);
+            #end
             hx.doctest.DocTestRunner.exit(exitCode);
          }
       };
    }
+
+
+   function assertEndsWith(txt:String, suffix:String, ?pos:haxe.PosInfos):Void
+      results.add(txt != null && StringTools.endsWith(txt, suffix), 'assertEndsWith("$txt", "$suffix")', pos);
+
+
+   function assertContains(searchIn:String, searchFor:String, ?pos:haxe.PosInfos):Void
+      results.add(searchIn != null && searchIn.indexOf(searchFor) > -1, 'assertContains("$searchIn", "$searchFor")', pos);
 }
 
 
