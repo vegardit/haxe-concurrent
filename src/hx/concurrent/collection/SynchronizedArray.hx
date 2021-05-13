@@ -302,7 +302,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    /**
     * <pre><code>
-    * >>> new SynchronizedArray([1,2,1]).filter(function(x) return x == 1).toArray() == [1, 1]
+    * >>> new SynchronizedArray([1,2,1]).filter((x) -> x == 1).toArray() == [1, 1]
     * </code></pre>
     */
    inline
@@ -314,7 +314,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    /**
     * <pre><code>
-    * >>> new SynchronizedArray([1,2,1]).map(function(x) return Std.string(x)).toArray() == ["1", "2", "1"]
+    * >>> new SynchronizedArray([1,2,1]).map((x) -> Std.string(x)).toArray() == ["1", "2", "1"]
     * </code></pre>
     */
    inline
