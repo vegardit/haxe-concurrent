@@ -751,6 +751,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
             #if threads
                Threads.await(() -> logQueue.length == 0, 10000);
             #end
+            #if python
+               // workaround for https://bugs.python.org/issue42717
+               Threads.sleep(5000);
+            #end
             hx.doctest.DocTestRunner.exit(exitCode);
          }
       };
