@@ -32,7 +32,7 @@ class Threads {
       #elseif flash
          var worker = flash.system.Worker.current;
          return worker == null ? "MainThread" : worker;
-      #else // javascript, lua
+      #else // javascript, lua, php
          return "MainThread";
       #end
    }

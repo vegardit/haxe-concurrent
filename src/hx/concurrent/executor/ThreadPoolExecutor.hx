@@ -45,76 +45,77 @@ class ThreadPoolExecutor extends Executor {
          start();
    }
 
+
    override
    function onStart() {
 
-       state = RUNNING;
+      state = RUNNING;
 
-       /*
-        * start scheduler thread
-        */
-       Threads.spawn(function() {
+      /*
+       * start scheduler thread
+       */
+      Threads.spawn(function() {
 
-            final doneTasks = new Array<TaskFutureImpl<Dynamic>>();
+         final doneTasks = new Array<TaskFutureImpl<Dynamic>>();
 
-            while (state == RUNNING) {
-               /*
-                * put scheduled tasks in execution queue if required
-                */
-               for (t in _scheduledTasks) {
-                  if (t.isDue())
-                     _threadPool.submit(function(context:ThreadContext) t.run());
-                  else if (t.isStopped)
-                     doneTasks.push(t);
-               }
-
-               /*
-                * purge done tasks from list
-                */
-               if (doneTasks.length > 0)
-                  for (t in doneTasks)
-                     _scheduledTasks.remove(t);
-
-               /*
-                * process newly scheduled tasks or sleep
-                */
-               final t = _newScheduledTasks.pop();
-               if (t == null) {
-                  Sys.sleep(SCHEDULER_RESOLUTION_SEC);
-                  continue;
-               }
-
-               final startAt = Dates.now();
-               _scheduledTasks.push(t);
-
-               while (true) {
-                  // work on the _newScheduledTasks queue for max. 5ms
-                  if (Dates.now() - startAt > SCHEDULER_RESOLUTION_MS)
-                     break;
-
-                  final t = _newScheduledTasks.pop();
-                  if (t == null)
-                     break;
-                  _scheduledTasks.push(t);
-               }
+         while (state == RUNNING) {
+            /*
+             * put scheduled tasks in execution queue if required
+             */
+            for (t in _scheduledTasks) {
+               if (t.isDue())
+                  _threadPool.submit(function(context:ThreadContext) t.run());
+               else if (t.isStopped)
+                  doneTasks.push(t);
             }
 
             /*
-             * cancel any remaining scheduled tasks
+             * purge done tasks from list
              */
-            for (t in _scheduledTasks)
-               t.cancel();
-            while (true) {
-               final t = _newScheduledTasks.pop();
-               if (t == null) break;
-               t.cancel();
+            if (doneTasks.length > 0)
+               for (t in doneTasks)
+                  _scheduledTasks.remove(t);
+
+            /*
+             * process newly scheduled tasks or sleep
+             */
+            final t = _newScheduledTasks.pop();
+            if (t == null) {
+               Sys.sleep(SCHEDULER_RESOLUTION_SEC);
+               continue;
             }
 
-            Threads.await(function() {
-               return _threadPool.state == STOPPED;
-            }, -1);
-            state = STOPPED;
-       });
+            final startAt = Dates.now();
+            _scheduledTasks.push(t);
+
+            while (true) {
+               // work on the _newScheduledTasks queue for max. 10ms
+               if (Dates.now() - startAt > SCHEDULER_RESOLUTION_MS)
+                  break;
+
+               final t = _newScheduledTasks.pop();
+               if (t == null)
+                  break;
+               _scheduledTasks.push(t);
+            }
+         }
+
+         /*
+          * cancel any remaining scheduled tasks
+          */
+         for (t in _scheduledTasks)
+            t.cancel();
+         while (true) {
+            final t = _newScheduledTasks.pop();
+            if (t == null) break;
+            t.cancel();
+         }
+
+         Threads.await(function() {
+            return _threadPool.state == STOPPED;
+         }, -1);
+         state = STOPPED;
+      });
    }
 
 
