@@ -28,7 +28,7 @@ class Ints {
       #elseif nodejs
          untyped __js__("Number.MAX_SAFE_INTEGER");
       #elseif php
-         untyped __php__("PHP_INT_MAX");
+         php.Syntax.code("PHP_INT_MAX");
       #elseif python
          python.Syntax.code("import sys");
          Std.int(python.Syntax.code("sys.maxsize"));

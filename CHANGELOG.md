@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `int += AtomicInt` not working on Haxe 4.2
 - `Threads.current` and `RLock` not working on Haxe 4.2 with HashLink
 - potential race condition when executing BackgroundProcess
+- Warning `untyped __php__ is deprecated.`
 
 
 ## [3.0.0] - 2020-04-21
