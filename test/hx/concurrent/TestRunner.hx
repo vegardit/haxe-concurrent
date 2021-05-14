@@ -60,10 +60,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testAtomicInt() {
-      var val:Int = -1;
-
       var atomic = new AtomicInt(1);
-      val = atomic;
+      var val:Int = atomic;
       assertEquals(atomic.value, 1);
       assertEquals(val, 1);
 
@@ -147,7 +145,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testConstantFuture() {
-      var future = new Future.ConstantFuture(10);
+      final future = new Future.ConstantFuture(10);
       switch(future.result) {
          case SUCCESS(10, _):
          default: fail();
@@ -170,7 +168,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
       signal.await();
 
-      var signal = new CountDownLatch(1);
+      final signal = new CountDownLatch(1);
       Threads.spawn(function() {
          signal.countDown();
       });
@@ -181,7 +179,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testQueue() {
-      var q = new Queue<Int>();
+      final q = new Queue<Int>();
       assertEquals(0, q.length);
       assertEquals(null, q.pop());
       q.push(1);
@@ -196,7 +194,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertEquals(0, q.length);
 
       #if threads
-      var q = new Queue<Int>();
+      final q = new Queue<Int>();
       Threads.spawn(function() {
          Threads.sleep(1000);
          q.push(123);
@@ -215,19 +213,22 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testScheduleTools() {
-      var now = Dates.now();
-      var in2sDate = Date.fromTime(now + 2000);
-      var runInMS = Std.int(ScheduleTools.firstRunAt(HOURLY(in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+      final now = Dates.now();
+      final in2sDate = Date.fromTime(now + 2000);
+
+      final runInMS = Std.int(ScheduleTools.firstRunAt(HOURLY(in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
       assertInRange(runInMS, 1000, 3000);
-      var runInMS = Std.int(ScheduleTools.firstRunAt(DAILY(in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+
+      final runInMS = Std.int(ScheduleTools.firstRunAt(DAILY(in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
       assertInRange(runInMS, 1000, 3000);
-      var runInMS = Std.int(ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
+
+      final runInMS = Std.int(ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
       assertInRange(runInMS, 1000, 3000);
    }
 
 
    function testRLock() {
-      var lock = new RLock();
+      final lock = new RLock();
       assertFalse(lock.isAcquiredByCurrentThread);
       assertFalse(lock.isAcquiredByOtherThread);
       assertFalse(lock.isAcquiredByAnyThread);
@@ -255,17 +256,20 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertEquals(0, lock.availablePermits);
       #end
 
-      var flag = new AtomicBool(false);
+      final flag = new AtomicBool(false);
       lock.acquire();
       // test lock re-entrance
-      assertTrue(lock.execute(function():Bool { flag.value = true; return true; } ));
+      assertTrue(lock.execute(function():Bool {
+         flag.value = true;
+         return true;
+      }));
       assertTrue(flag.value);
       lock.release();
    }
 
 
    function testRWLock() {
-      var lock = new RWLock();
+      final lock = new RWLock();
 
       assertMin(lock.readLock.availablePermits, 1);
       assertEquals(lock.writeLock.availablePermits, 1);
@@ -311,7 +315,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertTrue(lock.writeLock.isAcquiredByCurrentThread);
       assertFalse(lock.writeLock.isAcquiredByOtherThread);
 
-      var oldPermits = lock.readLock.availablePermits;
+      final oldPermits = lock.readLock.availablePermits;
       lock.readLock.acquire(); // read lock reentrance
       assertEquals(oldPermits -1, lock.readLock.availablePermits);
 
@@ -343,7 +347,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       #if threads
       lock.writeLock.acquire();
 
-      var signal = new CountDownLatch(1);
+      final signal = new CountDownLatch(1);
       Threads.spawn(function() {
          assertFalse(lock.readLock.tryAcquire());
          assertFalse(lock.writeLock.tryAcquire());
@@ -358,7 +362,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       lock.writeLock.release();
       lock.readLock.acquire();
 
-      var signal = new CountDownLatch(1);
+      final signal = new CountDownLatch(1);
       Threads.spawn(function() {
          assertTrue(lock.readLock.isAcquiredByAnyThread);
          assertFalse(lock.readLock.isAcquiredByCurrentThread);
@@ -381,7 +385,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testSemaphore() {
-      var sem = new Semaphore(2);
+      final sem = new Semaphore(2);
 
       assertEquals(2, sem.availablePermits);
 
@@ -401,9 +405,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
    function testThreads() {
       #if threads
          assertTrue(Threads.isSupported);
-         var i = new AtomicInt(0);
+         final i = new AtomicInt(0);
          for (j in 0...10)
-            Threads.spawn(function() i.increment());
+            Threads.spawn(() -> i.increment());
          assertTrue(Threads.await(function() return i.value == 10, 200));
       #else
          assertFalse(Threads.isSupported);
@@ -414,7 +418,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
    #if threads
    function testBackgroundProcess() {
       // cannot use timout command on Windows because of "ERROR: Input redirection is not supported, exiting the process immediately."
-      var p = Sys.systemName() == "Windows" ?
+      final p = Sys.systemName() == "Windows" ?
          new BackgroundProcess("ping", ["127.0.0.1", "-n", 2, "-w", 1000]) :
          new BackgroundProcess("ping", ["127.0.0.1", "-c", 2, "-W", 1000]);
 
@@ -429,7 +433,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       if(p.exitCode != 0)
          trace(p.stderr.readAll());
 
-      var linePreview = p.stdout.previewLine(0);
+      final linePreview = p.stdout.previewLine(0);
       assertEquals(linePreview, p.stdout.readLine(0));
       assertEndsWith(linePreview, "\n");
       assertNotEquals(linePreview, p.stdout.previewLine(0));
@@ -444,8 +448,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testThreadPool() {
-      var pool = new ThreadPool(2);
-      var ids = [-1, -1];
+      final pool = new ThreadPool(2);
+      final ids = [-1, -1];
       for (j in 0...2)
          pool.submit(function(ctx:ThreadContext) {
             Threads.sleep(200);
@@ -470,11 +474,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testEventDispatcher_Async() {
-      var executor = Executor.create(2);
-      var disp = new AsyncEventDispatcher(executor);
+      final executor = Executor.create(2);
+      final disp = new AsyncEventDispatcher(executor);
 
-      var listener1Count = new AtomicInt();
-      var listener1 = function(event:String) {
+      final listener1Count = new AtomicInt();
+      final listener1 = function(event:String) {
          listener1Count.incrementAndGet();
       }
 
@@ -483,8 +487,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertFalse(disp.subscribe(listener1));
       #end
 
-      var fut1 = disp.fire("123");
-      var fut2 = disp.fire("1234567890");
+      final fut1 = disp.fire("123");
+      final fut2 = disp.fire("1234567890");
 
       _later(100, function() {
          executor.stop();
@@ -502,7 +506,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testEventDispatcher_WithHistory() {
-      var disp = new EventDispatcherWithHistory<String>(new SyncEventDispatcher<String>());
+      final disp = new EventDispatcherWithHistory<String>(new SyncEventDispatcher<String>());
 
       switch(disp.fire("123").result) {
          case SUCCESS(v,_): assertEquals(0, v);
@@ -513,8 +517,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
          default: fail();
       }
 
-      var listener1Count = new AtomicInt();
-      var listener1 = function(event:String) {
+      final listener1Count = new AtomicInt();
+      final listener1 = function(event:String) {
          listener1Count.incrementAndGet();
       }
       assertTrue(disp.subscribeAndReplayHistory(listener1));
@@ -526,10 +530,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testEventDispatcher_Sync() {
-      var disp = new SyncEventDispatcher<String>();
+      final disp = new SyncEventDispatcher<String>();
 
-      var listener1Count = new AtomicInt();
-      var listener1 = function(event:String) {
+      final listener1Count = new AtomicInt();
+      final listener1 = function(event:String) {
          listener1Count.incrementAndGet();
       }
 
@@ -545,8 +549,9 @@ class TestRunner extends hx.doctest.DocTestRunner {
       assertEquals(1, listener1Count.value);
    }
 
+
    function testTaskExecutor_shutdown() {
-      var executor = Executor.create(2);
+      final executor = Executor.create(2);
       assertEquals(executor.state, ServiceState.RUNNING);
       executor.stop();
       _later(300, function() {
@@ -556,59 +561,67 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testTaskExecutor_shutdown_with_running_tasks() {
-      var executor = Executor.create(3);
-      var counter = new AtomicInt(0);
-      var future = executor.submit(function() counter++, FIXED_RATE(20));
-      var startAt = Dates.now();
-      _later(200, function() {
-         var v = counter.value;
-         assertFalse(future.isStopped);
-         assertTrue(v >= 10 * 0.4);
-         assertTrue(v <= 10 * 1.4);
+      final executor = Executor.create(3);
+      final intervalMS = 20;
+      var task_invocations = new AtomicInt(0);
+      var task_first_execution:Float = 0;
+      final task = executor.submit(function() {
+         if (task_first_execution == 0)
+            task_first_execution = Dates.now();
+         task_invocations.increment();
+      }, FIXED_RATE(intervalMS));
+
+      _later(10 * intervalMS, function() {
+         assertFalse(task.isStopped);
+         final task1_elapsed = Dates.now() - task_first_execution;
+         final v:Int = task_invocations;
+         final v_expected_value = task1_elapsed / intervalMS;
+         assertMin(v, Math.round(v_expected_value * 0.5));
+         assertMax(v, Math.round(v_expected_value * 1.5));
       });
-      _later(220, function() {
+      _later(12 * intervalMS, function() {
          executor.stop();
       });
-      _later(500, function() {
-         assertTrue(future.isStopped);
+      _later(40 * intervalMS, function() {
+         assertTrue(task.isStopped);
          assertEquals(executor.state, ServiceState.STOPPED);
       });
    }
 
 
    function testTaskExecutor_schedule_ONCE() {
-      var executor = Executor.create(3);
+      final executor = Executor.create(3);
 
-      var flag1 = new AtomicBool(false);
-      var flag2 = new AtomicBool(false);
-      var flag3 = new AtomicBool(false);
-      var startAt = Dates.now();
-      var future1 = executor.submit(function():Void flag1.negate(), ONCE(0));
-      var future2 = executor.submit(function():Void flag2.negate(), ONCE(500));
-      var future3 = executor.submit(function():Void flag3.negate(), ONCE(500));
+      final flag1 = new AtomicBool(false);
+      final flag2 = new AtomicBool(false);
+      final flag3 = new AtomicBool(false);
+
+      final task1 = executor.submit(() -> flag1.negate(), ONCE(0));
+      final task2 = executor.submit(() -> flag2.negate(), ONCE(500));
+      final task3 = executor.submit(() -> flag3.negate(), ONCE(500));
 
       assertFalse(flag2.value);
       assertFalse(flag3.value);
 
       _later(100, function() {
          assertTrue(flag1.value);
-         assertTrue(future1.isStopped);
+         assertTrue(task1.isStopped);
 
          assertFalse(flag2.value);
-         assertFalse(future2.isStopped);
+         assertFalse(task2.isStopped);
 
          assertFalse(flag3.value);
-         assertFalse(future3.isStopped);
-         future3.cancel();
+         assertFalse(task3.isStopped);
+         task3.cancel();
          assertFalse(flag3.value);
-         assertTrue(future3.isStopped);
+         assertTrue(task3.isStopped);
       });
       _later(1000, function() {
          assertTrue(flag2.value);
-         assertTrue(future2.isStopped);
+         assertTrue(task2.isStopped);
 
          assertFalse(flag3.value);
-         assertTrue(future3.isStopped);
+         assertTrue(task3.isStopped);
 
          executor.stop();
       });
@@ -616,14 +629,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testTaskExecutor_schedule_RATE_DELAY() {
-      var executor = Executor.create(2);
+      final executor = Executor.create(2);
 
-      var intervalMS = 100;
-      var threadMS = 200;
+      final intervalMS = 100;
+      final threadMS = 200;
 
-      var fixedRateCounter  = new AtomicInt(0);
+      final fixedRateCounter  = new AtomicInt(0);
       var future1_first_execution:Float = 0;
-      var future1 = executor.submit(function() {
+      final future1 = executor.submit(function() {
          if (future1_first_execution == 0)
             future1_first_execution = Dates.now();
          fixedRateCounter.increment();
@@ -631,44 +644,44 @@ class TestRunner extends hx.doctest.DocTestRunner {
          Threads.sleep(threadMS);
          #end
       }, FIXED_RATE(intervalMS));
-      var v1 = new AtomicInt(0);
+      final v1 = new AtomicInt(0);
 
       #if threads
-      var fixedDelayCounter = new AtomicInt(0);
+      final fixedDelayCounter = new AtomicInt(0);
       var future2_first_execution:Float = 0;
-      var future2 = executor.submit(function() {
+      final future2 = executor.submit(function() {
          if (future2_first_execution == 0)
             future2_first_execution = Dates.now();
          fixedDelayCounter.increment();
          Threads.sleep(threadMS);
       }, FIXED_DELAY(intervalMS));
-      var v2 = new AtomicInt(0);
+      final v2 = new AtomicInt(0);
       #end
 
-      _later(intervalMS * 10, function() {
+      _later(10 * intervalMS, function() {
          future1.cancel();
          #if threads
          Threads.await(() -> future1.isStopped, 1000);
          #end
-         var future1_elapsed = Dates.now() - future1_first_execution;
+         final future1_elapsed = Dates.now() - future1_first_execution;
          v1.value = fixedRateCounter.value;
-         var v1_expected_value = future1_elapsed / intervalMS;
+         final v1_expected_value = future1_elapsed / intervalMS;
          assertMin(v1.value, Math.round(v1_expected_value * 0.5));
          assertMax(v1.value, Math.round(v1_expected_value * 1.5));
 
          #if threads
          future2.cancel();
          Threads.await(() -> future2.isStopped, 1000);
-         var future2_elapsed = Dates.now() - future2_first_execution;
+         final future2_elapsed = Dates.now() - future2_first_execution;
          v2.value = fixedDelayCounter.value;
-         var v2_expected_value = future2_elapsed / (intervalMS + threadMS);
+         final v2_expected_value = future2_elapsed / (intervalMS + threadMS);
          assertMin(v2.value, Math.round(v2_expected_value * 0.5));
          assertMax(v2.value, Math.round(v2_expected_value * 1.5));
 
          assertTrue(v1 > v2);
          #end
       });
-      _later(intervalMS * 12, function() {
+      _later(12 * intervalMS, function() {
          assertEquals(v1.value, fixedRateCounter.value);
          #if threads
          assertEquals(v2.value, fixedDelayCounter.value);
@@ -680,15 +693,15 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testTaskExecutor_schedule_HOURLY_DAILY_WEEKLY() {
-      var executor = Executor.create(3);
+      final executor = Executor.create(3);
 
       var hourlyCounter  = new AtomicInt(0);
       var dailyCounter  = new AtomicInt(0);
       var weeklyCounter  = new AtomicInt(0);
-      var d = Date.fromTime(Dates.now() + 2000);
-      var future1 = executor.submit(function() hourlyCounter.increment(), HOURLY(d.getMinutes(), d.getSeconds()));
-      var future2 = executor.submit(function() dailyCounter.increment(),  DAILY(d.getHours(), d.getMinutes(), d.getSeconds()));
-      var future3 = executor.submit(function() weeklyCounter.increment(), WEEKLY(d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()));
+      final d = Date.fromTime(Dates.now() + 2000);
+      final future1 = executor.submit(() -> hourlyCounter++, HOURLY(d.getMinutes(), d.getSeconds()));
+      final future2 = executor.submit(() -> dailyCounter++,  DAILY(d.getHours(), d.getMinutes(), d.getSeconds()));
+      final future3 = executor.submit(() -> weeklyCounter++, WEEKLY(d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()));
       assertEquals(hourlyCounter.value, 0);
       assertEquals(dailyCounter.value, 0);
       assertEquals(weeklyCounter.value, 0);
@@ -712,12 +725,16 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    final _asyncExecutor = Executor.create(10);
-   var _asyncTests = new AtomicInt(0);
+   final _asyncTests = new AtomicInt(0);
    function _later(delayMS:Int, fn:Void->Void) {
-      _asyncTests++;
+      _asyncTests.increment();
       final future:TaskFuture<Dynamic> = _asyncExecutor.submit(function() {
-         try fn() catch (ex:Dynamic) trace(ex);
-         _asyncTests--;
+         try {
+            fn();
+         } catch (ex:Dynamic){
+            trace(ex);
+         }
+         _asyncTests.decrement();
       }, ONCE(delayMS));
    }
 
