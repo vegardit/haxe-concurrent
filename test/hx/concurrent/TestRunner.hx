@@ -572,12 +572,12 @@ class TestRunner extends hx.doctest.DocTestRunner {
       }, FIXED_RATE(intervalMS));
 
       _later(10 * intervalMS, function() {
-         assertFalse(task.isStopped);
-         final task1_elapsed = Dates.now() - task_first_execution;
          final v:Int = task_invocations;
+         final task1_elapsed = Dates.now() - task_first_execution;
          final v_expected_value = task1_elapsed / intervalMS;
          assertMin(v, Math.round(v_expected_value * 0.5));
          assertMax(v, Math.round(v_expected_value * 1.5));
+         assertFalse(task.isStopped);
       });
       _later(12 * intervalMS, function() {
          executor.stop();
