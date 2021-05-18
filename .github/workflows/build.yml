@@ -32,10 +32,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-haxelib-travix-
 
-    - name: "Install: Haxe 4.2.1"
+    - name: "Install: Haxe 4.2.2"
       uses: krdlab/setup-haxe@v1 # https://github.com/krdlab/setup-haxe
       with:
-        haxe-version: 4.2.1
+        haxe-version: 4.2.2
 
     - name: "Build: travix"
       shell: bash
@@ -67,11 +67,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        #- macos-latest # too many random fails
         - ubuntu-latest
+        #- macos-latest # too many random fails
         - windows-latest
         haxe:
-        - 4.2.1
+        - 4.2.2
         - 4.1.5
         - 4.0.5
 
@@ -171,11 +171,10 @@ jobs:
       run: haxelib run travix cs
 
     - name: Test [eval]
-      if: runner.os == 'Windows' # TODO https://github.com/HaxeFoundation/haxe/issues/10249 
       run: haxelib run travix interp -D eval-stack
 
     - name: Test [flash]
-      continue-on-error: true # see https://github.com/travis-ci/travis-ci/issues/8481
+      continue-on-error: true # fails with "Flash execution failed too many times, build failure." but test is actually ok
       run: haxelib run travix flash
 
     - name: Test [hl]
