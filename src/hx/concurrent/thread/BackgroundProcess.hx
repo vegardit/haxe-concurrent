@@ -31,6 +31,7 @@ class BackgroundProcess {
    /**
     * the exit code or null if the process is still running or was killed
     */
+   #if java @:volatile #end
    public var exitCode(default, null):Null<Int>;
 
    /**
@@ -98,24 +99,9 @@ class BackgroundProcess {
          pid = process.getPid();
       #end
 
-      final exitLock = new RLock();
-      Threads.spawn(function() {
-         try {
-            while (true)
-               try stdout.bytes.push(process.stdout.readByte()) catch (ex:haxe.io.Eof) break;
-          } catch (ex:Dynamic) {
-            trace(ex);
-         }
-
-         exitLock.execute(function():Void {
-            if (exitCode == null){
-               exitCode = process.exitCode();
-               process.close();
-            }
-         });
-      });
-
-      Threads.spawn(function() {
+      @:volatile
+      var stdErrDone:Bool = false;
+      Threads.spawn(() -> {
          try {
             while (true)
                try stderr.bytes.push(process.stderr.readByte()) catch (ex:haxe.io.Eof) break;
@@ -123,12 +109,20 @@ class BackgroundProcess {
             trace(ex);
          }
 
-         exitLock.execute(function():Void {
-            if (exitCode == null){
-               exitCode = process.exitCode();
-               process.close();
-            }
-         });
+         stdErrDone = true;
+      });
+
+      Threads.spawn(() -> {
+         try {
+            while (true)
+               try stdout.bytes.push(process.stdout.readByte()) catch (ex:haxe.io.Eof) break;
+          } catch (ex:Dynamic) {
+             trace(ex);
+         }
+
+         Threads.await(() -> stdErrDone, 5000);
+         exitCode = process.exitCode();
+         process.close();
       });
    }
 
@@ -141,7 +135,7 @@ class BackgroundProcess {
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     */
    public function awaitExit(timeoutMS:Int):Null<Int> {
-      Threads.await(function() return exitCode != null, timeoutMS);
+      Threads.await(() -> exitCode != null, timeoutMS);
       return exitCode;
    }
 
@@ -186,7 +180,6 @@ class NonBlockingInput {
    function new() { }
 
 
-   inline
    private function readLineInteral(maxWaitMS:Int):BytesBuffer {
       final buffer = new BytesBuffer();
       final waitUntil = Dates.now() + maxWaitMS;
