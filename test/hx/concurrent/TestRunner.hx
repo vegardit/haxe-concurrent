@@ -428,7 +428,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
          assertMin(p.pid, 1);
       #end
 
-      p.awaitExit(30000);
+      Logger.log(INFO, "Awaiting exit of ping process...");
+      p.awaitExit(5000);
 
       if(p.exitCode != 0)
          trace(p.stderr.readAll());
