@@ -89,12 +89,11 @@ class Threads {
             if (elapsedMS >= timeoutMS)
                return false;
          }
-         // wait 1ms
+
          #if flash
             cond.wait(waitLoopSleepMS);
          #else
             Sys.sleep(waitLoopSleepSecs);
-
          #end
       }
       return true;
@@ -134,5 +133,3 @@ class Threads {
    }
    #end
 }
-
-

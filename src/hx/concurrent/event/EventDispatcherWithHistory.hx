@@ -22,11 +22,11 @@ class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
 
 
    public function clearHistory():Void
-      _eventHistoryLock.execute(function() _eventHistory = []);
+      _eventHistoryLock.execute(() -> _eventHistory = []);
 
 
    public function fire(event:EVENT):Future<Int> {
-      _eventHistoryLock.execute(function() _eventHistory.push(event));
+      _eventHistoryLock.execute(() -> _eventHistory.push(event));
       return _wrapped.fire(event);
    }
 

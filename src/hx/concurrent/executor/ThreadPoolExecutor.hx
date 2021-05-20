@@ -64,7 +64,7 @@ class ThreadPoolExecutor extends Executor {
              */
             for (t in _scheduledTasks) {
                if (t.isDue())
-                  _threadPool.submit(function(context:ThreadContext) t.run());
+                  _threadPool.submit((ctx) -> t.run());
                else if (t.isStopped)
                   doneTasks.push(t);
             }
@@ -111,9 +111,7 @@ class ThreadPoolExecutor extends Executor {
             t.cancel();
          }
 
-         Threads.await(function() {
-            return _threadPool.state == STOPPED;
-         }, -1);
+         Threads.await(() -> _threadPool.state == STOPPED, -1);
          state = STOPPED;
       });
    }
@@ -131,7 +129,7 @@ class ThreadPoolExecutor extends Executor {
          switch(schedule) {
             case ONCE(_):
                if (future.isDue()) {
-                  _threadPool.submit(function(context:ThreadContext) future.run());
+                  _threadPool.submit((ctx) -> future.run());
                   return future;
                }
             default:

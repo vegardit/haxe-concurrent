@@ -66,6 +66,6 @@ class CountDownLatch {
 
 
    public function tryAwait(timeoutMS:Int):Bool
-      return Threads.await(function() return count < 1, timeoutMS);
+      return Threads.await(() -> count < 1, timeoutMS);
 }
 #end

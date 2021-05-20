@@ -60,9 +60,7 @@ class ThreadPool extends ServiceBase {
     * @return <code>true</code> if all submitted tasks are done otherwise <code>false</code>.
     */
    public function awaitCompletion(timeoutMS:Int):Bool
-      return Threads.await(function()
-         return _workQueue.length == 0 && _workingThreadCount == 0, timeoutMS
-      );
+      return Threads.await(() -> _workQueue.length == 0 && _workingThreadCount == 0, timeoutMS);
 
 
    /**
@@ -117,9 +115,7 @@ class ThreadPool extends ServiceBase {
             _spawnedThreadCount--;
 
             if (_spawnedThreadCount == 0)
-               _stateLock.execute(function() {
-                  state = STOPPED;
-               });
+               _stateLock.execute(() -> state = STOPPED);
          });
       }
    }
