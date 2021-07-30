@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- compilation error on Haxe 4.2: `EventListenable.hx:36: characters 30-41 : { remove : (hx.concurrent.event.AbstractEventListenable.EVENT -> Void) -> Bool } has no field addIfAbsent`
-- `int += AtomicInt` not working on Haxe 4.2
-- `Threads.current` and `RLock` not working on Haxe 4.2 with HashLink
-- potential race condition when executing BackgroundProcess
+- Haxe 4.2 support
+  - compilation error: `EventListenable.hx:36: characters 30-41 : { remove : (hx.concurrent.event.AbstractEventListenable.EVENT -> Void) -> Bool } has no field addIfAbsent`
+  - `int += AtomicInt` not working
+  - `Threads.current` and `RLock` not working on HashLink
+- potential race condition when executing `BackgroundProcess`
 - Warning `untyped __php__ is deprecated.`
 
 
