@@ -1,13 +1,34 @@
-# ---> Eclipse
+# Local work folder that is not checked in
+_LOCAL/
+
+# Eclipse
 .settings/
 .project
 **/.*.md.html
 
+# IntelliJ
+.idea
+*.iml
+*.ipr
+*.iws
 
-# ---> Temp files
+# Eclipse Theia
+.theia
+
+# Visual Studio Code
+.vscode
+
+# OSX
+.DS_Store
+
+# Vim
+*.swo
+*.swp
+
+# Temp files
+.history
 *.tmp
 *.bak
-*.swp
 /dump
 /target
 /tools/dump
