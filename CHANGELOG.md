@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [3.0.1] - 2021-08-01
+
 ### Fixed
 - Haxe 4.2 support
   - compilation error: `EventListenable.hx:36: characters 30-41 : { remove : (hx.concurrent.event.AbstractEventListenable.EVENT -> Void) -> Bool } has no field addIfAbsent`
@@ -15,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Threads.current` and `RLock` not working on HashLink
 - potential race condition when executing `BackgroundProcess`
 - Warning `untyped __php__ is deprecated.`
+- Warning `__js__ is deprecated, use js.Syntax.code instead`
 
 
 ## [3.0.0] - 2020-04-21
