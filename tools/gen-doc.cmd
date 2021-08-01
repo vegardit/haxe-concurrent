@@ -61,7 +61,7 @@ haxelib run dox ^
    --title "%PROJECT_NAME% %PROJECT_VERSION% API documentation" ^
    --toplevel-package "%TOP_LEVEL_PACKAGE%" ^
    -D description "%PROJECT_NAME%: %PROJECT_DESCRIPTION%" ^
-   -D source-path "%REPO_URL%/tree/master/src" ^
+   -D source-path "%REPO_URL%/tree/main/src" ^
    -D themeColor 0x1690CC ^
    -D version "%PROJECT_VERSION%" ^
    -D website "%OWNER%" ^

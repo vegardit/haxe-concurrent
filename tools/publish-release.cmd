@@ -70,7 +70,7 @@ echo Creating GitHub release https://github.com/%REPO_NAME%/releases/tag/v%PROJE
    echo {
    echo "tag_name":"v%PROJECT_VERSION%",
    echo "name":"v%PROJECT_VERSION%",
-   echo "target_commitish":"master",
+   echo "target_commitish":"main",
    echo "body":"%RELEASE_NOTE%",
    echo "draft":%DRAFT%,
    echo "prerelease":%PREPRELEASE%

@@ -42,27 +42,27 @@ Java, JavaScript ([Node.js](https://nodejs.org) and PhantomJS), Lua, [Neko](http
 
 ## <a name="atomic-package"></a>The `hx.concurrent.atomic` package
 
-The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic) package contains mutable value holder classes that allow for thread.safe manipulation:
+The [hx.concurrent.atomic](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/atomic) package contains mutable value holder classes that allow for thread.safe manipulation:
 
-* [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicBool.hx)
-* [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicInt.hx)
-* [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/atomic/AtomicValue.hx)
+* [AtomicBool](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/atomic/AtomicBool.hx)
+* [AtomicInt](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/atomic/AtomicInt.hx)
+* [AtomicValue](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/atomic/AtomicValue.hx)
 
 
 ## <a name="collection-package"></a>The `hx.concurrent.collection` package
 
-The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection) package contains thread-safe implementations of different types of collections:
+The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection) package contains thread-safe implementations of different types of collections:
 
-* [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/CopyOnWriteArray.hx)
-* [Queue](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/Queue.hx)
-* [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedArray.hx)
-* [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
+* [CopyOnWriteArray](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/CopyOnWriteArray.hx)
+* [Queue](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/Queue.hx)
+* [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/SynchronizedArray.hx)
+* [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
 
 
 ## <a name="executor-package"></a>The `hx.concurrent.executor` package
 
-The [hx.concurrent.executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor) package contains
-[Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) implementations that allow
+The [hx.concurrent.executor](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/executor) package contains
+[Executor](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/executor/Executor.hx) implementations that allow
 to execute functions concurrently and to schedule tasks for later/repeated execution.
 
 On platform with the thread support (C++, C#, Eval, HashLink, Neko, Python, Java) threads are used to realize true concurrent execution, on other
@@ -119,7 +119,7 @@ class Test {
 
 ## <a name="event-package"></a>The `hx.concurrent.event` package
 
-The [hx.current.event](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
+The [hx.current.event](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
 
 ```haxe
 import hx.concurrent.event.AsyncEventDispatcher;
@@ -181,19 +181,19 @@ class Test {
 
 ## <a name="lock-package"></a>The `hx.concurrent.lock` package
 
-The [hx.concurrent.lock](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock) package contains lock implementations for different purposes:
+The [hx.concurrent.lock](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/lock) package contains lock implementations for different purposes:
 
-* [RLock](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock/RLock.hx) - a re-entrant lock
-* [RWLock](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock/RWLock.hx) - an upgradeable read-write lock
-* [Semaphore](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/lock/Semaphore.hx)
+* [RLock](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/lock/RLock.hx) - a re-entrant lock
+* [RWLock](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/lock/RWLock.hx) - an upgradeable read-write lock
+* [Semaphore](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/lock/Semaphore.hx)
 
 
 ## <a name="thread-package"></a>The `hx.concurrent.thread` package
 
-The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread) package contains
+The [hx.concurrent.thread](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/thread) package contains
 classes for platforms supporting threads:
 
-* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/ThreadPool.hx) - basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/executor/Executor.hx) instead.
+* [ThreadPool](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/thread/ThreadPool.hx) - basic thread-pool implementation supporting C++, C#, HashLink, Neko, Java and Python. For advanced concurrency or cross-platform requirements use [Executor](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/executor/Executor.hx) instead.
 
    ```haxe
    import hx.concurrent.thread.*;
@@ -218,7 +218,7 @@ classes for platforms supporting threads:
    }
     ```
 
-* [Threads](https://github.com/vegardit/haxe-concurrent/blob/master/src/hx/concurrent/thread/Threads.hx)
+* [Threads](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/thread/Threads.hx)
 
 
 ## <a name="installation"></a>Installation
@@ -239,14 +239,14 @@ classes for platforms supporting threads:
 ### Using `haxelib git`
 
 ```
-haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent master D:\haxe-projects\haxe-concurrent
+haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent main D:\haxe-projects\haxe-concurrent
 ```
 
 ###  Using Git
 
-1. check-out the master branch
+1. check-out the main branch
     ```
-    git clone https://github.com/vegardit/haxe-concurrent --branch master --single-branch D:\haxe-projects\haxe-concurrent
+    git clone https://github.com/vegardit/haxe-concurrent --branch main --single-branch D:\haxe-projects\haxe-concurrent
     ```
 
 2. register the development release with haxe
