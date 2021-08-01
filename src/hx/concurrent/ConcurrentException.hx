@@ -53,6 +53,7 @@ class ConcurrentException {
       sb.add("rethrown exception:\n");
       sb.add(INDENT); sb.add("--------------------\n");
       sb.add(INDENT); sb.add("| Exception : "); sb.add(cause); sb.add("\n");
+      #if lua @:nullSafety(Off) #end
       for (item in CallStack.toString(causeStackTrace).split("\n")) {
          if (item == "") continue;
          sb.add(INDENT);

@@ -29,7 +29,7 @@ abstract AtomicBool(AB) from AB to AB {
     * </code></pre>
     */
    inline
-   public function new(?val:Bool = false)
+   public function new(val:Bool = false)
       this = new AB(val);
 
    @:to     inline function toBool():Bool    return value;

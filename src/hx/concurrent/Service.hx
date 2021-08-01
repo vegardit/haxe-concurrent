@@ -96,6 +96,7 @@ class ServiceBase implements Service<Int> {
 
 
    public function toString():String {
+      #if js @:nullSafety(Off) #end
       return Type.getClassName(Type.getClass(this)) + "#" + id;
    }
 }

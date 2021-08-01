@@ -779,10 +779,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
    }
 
 
+   @:nullSafety(Off)
    function assertEndsWith(txt:String, suffix:String, ?pos:haxe.PosInfos):Void
       results.add(txt != null && StringTools.endsWith(txt, suffix), 'assertEndsWith("$txt", "$suffix")', pos);
 
-
+   @:nullSafety(Off)
    function assertContains(searchIn:String, searchFor:String, ?pos:haxe.PosInfos):Void
       results.add(searchIn != null && searchIn.indexOf(searchFor) > -1, 'assertContains("$searchIn", "$searchFor")', pos);
 }

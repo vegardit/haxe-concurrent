@@ -42,7 +42,7 @@ abstract CountDownLatch(java.util.concurrent.CountDownLatch) {
 #elseif threads
 class CountDownLatch {
 
-   public var count(get, null):Int;
+   public var count(get, never):Int;
    inline function get_count():Int
       return _count;
 

@@ -187,7 +187,7 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
       if (isStopped)
          return;
 
-      var result:Null<FutureResult<T>> = null;
+      var result:FutureResult<T> = FutureResult.NONE(this);
       try {
          final resultValue:T = switch(_task.value) {
             case a(fn): fn();

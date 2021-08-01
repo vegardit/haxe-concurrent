@@ -122,6 +122,7 @@ class Threads {
    inline
    public static function spawn(func:()->Void):Void {
       #if (cpp || cs || eval || java || neko || hl)
+         #if (neko && (haxe_ver < 4.2)) @:nullSafety(Off) #end
          sys.thread.Thread.create(func);
       #elseif python
          final t = new python.lib.threading.Thread({target: func});

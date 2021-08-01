@@ -19,7 +19,7 @@ import hx.concurrent.internal.Either2;
  */
 class TimerExecutor extends Executor {
 
-   var _scheduledTasks:Array<TaskFutureImpl<Dynamic>>;
+   var _scheduledTasks:Array<TaskFutureImpl<Dynamic>> = [];
 
 
    inline
@@ -51,22 +51,17 @@ class TimerExecutor extends Executor {
 
 
    override
-   function onStart()
-      _scheduledTasks = new Array<TaskFutureImpl<Dynamic>>();
-
-
-   override
    function onStop() {
       for (t in _scheduledTasks)
          t.cancel();
-      _scheduledTasks = null;
+      _scheduledTasks = [];
    }
 }
 
 
 private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
-   var _timer:haxe.Timer;
+   var _timer:Null<haxe.Timer>;
 
 
    public function new(executor:TimerExecutor, task:Task<T>, schedule:Schedule) {
@@ -80,22 +75,23 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
       haxe.Timer.delay(this.run, initialDelay);
    }
 
-
    public function run():Void {
       if (isStopped)
          return;
 
       if (_timer == null) {
+         var t:Null<haxe.Timer> = null;
          switch(schedule) {
-            case FIXED_RATE(intervalMS, _): _timer = new haxe.Timer(intervalMS); _timer.run = this.run;
-            case HOURLY(_): _timer = new haxe.Timer(ScheduleTools.HOUR_IN_MS);   _timer.run = this.run;
-            case DAILY(_):  _timer = new haxe.Timer(ScheduleTools.DAY_IN_MS);    _timer.run = this.run;
-            case WEEKLY(_): _timer = new haxe.Timer(ScheduleTools.WEEK_IN_MS);   _timer.run = this.run;
+            case FIXED_RATE(intervalMS, _): t = new haxe.Timer(intervalMS); t.run = this.run;
+            case HOURLY(_): t = new haxe.Timer(ScheduleTools.HOUR_IN_MS);   t.run = this.run;
+            case DAILY(_):  t = new haxe.Timer(ScheduleTools.DAY_IN_MS);    t.run = this.run;
+            case WEEKLY(_): t = new haxe.Timer(ScheduleTools.WEEK_IN_MS);   t.run = this.run;
             default:
          }
+         _timer = t;
       }
 
-      var result:Null<FutureResult<T>> = null;
+      var result:FutureResult<T> = FutureResult.NONE(this);
       try {
          var resultValue:T = switch(_task.value) {
             case a(fn): fn();
@@ -123,7 +119,8 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
 
    override
    public function cancel():Void {
-      if(_timer != null) _timer.stop();
+      final t = _timer;
+      if(t != null) t.stop();
       super.cancel();
    }
 }

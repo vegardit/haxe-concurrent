@@ -44,4 +44,16 @@ class Macros {
       }
       return macro {}
    }
+
+   macro
+   public static function configureNullSafety() {
+      haxe.macro.Compiler.nullSafety("hx.concurrent",
+         #if (haxe_ver < 4.1)
+            Strict // Haxe 4.x does not have StrictThreaded
+         #else
+            StrictThreaded
+         #end
+      );
+      return macro {}
+   }
 }

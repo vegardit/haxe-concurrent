@@ -26,7 +26,7 @@ import sys.io.Process;
 class BackgroundProcess {
 
    public final cmd:String;
-   public final args:ReadOnlyArray<String>;
+   public final args:Null<ReadOnlyArray<String>>;
 
    /**
     * the exit code or null if the process is still running or was killed
@@ -37,7 +37,7 @@ class BackgroundProcess {
    /**
     * the process ID or -1 on targets that have no support (e.g. Java < 9 on Windows)
     */
-   public var pid(default, null):Int;
+   public var pid(default, null):Int = -1;
 
    /**
     * the process's standard input
@@ -83,7 +83,6 @@ class BackgroundProcess {
              *     at haxe.lang.Runtime.toInt(Runtime.java:127)
              *     at sys.io.Process.getPid(Process.java:218)
              */
-            pid = -1;
          }
 
          if (pid == -1) {

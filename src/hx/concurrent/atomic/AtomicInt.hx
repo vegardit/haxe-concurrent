@@ -27,7 +27,7 @@ import hx.concurrent.lock.RLock;
 @:forward
 abstract AtomicInt(AtomicIntImpl) from AtomicIntImpl to AtomicIntImpl {
 
-   inline public function new(?val:Int = 0) this = new AtomicIntImpl(val);
+   inline public function new(val:Int = 0) this = new AtomicIntImpl(val);
 
    @:to inline function toInt():Int return this.value;
 

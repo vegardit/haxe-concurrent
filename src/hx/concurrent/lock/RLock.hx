@@ -45,7 +45,7 @@ class RLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by any thread
     */
-   public var isAcquiredByAnyThread(get, null):Bool;
+   public var isAcquiredByAnyThread(get, never):Bool;
    inline function get_isAcquiredByAnyThread():Bool
       return _holder != null;
 
@@ -53,7 +53,7 @@ class RLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by the current thread
     */
-   public var isAcquiredByCurrentThread(get, null):Bool;
+   public var isAcquiredByCurrentThread(get, never):Bool;
    inline function get_isAcquiredByCurrentThread():Bool
       return _holder == Threads.current;
 
@@ -61,7 +61,7 @@ class RLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by any other thread
     */
-   public var isAcquiredByOtherThread(get, null):Bool;
+   public var isAcquiredByOtherThread(get, never):Bool;
    inline function get_isAcquiredByOtherThread():Bool
       return isAcquiredByAnyThread && !isAcquiredByCurrentThread;
 
@@ -88,6 +88,7 @@ class RLock implements Acquirable {
 
       if (!swallowExceptions && ex != null)
          ex.rethrow();
+      @:nullSafety(Off)
       return result;
    }
 

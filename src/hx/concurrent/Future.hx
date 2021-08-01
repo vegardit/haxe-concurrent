@@ -15,7 +15,7 @@ interface Future<T> {
 
    /**
     * This function is non-blocking eaning if no result is available yet
-    * <code>TaskResult.None</code> is returned.
+    * <code>FutureResult.NONE</code> is returned.
     *
     * @return the future's computed result
     */
@@ -27,7 +27,7 @@ interface Future<T> {
     *
     * Replaces any previously registered onResult function.
     */
-   var onResult(default, set):FutureResult<T>->Void;
+   var onResult(default, set):Null<(FutureResult<T>) -> Void>;
 }
 
 
@@ -56,10 +56,10 @@ enum FutureResult<T> {
 
 class FutureBase<T> implements Future<T> {
 
-   public var result(default, null):Null<FutureResult<T>>;
+   public var result(default, null):FutureResult<T>;
 
-   public var onResult(default, set):(FutureResult<T>) -> Void;
-   inline function set_onResult(fn:(FutureResult<T>) -> Void) {
+   public var onResult(default, set):Null<(FutureResult<T>) -> Void>;
+   inline function set_onResult(fn:Null<(FutureResult<T>) -> Void>) {
       // immediately invoke the callback function in case a result is already present
       if (fn != null) {
          final result = this.result;
@@ -73,7 +73,6 @@ class FutureBase<T> implements Future<T> {
 
    inline
    function new() {
-      onResult = null;
       result = FutureResult.NONE(this);
    }
 }

@@ -21,6 +21,7 @@ import hx.concurrent.thread.Threads;
  */
 @:allow(hx.concurrent.lock.ReadLock)
 @:allow(hx.concurrent.lock.WriteLock)
+@:nullSafety(Off)
 class RWLock {
 
    public final readLock:ReadLock;
@@ -54,7 +55,7 @@ class ReadLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by any thread
     */
-   public var isAcquiredByAnyThread(get, null):Bool;
+   public var isAcquiredByAnyThread(get, never):Bool;
    inline function get_isAcquiredByAnyThread():Bool
       return rwLock.sync.execute(function() {
          return holders.length > 0;
@@ -64,7 +65,7 @@ class ReadLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by the current thread
     */
-   public var isAcquiredByCurrentThread(get, null):Bool;
+   public var isAcquiredByCurrentThread(get, never):Bool;
    inline function get_isAcquiredByCurrentThread():Bool
       return rwLock.sync.execute(function() {
          return holders.indexOf(Threads.current) > -1;
@@ -74,7 +75,7 @@ class ReadLock implements Acquirable {
    /**
     * Indicates if the lock is acquired by any other thread
     */
-   public var isAcquiredByOtherThread(get, null):Bool;
+   public var isAcquiredByOtherThread(get, never):Bool;
    inline function get_isAcquiredByOtherThread():Bool {
       final requestor = Threads.current;
       return rwLock.sync.execute(function() {

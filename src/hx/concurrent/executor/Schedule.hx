@@ -116,6 +116,7 @@ class ScheduleTools {
     */
    public static function assertValid(schedule:Schedule):Schedule {
       schedule = applyDefaults(schedule);
+      @:nullSafety(Off)
       switch(schedule) {
          case ONCE(initialDelayMS):
             if (initialDelayMS < 0)
@@ -124,7 +125,7 @@ class ScheduleTools {
          case FIXED_DELAY(intervalMS, initialDelayMS):
             if (intervalMS <= 0)
                throw "[Schedule.FIXED_DELAY.intervalMS] must be > 0";
-            if (initialDelayMS < 0)
+            if (initialDelayMS == null || initialDelayMS < 0)
                throw "[Schedule.FIXED_DELAY.initialDelayMS] must be >= 0";
 
          case FIXED_RATE(intervalMS, initialDelayMS):
@@ -134,18 +135,18 @@ class ScheduleTools {
                throw "[Schedule.FIXED_RATE.initialDelayMS] must be >= 0";
 
          case HOURLY(minute, second):
-            if (minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
-            if (second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
+            if (minute == null || minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
 
          case DAILY(hour, minute, second):
-            if (hour   < 0) throw "[Schedule.DAILY.hour] must be between >= 0 and <= 23";
-            if (minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
-            if (second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
+            if (hour   == null || hour   < 0) throw "[Schedule.DAILY.hour] must be between >= 0 and <= 23";
+            if (minute == null || minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
 
          case WEEKLY(day, hour, minute, second):
-            if (hour   < 0) throw "[Schedule.WEEKLY.hour] must be between >= 0 and <= 23";
-            if (minute < 0) throw "[Schedule.WEEKLY.minute] must be between >= 0 and <= 59";
-            if (second < 0) throw "[Schedule.WEEKLY.second] must be between >= 0 and <= 59";
+            if (hour   == null || hour   < 0) throw "[Schedule.WEEKLY.hour] must be between >= 0 and <= 23";
+            if (minute == null || minute < 0) throw "[Schedule.WEEKLY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0) throw "[Schedule.WEEKLY.second] must be between >= 0 and <= 59";
       }
       return schedule;
    }
@@ -159,6 +160,7 @@ class ScheduleTools {
       schedule = assertValid(schedule);
 
       // validate schedule and calculate initial run
+      @:nullSafety(Off)
       switch(schedule) {
          case ONCE(initialDelayMS):                    return Dates.now() + initialDelayMS;
          case FIXED_DELAY(intervalMS, initialDelayMS): return Dates.now() + initialDelayMS;
