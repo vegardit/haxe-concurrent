@@ -26,7 +26,7 @@ class Ints {
       #elseif java
          java.lang.Integer.MAX_VALUE;
       #elseif nodejs
-         untyped __js__("Number.MAX_SAFE_INTEGER");
+         untyped js.Syntax.code("Number.MAX_SAFE_INTEGER");
       #elseif php
          php.Syntax.code("PHP_INT_MAX");
       #elseif python

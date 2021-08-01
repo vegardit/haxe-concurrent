@@ -37,7 +37,7 @@ class Dates {
       #elseif java
          return cast java.lang.System.currentTimeMillis();
       #elseif js
-         return untyped __js__("Date.now()");
+         return js.Syntax.code("Date.now()");
       #elseif sys // Cpp, Lua, Neko, HL, PHP, Python
          return Sys.time() * 1000;
       #else
