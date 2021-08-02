@@ -18,9 +18,7 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    
-    timeout-minutes: 10
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -108,6 +106,8 @@ jobs:
       run: haxelib run travix cs
 
     - name: Test [eval]
+      timeout-minutes: 1
+      continue-on-error: true # randomly hangs even on > 4.1 probably because if https://github.com/HaxeFoundation/haxe/issues/8525
       if: ${{ matrix.haxe != '4.0.5' && matrix.haxe != '4.1.5' }} # hangs because of https://github.com/HaxeFoundation/haxe/issues/10249
       run: haxelib run travix interp -D eval-stack
 
