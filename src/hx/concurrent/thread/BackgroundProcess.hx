@@ -45,8 +45,8 @@ class BackgroundProcess {
    public var stdin(get, never):haxe.io.Output;
    inline function get_stdin() return process.stdin;
 
-   public var stderr(default, never):NonBlockingInput = new NonBlockingInput();
-   public var stdout(default, never):NonBlockingInput = new NonBlockingInput();
+   public final stderr = new NonBlockingInput();
+   public final stdout = new NonBlockingInput();
 
    public var isRunning(get, never): Bool;
    function get_isRunning() {
@@ -99,7 +99,7 @@ class BackgroundProcess {
       #end
 
       @:volatile
-      var stdErrDone:Bool = false;
+      var stdErrDone = false;
       Threads.spawn(() -> {
          try {
             while (true)
