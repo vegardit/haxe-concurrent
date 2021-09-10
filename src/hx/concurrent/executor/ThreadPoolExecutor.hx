@@ -72,9 +72,13 @@ class ThreadPoolExecutor extends Executor {
             /*
              * purge done tasks from list
              */
-            if (doneTasks.length > 0)
+            if (doneTasks.length > 0) {
                for (t in doneTasks)
                   _scheduledTasks.remove(t);
+
+               #if python @:nullSafety(Off) #end // null-safety false positive
+               doneTasks.resize(0);
+            }
 
             /*
              * process newly scheduled tasks or sleep
@@ -123,7 +127,10 @@ class ThreadPoolExecutor extends Executor {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
 
-         final future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+         if (schedule == null)
+            schedule = Executor.NOW_ONCE;
+
+         final future = new TaskFutureImpl<T>(this, task, schedule);
 
          // skip round-trip via scheduler for one-shot tasks that should be executed immediately
          switch(schedule) {

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+### Fixed
+- [Issue #12](https://github.com/vegardit/haxe-concurrent/issues/12) memory leak in ThreadPoolExecutor
+
+
 ## [3.0.1] - 2021-08-01
 
 ### Fixed
