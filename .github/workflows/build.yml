@@ -27,7 +27,7 @@ jobs:
         #- macos-latest # too many random fails
         - windows-latest
         haxe:
-        - 4.2.4
+        - 4.2.5
         - 4.1.5
         - 4.0.5
 
@@ -37,7 +37,7 @@ jobs:
       run: env | sort
 
     - name: Git Checkout
-      uses: actions/checkout@v2 #https://github.com/actions/checkout
+      uses: actions/checkout@v3 #https://github.com/actions/checkout
 
     - name: "Cache: Haxelib Repository"
       uses: actions/cache@v2
