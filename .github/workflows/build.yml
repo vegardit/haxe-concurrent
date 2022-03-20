@@ -64,7 +64,7 @@ jobs:
         rm /usr/local/share/man/man5/*
 
     - name: "Install: Python 3"
-      uses: actions/setup-python@v2 # https://github.com/actions/setup-python
+      uses: actions/setup-python@v3 # https://github.com/actions/setup-python
       with:
         python-version: 3.9
 
