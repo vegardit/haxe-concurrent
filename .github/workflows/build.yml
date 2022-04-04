@@ -40,7 +40,7 @@ jobs:
       uses: actions/checkout@v3 #https://github.com/actions/checkout
 
     - name: "Cache: Haxelib Repository"
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       with:
         path: $RUNNER_TOOL_CACHE/haxe/${{ matrix.haxe }}/x64/lib
         # https://github.com/actions/cache/issues/342#issuecomment-673371329
