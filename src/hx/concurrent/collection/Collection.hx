@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.collection;
@@ -26,6 +26,9 @@ interface Collection<T> {
    function filter(fn:T->Bool):Collection<T>;
    function map<X>(fn:T->X):Collection<X>;
 
+   /**
+    * @return a shallow copy of `this` collection.
+    */
    function copy():Collection<T>;
    function toArray():Array<T>;
    function toString():String;
