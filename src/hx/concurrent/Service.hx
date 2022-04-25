@@ -5,7 +5,6 @@
 package hx.concurrent;
 
 import hx.concurrent.atomic.AtomicInt;
-import hx.concurrent.event.EventListenable;
 import hx.concurrent.lock.RLock;
 
 /**

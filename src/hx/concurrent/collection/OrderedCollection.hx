@@ -4,8 +4,6 @@
  */
 package hx.concurrent.collection;
 
-import hx.concurrent.internal.Either3;
-
 /**
  * @author Sebastian Thomschke, Vegard IT GmbH
  */

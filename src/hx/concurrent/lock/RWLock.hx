@@ -4,10 +4,8 @@
  */
 package hx.concurrent.lock;
 
-import hx.concurrent.atomic.AtomicBool;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Ints;
-import hx.concurrent.ConcurrentException;
 import hx.concurrent.thread.Threads;
 
 /**
