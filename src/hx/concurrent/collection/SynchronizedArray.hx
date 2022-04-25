@@ -52,9 +52,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    @:allow(hx.concurrent.collection.SynchronizedArray)
    function set(idx:Int, x:T):Void
-      _sync.execute(function() {
-         _items[idx] = x;
-      });
+      _sync.execute(() -> _items[idx] = x);
 
 
    /**
@@ -65,9 +63,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public var first(get, never):Null<T>;
    inline function get_first():Null<T>
-      return _sync.execute(function() {
-         return _items.length == 0 ? null : _items[0];
-      });
+      return _sync.execute(() -> _items.length == 0 ? null : _items[0]);
 
 
    /**
@@ -78,9 +74,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public var last(get, never):Null<T>;
    inline function get_last():Null<T>
-      return _sync.execute(function() {
-         return _items.length == 0 ? null : _items[_items.length  - 1];
-      });
+      return _sync.execute(() -> _items.length == 0 ? null : _items[_items.length - 1]);
 
 
    /**
@@ -91,9 +85,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public var length(get, never):Int;
    inline function get_length():Int
-      return _sync.execute(function() {
-         return _items.length;
-      });
+      return _sync.execute(() -> _items.length);
 
 
    inline
@@ -102,9 +94,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
 
    public function add(item:T):Void
-      _sync.execute(function() {
-         _items.push(item);
-      });
+      _sync.execute(() -> _items.push(item));
 
 
    /**
@@ -133,15 +123,11 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
 
    public function clear():Void
-      _sync.execute(function() {
-         _items = [];
-      });
+      _sync.execute(() -> _items = []);
 
 
    public function insertAt(idx:Int, x:T):Void
-      _sync.execute(function() {
-         _items.insert(idx, x);
-      });
+      _sync.execute(() -> _items.insert(idx, x));
 
 
    /**
@@ -219,9 +205,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    inline
    public function copy():SynchronizedArray<T>
-      return _sync.execute(function() {
-         return new SynchronizedArray<T>(_items.copy());
-      });
+      return _sync.execute(() -> new SynchronizedArray<T>(_items.copy()));
 
 
    /**
@@ -243,9 +227,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function isEmpty():Bool
-      return _sync.execute(function() {
-         return _items.length == 0;
-      });
+      return _sync.execute(() -> _items.length == 0);
 
 
    /**
@@ -276,9 +258,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function indexOf(x:T, startAt:Int = 0):Int
-      return _sync.execute(function() {
-         return _items.indexOf(x, startAt);
-      });
+      return _sync.execute(() -> _items.indexOf(x, startAt));
 
 
    /**
@@ -307,9 +287,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function filter(fn:T->Bool):SynchronizedArray<T>
-      return _sync.execute(function() {
-         return new SynchronizedArray(_items.filter(fn));
-      });
+      return _sync.execute(() -> new SynchronizedArray(_items.filter(fn)));
 
 
    /**
@@ -319,9 +297,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function map<X>(fn:T->X):SynchronizedArray<X>
-      return _sync.execute(function() {
-         return new SynchronizedArray(_items.map(fn));
-      });
+      return _sync.execute(() -> new SynchronizedArray(_items.map(fn)));
 
 
    /**
@@ -333,9 +309,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function join(sep:String):String
-      return _sync.execute(function() {
-         return _items.join(sep);
-      });
+      return _sync.execute(() -> _items.join(sep));
 
 
    /**
@@ -347,9 +321,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function iterator():Iterator<T>
-      return _sync.execute(function() {
-         return _items.iterator();
-      });
+      return _sync.execute(() -> _items.iterator());
 
 
    /**
@@ -361,9 +333,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    inline
    public function toArray():Array<T>
-      return _sync.execute(function() {
-         return _items.copy();
-      });
+      return _sync.execute(() -> _items.copy());
 
 
    /**

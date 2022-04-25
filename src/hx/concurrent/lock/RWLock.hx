@@ -44,9 +44,7 @@ class ReadLock implements Acquirable {
       if (rwLock.writeLock.isAcquiredByOtherThread)
          return 0;
 
-      return rwLock.sync.execute(function() {
-         return Ints.MAX_VALUE - holders.length;
-      });
+      return rwLock.sync.execute(() -> Ints.MAX_VALUE - holders.length);
    }
 
 
@@ -55,9 +53,7 @@ class ReadLock implements Acquirable {
     */
    public var isAcquiredByAnyThread(get, never):Bool;
    inline function get_isAcquiredByAnyThread():Bool
-      return rwLock.sync.execute(function() {
-         return holders.length > 0;
-      });
+      return rwLock.sync.execute(() -> holders.length > 0);
 
 
    /**
@@ -65,9 +61,7 @@ class ReadLock implements Acquirable {
     */
    public var isAcquiredByCurrentThread(get, never):Bool;
    inline function get_isAcquiredByCurrentThread():Bool
-      return rwLock.sync.execute(function() {
-         return holders.indexOf(Threads.current) > -1;
-      });
+      return rwLock.sync.execute(() -> holders.indexOf(Threads.current) > -1);
 
 
    /**

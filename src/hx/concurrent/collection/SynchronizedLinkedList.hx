@@ -48,9 +48,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public var first(get, never):Null<T>;
    inline function get_first():Null<T>
-      return _sync.execute(function() {
-         return _items.first();
-      });
+      return _sync.execute(() -> _items.first());
 
 
    /**
@@ -61,9 +59,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public var last(get, never):Null<T>;
    inline function get_last():Null<T>
-      return _sync.execute(function() {
-         return _items.last();
-      });
+      return _sync.execute(() -> _items.last());
 
 
    /**
@@ -73,7 +69,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public var length(get, never):Int;
-   inline function get_length():Int
+   function get_length():Int
       return _sync.execute(function() {
           var len = 0;
           for (item in _items)
@@ -88,9 +84,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
 
    public function add(item:T):Void
-      _sync.execute(function() {
-         _items.add(item);
-      });
+      _sync.execute(() -> _items.add(item));
 
 
    /**
@@ -119,9 +113,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
 
    public function clear():Void
-      _sync.execute(function() {
-         _items = new List<T>();
-      });
+      _sync.execute(() -> _items = new List<T>());
 
 
    public function insertAt(idx:Int, x:T):Void
@@ -273,9 +265,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function isEmpty():Bool
-      return _sync.execute(function() {
-         return !_items.iterator().hasNext();
-      });
+      return _sync.execute(() -> !_items.iterator().hasNext());
 
 
    /**
@@ -353,9 +343,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function filter(fn:T->Bool):SynchronizedLinkedList<T>
-      return _sync.execute(function() {
-         return new SynchronizedLinkedList(_items.filter(fn));
-      });
+      return _sync.execute(() -> new SynchronizedLinkedList(_items.filter(fn)));
 
 
    /**
@@ -364,9 +352,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function map<X>(fn:T->X):SynchronizedLinkedList<X>
-      return _sync.execute(function() {
-         return new SynchronizedLinkedList(_items.map(fn));
-      });
+      return _sync.execute(() -> new SynchronizedLinkedList(_items.map(fn)));
 
 
    /**
@@ -377,9 +363,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function join(sep:String):String
-      return _sync.execute(function() {
-         return _items.join(sep);
-      });
+      return _sync.execute(() -> _items.join(sep));
 
 
    /**
@@ -390,9 +374,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function iterator():Iterator<T>
-      return _sync.execute(function() {
-         return _items.iterator();
-      });
+      return _sync.execute(() -> _items.iterator());
 
 
    /**
@@ -419,8 +401,5 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * </code></pre>
     */
    public function toString():String
-      return _sync.execute(function() {
-         return _items.toString();
-      });
-
+      return _sync.execute(() -> _items.toString());
 }
