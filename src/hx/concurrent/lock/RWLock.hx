@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
 
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Ints;
+import hx.concurrent.lock.Acquirable.AbstractAcquirable;
 import hx.concurrent.thread.Threads;
 
 /**
@@ -37,9 +38,8 @@ class RWLock {
 
 @:allow(hx.concurrent.lock.RWLock)
 @:allow(hx.concurrent.lock.WriteLock)
-class ReadLock implements Acquirable {
+class ReadLock extends AbstractAcquirable {
 
-   public var availablePermits(get, never):Int;
    function get_availablePermits():Int {
       if (rwLock.writeLock.isAcquiredByOtherThread)
          return 0;

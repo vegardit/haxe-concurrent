@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.internal;
@@ -16,8 +16,8 @@ import haxe.macro.*;
 class Macros {
 
    static final __static_init = {
-      #if (haxe_ver < 4)
-         throw 'ERROR: As of haxe-concurrent 3.0.0, Haxe 4.x or higher is required!';
+      #if (haxe_ver < 4.2)
+         throw 'ERROR: As of haxe-concurrent 4.0.0, Haxe 4.2 or higher is required!';
       #end
    };
 
@@ -47,13 +47,7 @@ class Macros {
 
    macro
    public static function configureNullSafety() {
-      haxe.macro.Compiler.nullSafety("hx.concurrent",
-         #if (haxe_ver < 4.1)
-            Strict // Haxe 4.x does not have StrictThreaded
-         #else
-            StrictThreaded
-         #end
-      );
+      haxe.macro.Compiler.nullSafety("hx.concurrent", StrictThreaded);
       return macro {}
    }
 }

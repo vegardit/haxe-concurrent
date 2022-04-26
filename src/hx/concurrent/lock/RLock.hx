@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
 
+import hx.concurrent.lock.Acquirable.AbstractAcquirable;
 import hx.concurrent.internal.Dates;
-import hx.concurrent.ConcurrentException;
 import hx.concurrent.thread.Threads;
 
 /**
@@ -15,7 +15,7 @@ import hx.concurrent.thread.Threads;
  *
  * @author Sebastian Thomschke, Vegard IT GmbH
  */
-class RLock implements Acquirable {
+class RLock extends AbstractAcquirable {
 
    /**
     * Indicates if this class will have any effect on the current target.
@@ -37,7 +37,6 @@ class RLock implements Acquirable {
    var _holderEntranceCount = 0;
 
 
-   public var availablePermits(get, never):Int;
    function get_availablePermits():Int
       return isAcquiredByAnyThread ? 0 : 1;
 
@@ -68,28 +67,6 @@ class RLock implements Acquirable {
 
    inline
    public function new() {
-   }
-
-
-   /**
-    * Executes the given function while the lock is acquired.
-    */
-   public function execute<T>(func:Void->T, swallowExceptions = false):T {
-      var ex:Null<ConcurrentException> = null;
-      var result:Null<T> = null;
-
-      acquire();
-      try {
-         result = func();
-      } catch (e:Dynamic) {
-         ex = ConcurrentException.capture(e);
-      }
-      release();
-
-      if (!swallowExceptions && ex != null)
-         ex.rethrow();
-      @:nullSafety(Off)
-      return result;
    }
 
 

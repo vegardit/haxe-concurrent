@@ -38,6 +38,7 @@ Java, JavaScript ([Node.js](https://nodejs.org) and PhantomJS), Lua, [Neko](http
 |1.0.0 to 1.2.0  |3.2.1 or higher|
 |2.0.0 to 2.1.3  |3.4.2 or higher|
 |3.0.0 or higher |4.0.5 or higher|
+|4.0.0 or higher |4.2.0 or higher|
 
 
 ## <a name="atomic-package"></a>The `hx.concurrent.atomic` package

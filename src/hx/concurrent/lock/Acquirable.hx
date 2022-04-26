@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
@@ -32,4 +32,36 @@ interface Acquirable {
     * Depending on the implementation this method may throw an exception if the current thread doesn't hold the permit.
     */
    function release():Void;
+
+   /**
+    * Executes the given function while the acquirable is acquired.
+    */
+   function execute<T>(func:Void->T, swallowExceptions:Bool = false):T;
+}
+
+abstract class AbstractAcquirable implements Acquirable {
+
+   public var availablePermits(get, never):Int;
+   abstract function get_availablePermits():Int;
+
+   /**
+    * Executes the given function while the lock is acquired.
+    */
+   public function execute<T>(func:Void->T, swallowExceptions:Bool = false):T {
+      var ex:Null<ConcurrentException> = null;
+      var result:Null<T> = null;
+
+      acquire();
+      try {
+         result = func();
+      } catch (e:Dynamic) {
+         ex = ConcurrentException.capture(e);
+      }
+      release();
+
+      if (!swallowExceptions && ex != null)
+         ex.rethrow();
+      @:nullSafety(Off)
+      return result;
+   }
 }

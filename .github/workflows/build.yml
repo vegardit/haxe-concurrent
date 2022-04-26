@@ -28,8 +28,6 @@ jobs:
         - windows-latest
         haxe:
         - 4.2.5
-        - 4.1.5
-        - 4.0.5
 
     steps:
     - name: Show environment variables
@@ -102,13 +100,11 @@ jobs:
     ##################################################
 
     - name: Test [cs]
-      continue-on-error: ${{ matrix.haxe == '4.0.5' }} # fails because of https://github.com/HaxeFoundation/haxe/issues/7428
       run: haxelib run travix cs
 
     - name: Test [eval]
       timeout-minutes: 1
       continue-on-error: true # randomly hangs even on > 4.1 probably because if https://github.com/HaxeFoundation/haxe/issues/8525
-      if: ${{ matrix.haxe != '4.0.5' && matrix.haxe != '4.1.5' }} # hangs because of https://github.com/HaxeFoundation/haxe/issues/10249
       run: haxelib run travix interp -D eval-stack
 
     - name: Test [flash]
@@ -117,7 +113,6 @@ jobs:
 
     - name: Test [hl]
       if: runner.os != 'Linux' # prebuild linux binary available yet
-      continue-on-error: ${{ runner.os == 'macOS' && (matrix.haxe == '4.0.5' || matrix.haxe == '4.1.5' ) }}
       run: haxelib run travix hl
 
     - name: Test [java]
