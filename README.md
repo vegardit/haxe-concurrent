@@ -58,6 +58,7 @@ The [hx.concurrent.collection](https://github.com/vegardit/haxe-concurrent/blob/
 - [Queue](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/Queue.hx)
 - [SynchronizedArray](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/SynchronizedArray.hx)
 - [SynchronizedLinkedList](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/SynchronizedLinkedList.hx)
+- [SynchronizedMap](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/collection/SynchronizedMap.hx)
 
 
 ## <a name="executor-package"></a>The `hx.concurrent.executor` package
