@@ -555,7 +555,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final executor = Executor.create(2);
       assertEquals(executor.state, ServiceState.RUNNING);
       executor.stop();
-      _later(300, function() {
+      _later(500, function() {
          assertEquals(executor.state, ServiceState.STOPPED);
       });
    }
