@@ -32,8 +32,7 @@ enum ServiceState {
 }
 
 
-@:abstract
-class ServiceBase implements Service<Int> {
+abstract class ServiceBase implements Service<Int> {
 
    static final _ids = new AtomicInt();
 
