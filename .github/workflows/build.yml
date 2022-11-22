@@ -40,7 +40,7 @@ jobs:
     - name: "Cache: Haxelib Repository"
       uses: actions/cache@v3
       with:
-        path: $RUNNER_TOOL_CACHE/haxe/${{ matrix.haxe }}/x64/lib
+        path: ${{ runner.tool_cache }}/haxe/${{ matrix.haxe }}/x64/lib
         # https://github.com/actions/cache/issues/342#issuecomment-673371329
         key: ${{ runner.os }}-haxelib-${{ matrix.haxe }}-${{ github.run_id }}
         restore-keys: |
