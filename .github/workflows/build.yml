@@ -15,6 +15,13 @@ on:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
+env:
+  # https://docs.brew.sh/Manpage#environment
+  HOMEBREW_NO_ANALYTICS: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -46,20 +53,24 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-haxelib-${{ matrix.haxe }}-
 
-    - name: Upgrade brew
+    - name: Update brew formulas
       if: runner.os == 'macOS'
-      env:
-        # https://docs.brew.sh/Manpage#environment
-        HOMEBREW_NO_ANALYTICS: 1
-        HOMEBREW_NO_INSTALL_CLEANUP: 1
       run: |
         echo "::group::brew update" && brew update && echo "::endgroup::"
         echo "::group::brew config" && brew config && echo "::endgroup::"
+        echo "::group::brew list" && brew list --version && echo "::endgroup::"
 
-        # workaround to prevent "/usr/local/... is not inside a keg" during "brew install mono"
-        rm /usr/local/bin/2to3
-        rm /usr/local/share/man/man1/*
-        rm /usr/local/share/man/man5/*
+        # workaround to prevent "Error: The `brew link` step did not complete successfully" during "brew install mono"
+        rm -f \
+          /usr/local/share/man/man1/* \
+          /usr/local/share/man/man5/* \
+          /usr/local/bin/idle3 \
+          /usr/local/bin/2to3 \
+          /usr/local/bin/2to3 \
+          /usr/local/bin/idle3 \
+          /usr/local/bin/pydoc3 \
+          /usr/local/bin/python3 \
+          /usr/local/bin/python3-config
 
     - name: "Install: Python 3"
       uses: actions/setup-python@v4 # https://github.com/actions/setup-python
@@ -85,12 +96,19 @@ jobs:
       run: |
         haxelib config
 
-        for lib in haxe-doctest travix; do
+        for lib in haxe-doctest hx3compat; do
           echo "::group::install_$lib"
           haxelib --always install $lib
           haxelib --always update $lib || true
           echo "::endgroup::"
         done
+
+        # install latest travix version
+        haxelib git travix https://github.com/back2dos/travix
+        pushd .
+        cd $(haxelib config)travix/git
+        haxe build-neko.hxml -lib hx3compat
+        popd
 
         haxelib dev haxe-concurrent .
 
