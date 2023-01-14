@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.executor;
@@ -18,8 +19,6 @@ import hx.concurrent.thread.Threads;
 /**
  * hx.concurrent.thread.ThreadPool based executor.
  * Only available on platforms supporting threads.
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 #if threads
 class ThreadPoolExecutor extends Executor {

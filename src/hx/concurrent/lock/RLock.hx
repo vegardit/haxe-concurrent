@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
@@ -12,8 +13,6 @@ import hx.concurrent.thread.Threads;
  * A re-entrant lock that can only be released by the same thread that acquired it.
  *
  * https://stackoverflow.com/questions/2332765/lock-mutex-semaphore-whats-the-difference
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class RLock extends AbstractAcquirable {
 

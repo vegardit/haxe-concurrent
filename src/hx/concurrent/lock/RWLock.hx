@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2022 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
@@ -15,8 +16,6 @@ import hx.concurrent.thread.Threads;
  * A thread can acquire a write-lock (upgrade) while holding a read-lock if no other thread holds a read-lock at the same time.
  *
  * https://stackoverflow.com/questions/2332765/lock-mutex-semaphore-whats-the-difference
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 @:allow(hx.concurrent.lock.ReadLock)
 @:allow(hx.concurrent.lock.WriteLock)

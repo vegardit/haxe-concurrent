@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.collection;
@@ -10,8 +11,6 @@ import hx.concurrent.thread.Threads;
 
 /**
  * Unbound thread-safe first-in-first-out message queue.
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class Queue<T> {
    #if (cpp || cs || eval || java || neko || hl)

@@ -1,7 +1,7 @@
 @echo off
-REM Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+REM SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+REM SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
 REM SPDX-License-Identifier: Apache-2.0
-REM Author: Sebastian Thomschke, Vegard IT GmbH
 
 REM generates API documentation using dox at <project_root>\target\site
 

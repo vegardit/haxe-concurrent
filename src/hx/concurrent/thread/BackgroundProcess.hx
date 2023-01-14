@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.thread;
@@ -20,8 +21,6 @@ import sys.io.Process;
  *
  * Per BackgroundProcess two threads are spawned to handle the underlying
  * blocking haxe.io.Input stderr/stdout streams.
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 class BackgroundProcess {
 

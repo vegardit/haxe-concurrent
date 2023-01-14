@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.atomic;
@@ -15,8 +16,6 @@ private typedef AB = AtomicBoolImpl;
 
 /**
  * Boolean with thread-safe atomic operations.
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 abstract AtomicBool(AB) from AB to AB {
 

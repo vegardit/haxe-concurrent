@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2021 Vegard IT GmbH (https://vegardit.com) and contributors.
+ * SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+ * SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.atomic;
@@ -21,8 +22,6 @@ import hx.concurrent.lock.RLock;
  * >>> (-new AtomicInt(3) == -3)   == true
  * >>> (-new AtomicInt(3) == -3.0) == true
  * </code></pre>
- *
- * @author Sebastian Thomschke, Vegard IT GmbH
  */
 @:forward
 abstract AtomicInt(AtomicIntImpl) from AtomicIntImpl to AtomicIntImpl {
