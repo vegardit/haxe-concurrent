@@ -66,13 +66,14 @@ class BackgroundProcess {
     * @throws an exception in case the process cannot be created
     */
    @:access(sys.io.Process.proc)
-   public function new(cmd:String, ?args:Array<AnyAsString>) {
+   public function new(cmd:String, ?args:Array<Any>) {
       if (cmd == null || cmd.length == 0)
          throw "[cmd] must not be null or empty";
 
       this.cmd = cmd;
-      this.args = args;
-      process = new Process(cmd, args);
+      final argsAsString = args == null ? null : args.map((arg) -> Std.string(arg));
+      this.args = argsAsString;
+      process = new Process(cmd, argsAsString);
       #if java
          try {
             pid = process.getPid();
@@ -187,10 +188,9 @@ class NonBlockingInput {
             if (Dates.now() > waitUntil)
                break;
 
-            Threads.sleep(1);
+            Threads.sleep(5);
             continue;
          }
-
          buffer.addByte(byte);
 
          if (byte == 10)
@@ -256,8 +256,6 @@ class NonBlockingInput {
 
          buffer.addByte(byte);
       }
-      if (buffer.length == 0)
-         return "";
 
       if (linePreview.length == 0) {
          if (buffer.length == 0)
