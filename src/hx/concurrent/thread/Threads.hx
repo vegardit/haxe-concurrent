@@ -18,10 +18,14 @@ class Threads {
     */
    public static var current(get, never):Dynamic;
    static function get_current():Dynamic {
-      #if threads
-         return sys.thread.Thread.current();
-      #elseif eval
+      #if eval
          return cast(sys.thread.Thread.current(), eval.vm.NativeThread).id();
+      #elseif cs
+         return cs.system.threading.Thread.CurrentThread;
+      #elseif java
+         return java.lang.Thread.currentThread();
+      #elseif threads
+         return sys.thread.Thread.current();
       #elseif flash
          var worker = flash.system.Worker.current;
          return worker == null ? "MainThread" : worker;

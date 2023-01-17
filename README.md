@@ -30,6 +30,10 @@ Java, JavaScript ([Node.js](https://nodejs.org) and PhantomJS), Lua, [Neko](http
 **Note:**
 - When targeting Flash the option `-swf-version 11.5` (or higher) must be specified, otherwise you will get `Class flash.concurrent::Condition could not be found.`
 - When targeting C# the option `-D net-ver=45` must be specified, otherwise you may get `error CS0234: The type or namespace name 'Volatile' does not exist in the namespace 'System.Threading'. Are you missing an assembly reference?`
+- Multi-threading/locking support in Eval is broken, see some of the unresolved issues:
+  - https://github.com/HaxeFoundation/haxe/issues/8524
+  - https://github.com/HaxeFoundation/haxe/issues/8525
+
 
 ### Haxe compatibility
 

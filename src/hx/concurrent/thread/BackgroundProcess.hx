@@ -102,8 +102,14 @@ class BackgroundProcess {
       var stdErrDone = false;
       Threads.spawn(() -> {
          try {
-            while (true)
-               try stderr.bytes.push(process.stderr.readByte()) catch (ex:haxe.io.Eof) break;
+            while (true) {
+               try {
+                  stderr.bytes.push(process.stderr.readByte());
+               } catch (ex:haxe.io.Eof) {
+                #if eval Sys.sleep(0.001); #end // adding a sleep here somehow prevents sporadic premature Eof exceptions on Eval target
+                break;
+               }
+            }
          } catch (ex:Dynamic) {
             trace(ex);
          }
@@ -115,7 +121,7 @@ class BackgroundProcess {
          try {
             while (true)
                try stdout.bytes.push(process.stdout.readByte()) catch (ex:haxe.io.Eof) break;
-          } catch (ex:Dynamic) {
+         } catch (ex:Dynamic) {
              trace(ex);
          }
 

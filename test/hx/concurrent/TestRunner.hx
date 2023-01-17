@@ -27,7 +27,7 @@ import hx.doctest.internal.Logger;
 @:keep // prevent DCEing of manually created testXYZ() methods
 class TestRunner extends hx.doctest.DocTestRunner {
 
-   #if threads
+   #if (threads && !eval) // eval has broken multi-threading support
    static final logQueue = new Queue<{level:Level, msg:String, ?pos:haxe.PosInfos}>();
    @:keep
    static final __static_init = {
@@ -764,7 +764,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             }
 
             final exitCode = results.testsFailed == 0 ? 0 : 1;
-            #if threads
+            #if (threads && !eval) // eval has broken multi-threading support
                Threads.await(() -> logQueue.length == 0, 10000);
             #end
             #if python
