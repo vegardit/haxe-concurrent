@@ -15,6 +15,10 @@ on:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
 
+defaults:
+  run:
+    shell: bash
+
 env:
   # https://docs.brew.sh/Manpage#environment
   HOMEBREW_NO_ANALYTICS: 1
@@ -38,7 +42,6 @@ jobs:
 
     steps:
     - name: Show environment variables
-      shell: bash
       run: env | sort
 
     - name: Git Checkout
@@ -53,14 +56,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-haxelib-${{ matrix.haxe }}-
 
-    - name: Update brew formulas
+    - name: "MacOS: Update brew formulas"
       if: runner.os == 'macOS'
       run: |
+        set -eu
+
         echo "::group::brew update" && brew update && echo "::endgroup::"
         echo "::group::brew config" && brew config && echo "::endgroup::"
         echo "::group::brew list" && brew list --version && echo "::endgroup::"
 
         # workaround to prevent "Error: The `brew link` step did not complete successfully" during "brew install mono"
+        # and setup-python action, see https://github.com/actions/setup-python/issues/577
         rm -f \
           /usr/local/share/man/man1/* \
           /usr/local/share/man/man5/* \
@@ -91,13 +97,14 @@ jobs:
         haxe-version: ${{ matrix.haxe }}
 
     - name: "Install: Haxe Libraries"
-      shell: bash
       run: |
+        set -eu
+
         haxelib config
 
         for lib in haxe-doctest hx3compat; do
           echo "::group::install_$lib"
-          haxelib --always install $lib
+          haxelib install $lib
           haxelib --always update $lib || true
           echo "::endgroup::"
         done
@@ -115,9 +122,6 @@ jobs:
     ##################################################
     # Tests
     ##################################################
-
-    - name: Test [cs]
-      run: haxelib run travix cs
 
     - name: Test [eval]
       timeout-minutes: 1
@@ -160,7 +164,10 @@ jobs:
         python --version
         haxelib run travix python
 
-    - name: Test [cpp] # testing C++ as last since it takes the longest to build
+    - name: Test [cs]
+      run: haxelib run travix cs
+
+    - name: Test [cpp]
       run: haxelib run travix cpp
 
 
