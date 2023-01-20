@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [4.1.0] - 2023-01-20
+
 ### Added
 - BackgroundProcess#awaitSuccess() now returns a boolean indicating if the process finished or is still running
 
