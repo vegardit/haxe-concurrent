@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- BackgroundProcess#awaitSuccess() now returns a boolean indicating if the process finished or is still running
+
+### Fixed
+- Fix "Uncaught exception Lock was aquired by another thread!"
+- Prevent random premature killing of external processes run via BackgroundProcess
+
 
 ## [4.0.1] - 2023-01-17
 

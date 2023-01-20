@@ -138,6 +138,8 @@ class BackgroundProcess {
     * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns either null or the exit code.
     * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+    *
+    * @return the exit code or null
     */
    public function awaitExit(timeoutMS:Int):Null<Int> {
       Threads.await(() -> exitCode != null, timeoutMS);
@@ -152,17 +154,21 @@ class BackgroundProcess {
     * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
+    * @return `true` if process exited successful, `false` if process is still running
     * @throws if exitCode != 0
     */
-   public function awaitSuccess(timeoutMS:Int, includeStdErr = true):Void {
+   public function awaitSuccess(timeoutMS:Int, includeStdErr = true):Bool {
       final exitCode = awaitExit(timeoutMS);
       if (exitCode == 0)
-         return;
+         return true;
+
+      if (exitCode == null)
+         return false;
 
       if (includeStdErr)
-         throw 'Process failed with exit code $exitCode and error message: ${stderr.readAll()}';
+         throw 'Process [cmd=$cmd,pid=$pid] failed with exit code $exitCode and error message: ${stderr.readAll()}';
 
-      throw 'Process failed with exit code $exitCode';
+      throw 'Process [cmd=$cmd,pid=$pid] failed with exit code $exitCode';
    }
 
    /**
