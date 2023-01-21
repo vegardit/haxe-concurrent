@@ -33,7 +33,7 @@ class Macros {
       ) {
          trace("[INFO] Setting compiler define 'threads'.");
          Compiler.define("threads");
-      } else {
+      } else if (!def.exists("display")) {
          trace("[INFO] NOT setting compiler define 'threads'.");
       }
 
