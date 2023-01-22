@@ -200,7 +200,7 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
             case b(fn): fn(); null;
          }
          result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
-      } catch (ex:Dynamic)
+      } catch (ex)
          result = FutureResult.FAILURE(ConcurrentException.capture(ex), Dates.now(), this);
 
       // calculate next run for FIXED_DELAY
@@ -213,9 +213,9 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
       this.result = result;
 
       final fn = this.onResult;
-      if (fn != null) try fn(result) catch (ex:Dynamic) trace(ex);
+      if (fn != null) try fn(result) catch (ex) trace(ex);
       final fn = _executor.onResult;
-      if (fn != null) try fn(result) catch (ex:Dynamic) trace(ex);
+      if (fn != null) try fn(result) catch (ex) trace(ex);
    }
 }
 #end

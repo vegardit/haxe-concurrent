@@ -31,7 +31,7 @@ class AsyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenabl
             try {
                listener(event);
                count++;
-            } catch (ex:Dynamic) {
+            } catch (ex) {
                 trace(ex);
             }
          }

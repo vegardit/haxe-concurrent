@@ -57,7 +57,7 @@ class BackgroundProcess {
       try {
          stdin.flush();
          return true;
-      } catch (ex:Dynamic) {
+      } catch (ex) {
          return false;
       }
    }
@@ -79,7 +79,7 @@ class BackgroundProcess {
       #if java
          try {
             pid = process.getPid();
-         } catch (ex:Dynamic) {
+         } catch (ex) {
             /* sys.io.Process#getPid() results into an Exception on Java 11:
              *   Exception in thread "main" java.lang.ClassCastException: class haxe.lang.Closure cannot be cast to class java.lang.Number (haxe.lang.Closure is in unnamed module of loader 'app'; java.lang.Number is in module java.base of loader 'bootstrap')
              *     at haxe.lang.Runtime.toInt(Runtime.java:127)
@@ -92,7 +92,7 @@ class BackgroundProcess {
                // Java 9+ https://docs.oracle.com/javase/9/docs/api/java/lang/ProcessHandle.html#pid--
                final javaProcess:hx.concurrent.internal.externs.java.lang.Process = cast process.proc;
                pid = cast(javaProcess.pid(), Int);
-            } catch (ex:Dynamic) {
+            } catch (ex) {
                // ignore
             }
          }
@@ -112,7 +112,7 @@ class BackgroundProcess {
                 break;
                }
             }
-         } catch (ex:Dynamic) {
+         } catch (ex) {
             trace(ex);
          }
 
@@ -123,7 +123,7 @@ class BackgroundProcess {
          try {
             while (true)
                try stdout.bytes.push(process.stdout.readByte()) catch (ex:haxe.io.Eof) break;
-         } catch (ex:Dynamic) {
+         } catch (ex) {
              trace(ex);
          }
 

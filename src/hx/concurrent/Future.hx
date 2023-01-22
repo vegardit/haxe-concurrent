@@ -13,7 +13,7 @@ import hx.concurrent.internal.Dates;
 interface Future<T> {
 
    /**
-    * This function is non-blocking eaning if no result is available yet
+    * This function is non-blocking meaning if no result is available yet
     * <code>FutureResult.NONE</code> is returned.
     *
     * @return the future's computed result

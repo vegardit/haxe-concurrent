@@ -46,7 +46,7 @@ class Threads {
             try {
                python.Syntax.code("from threading import Thread");
                return true;
-            } catch (ex:Dynamic) {
+            } catch (ex) {
                return false;
             }
          #end

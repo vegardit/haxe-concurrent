@@ -55,7 +55,7 @@ class Queue<T> {
          #if (cpp || cs || eval || java || neko || hl)
             msg = _queue.pop(false);
          #elseif python
-            msg = try _queue.pop() catch(e:Dynamic) null;
+            msg = try _queue.pop() catch (ex) null;
          #else
             _queueLock.acquire();
             msg = _queue.pop();
@@ -66,7 +66,7 @@ class Queue<T> {
             #if (cpp || cs || eval || java || neko || hl)
                msg = _queue.pop(false);
             #elseif python
-               msg = try _queue.pop() catch(e:Dynamic) null;
+               msg = try _queue.pop() catch (ex) null;
             #else
                _queueLock.acquire();
                msg = _queue.pop();

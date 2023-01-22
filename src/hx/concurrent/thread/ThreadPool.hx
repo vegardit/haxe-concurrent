@@ -101,7 +101,7 @@ class ThreadPool extends ServiceBase {
                   try {
                      _workingThreadCount++;
                      task(context);
-                  } catch (ex:Dynamic) {
+                  } catch (ex) {
                      trace(ex);
                   }
                   _workingThreadCount--;

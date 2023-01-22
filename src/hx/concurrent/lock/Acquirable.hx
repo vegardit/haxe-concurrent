@@ -51,7 +51,7 @@ abstract class AbstractAcquirable implements Acquirable {
       acquire();
       try {
          result = func();
-      } catch (e:Dynamic) {
+      } catch (e) {
          ex = ConcurrentException.capture(e);
       }
       release();

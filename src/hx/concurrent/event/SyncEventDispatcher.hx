@@ -21,7 +21,7 @@ class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable
          try {
             listener(event);
             count++;
-         } catch (ex:Dynamic) {
+         } catch (ex) {
             trace(ex);
          }
       }
