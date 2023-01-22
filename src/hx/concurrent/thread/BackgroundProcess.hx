@@ -88,8 +88,8 @@ class BackgroundProcess {
          if (pid == -1) {
             try {
                // Java 9+ https://docs.oracle.com/javase/9/docs/api/java/lang/ProcessHandle.html#pid--
-               final pidMethod = Reflect.field(process.proc, "pid");
-               pid = Reflect.callMethod(process.proc, pidMethod, []);
+               final javaProcess:hx.concurrent.internal.externs.java.lang.Process = cast process.proc;
+               pid = cast(javaProcess.pid(), Int);
             } catch (ex:Dynamic) {
                // ignore
             }
