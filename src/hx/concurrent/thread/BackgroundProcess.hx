@@ -28,7 +28,9 @@ class BackgroundProcess {
    public final args:Null<ReadOnlyArray<String>>;
 
    /**
-    * the exit code or null if the process is still running or was killed
+    * - the exit code if the process finished, or
+    * - null if the process is still running, or
+    * - an undefined int value if the process was killed
     */
    #if java @:volatile #end
    public var exitCode(default, null):Null<Int>;
