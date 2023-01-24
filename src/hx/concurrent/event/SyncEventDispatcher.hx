@@ -5,7 +5,7 @@
  */
 package hx.concurrent.event;
 
-import hx.concurrent.Future.ConstantFuture;
+import hx.concurrent.Future.CompletedFuture;
 
 class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable<EVENT> implements EventDispatcher<EVENT> {
 
@@ -15,7 +15,7 @@ class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable
    /**
     * @return the number of listeners notified successfully
     */
-   public function fire(event:EVENT):ConstantFuture<Int> {
+   public function fire(event:EVENT):CompletedFuture<Int> {
       var count = 0;
       for (listener in _eventListeners.iterator()) {
          try {
@@ -25,9 +25,8 @@ class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable
             trace(ex);
          }
       }
-      return new ConstantFuture(count);
+      return new CompletedFuture(count);
    }
-
 
    override
    public function unsubscribeAll():Void

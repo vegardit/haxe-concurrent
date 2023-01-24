@@ -15,6 +15,7 @@ import hx.concurrent.event.SyncEventDispatcher;
 import hx.concurrent.executor.Executor;
 import hx.concurrent.executor.Schedule;
 import hx.concurrent.internal.Dates;
+import hx.concurrent.Future.CompletedFuture;
 import hx.concurrent.lock.RLock;
 import hx.concurrent.lock.RWLock;
 import hx.concurrent.lock.Semaphore;
@@ -143,13 +144,13 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
 
    function testConstantFuture() {
-      final future = new Future.ConstantFuture(10);
+      final future = new CompletedFuture(10);
       switch(future.result) {
-         case SUCCESS(10, _):
+         case VALUE(10, _):
          default: fail();
       }
       var flag = false;
-      future.onResult = function(result:Future.FutureResult<Int>) flag = true;
+      future.onCompletion(outcome -> flag = true);
       assertEquals(flag, true);
    }
 
@@ -484,9 +485,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       }
 
       assertTrue(disp.subscribe(listener1));
-      #if !(hl)
       assertFalse(disp.subscribe(listener1));
-      #end
 
       final fut1 = disp.fire("123");
       final fut2 = disp.fire("1234567890");
@@ -495,11 +494,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
          executor.stop();
          assertEquals(2, listener1Count.value);
          switch(fut1.result) {
-            case SUCCESS(v,_): assertEquals(1, v);
+            case VALUE(v,_): assertEquals(1, v);
             default: fail();
          }
          switch(fut2.result) {
-            case SUCCESS(v,_): assertEquals(1, v);
+            case VALUE(v,_): assertEquals(1, v);
             default: fail();
          }
       });
@@ -510,11 +509,11 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final disp = new EventDispatcherWithHistory<String>(new SyncEventDispatcher<String>());
 
       switch(disp.fire("123").result) {
-         case SUCCESS(v,_): assertEquals(0, v);
+         case VALUE(v,_): assertEquals(0, v);
          default: fail();
       }
       switch(disp.fire("1234567890").result) {
-         case SUCCESS(v,_): assertEquals(0, v);
+         case VALUE(v,_): assertEquals(0, v);
          default: fail();
       }
 
@@ -544,7 +543,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       #end
 
       switch(disp.fire("123").result) {
-         case SUCCESS(v,_): assertEquals(1, v);
+         case VALUE(v,_): assertEquals(1, v);
          default: fail();
       }
       assertEquals(1, listener1Count.value);
@@ -636,6 +635,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final threadMS = 200;
 
       final fixedRateCounter  = new AtomicInt(0);
+      final fixedRateCompletionCounter1 = new AtomicInt(0);
+      final fixedRateCompletionCounter2 = new AtomicInt(0);
       var future1_first_execution:Float = 0;
       final future1 = executor.submit(function() {
          if (future1_first_execution == 0)
@@ -645,10 +646,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
          Threads.sleep(threadMS);
          #end
       }, FIXED_RATE(intervalMS));
+      future1.onCompletion(r -> fixedRateCompletionCounter1.increment());
+      future1.onCompletion(r -> fixedRateCompletionCounter2.increment());
       final v1 = new AtomicInt(0);
 
       #if threads
       final fixedDelayCounter = new AtomicInt(0);
+      final fixedDelayCompletionCounter1 = new AtomicInt(0);
+      final fixedDelayCompletionCounter2 = new AtomicInt(0);
       var future2_first_execution:Float = 0;
       final future2 = executor.submit(function() {
          if (future2_first_execution == 0)
@@ -656,6 +661,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
          fixedDelayCounter.increment();
          Threads.sleep(threadMS);
       }, FIXED_DELAY(intervalMS));
+      future2.onCompletion(r -> fixedDelayCompletionCounter1.increment());
+      future2.onCompletion(r -> fixedDelayCompletionCounter2.increment());
       final v2 = new AtomicInt(0);
       #end
 
@@ -682,10 +689,14 @@ class TestRunner extends hx.doctest.DocTestRunner {
          assertTrue(v1 > v2);
          #end
       });
-      _later(12 * intervalMS, function() {
+      _later(14 * intervalMS, function() {
          assertEquals(v1.value, fixedRateCounter.value);
+         assertEquals(v1.value, fixedRateCompletionCounter1.value);
+         assertEquals(v1.value, fixedRateCompletionCounter2.value);
          #if threads
          assertEquals(v2.value, fixedDelayCounter.value);
+         assertEquals(v2.value, fixedDelayCompletionCounter1.value);
+         assertEquals(v2.value, fixedDelayCompletionCounter2.value);
          #end
 
          executor.stop();

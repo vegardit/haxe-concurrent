@@ -6,6 +6,12 @@
 package hx.concurrent;
 
 import hx.concurrent.internal.Dates;
+import hx.concurrent.internal.Either2;
+import hx.concurrent.lock.RLock;
+
+
+typedef FutureCompletionListener<T> = (FutureResult<T>) -> Void;
+
 
 /**
  * https://en.wikipedia.org/wiki/Futures_and_promises
@@ -13,66 +19,103 @@ import hx.concurrent.internal.Dates;
 interface Future<T> {
 
    /**
-    * This function is non-blocking meaning if no result is available yet
-    * <code>FutureResult.NONE</code> is returned.
-    *
-    * @return the future's computed result
+    * @return true if `Future.result` holds either `FutureResult.DONE` or `FutureResult.FAILURE`
+    */
+   function isComplete():Bool;
+
+   /**
+    * @return the future's result, i.e. computed result or exception
     */
    var result(default, null):FutureResult<T>;
 
    /**
     * Callback function `function(result:FutureResult<T>):Void` to be executed when a result
-    * becomes available or immediately in case a result is already present.
-    *
-    * Replaces any previously registered onResult function.
+    * becomes available or immediately in case the future is already complete.
     */
-   var onResult(default, set):Null<(FutureResult<T>) -> Void>;
+   function onCompletion(listener:FutureCompletionListener<T>):Void;
 }
 
 
 enum FutureResult<T> {
-
    /**
-    * Indicates last execution attempt successfully computed a result.
+    * Indicates the future completed successfully.
     *
     * @param time when the result was computed
     */
-   SUCCESS(result:T, time:Float, future:Future<T>);
+   VALUE(result:T, time:Float, future:Future<T>);
 
    /**
-    * Indicates an error during the last execution attempt.
+    * Indicates the future completed with an error.
     *
     * @param time when the failure occured
     */
    FAILURE(ex:ConcurrentException, time:Float, future:Future<T>);
 
    /**
-    * Indicates no result has been computed yet
+    * Indicates the future is not yet complete.
     */
-   NONE(future:Future<T>);
+   PENDING(future:Future<T>);
 }
 
 
-class FutureBase<T> implements Future<T> {
 
+abstract class AbstractFuture<T> implements Future<T> {
+
+   final completionListeners = new Array<FutureCompletionListener<T>>();
+   final sync = new RLock();
+
+   #if java @:volatile #end
    public var result(default, null):FutureResult<T>;
 
-   public var onResult(default, set):Null<(FutureResult<T>) -> Void>;
-   inline function set_onResult(fn:Null<(FutureResult<T>) -> Void>) {
-      // immediately invoke the callback function in case a result is already present
-      if (fn != null) {
-         final result = this.result;
-         switch(result) {
-            case NONE(_):
-            default: fn(result);
-         }
+   inline
+   function new()
+      result = FutureResult.PENDING(this);
+
+   public function isComplete():Bool {
+      return switch(result) {
+         case PENDING(_): false;
+         default: true;
       }
-      return onResult = fn;
    }
 
+   public function onCompletion(listener:FutureCompletionListener<T>):Void {
+      sync.execute(() -> {
+         // immediately invoke the listener in case a result is already present
+         switch(result) {
+            case PENDING(_):
+            default: listener(result);
+         }
+         completionListeners.push(listener);
+      });
+   }
+}
+
+
+/**
+ * Future that can be completed via `CompletableFuture#done` or `CompletableFuture#failed`
+ */
+class CompletableFuture<T> extends AbstractFuture<T> {
+
    inline
-   function new() {
-      result = FutureResult.NONE(this);
+   public function new()
+      super();
+
+   /**
+    * @return true if the result was set and false if `overwriteResult == false` and the future was already completed
+    */
+   public function complete(result:Either2<T, ConcurrentException>, overwriteResult = false):Bool {
+      return sync.execute(() -> {
+         if (overwriteResult || !isComplete()) {
+            switch(result.value) {
+               case a(value): this.result = FutureResult.VALUE(value, Dates.now(), this);
+               case b(ex):    this.result = FutureResult.FAILURE(ex, Dates.now(), this);
+            }
+            for (listener in completionListeners)
+               try listener(this.result) catch (ex) trace(ex);
+            return true;
+         }
+         return false;
+      });
    }
 }
 
@@ -80,10 +123,19 @@ class FutureBase<T> implements Future<T> {
 /**
  * Future with a pre-calculated result.
  */
-class ConstantFuture<T> extends FutureBase<T> {
+final class CompletedFuture<T> implements Future<T> {
 
-   public function new(result:T) {
-      super();
-      this.result = FutureResult.SUCCESS(result, Dates.now(), this);
-   }
+   public final result:FutureResult<T>;
+
+   public function new(value:T)
+      this.result = FutureResult.VALUE(value, Dates.now(), this);
+
+   inline
+   public function isComplete():Bool
+      return true;
+
+   inline
+   public function onCompletion(listener:FutureCompletionListener<T>):Void
+      listener(result);
 }
+

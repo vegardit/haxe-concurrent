@@ -5,13 +5,14 @@
  */
 package hx.concurrent.thread;
 
+#if (threads || display)
 import haxe.ds.StringMap;
 import hx.concurrent.Service.ServiceBase;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.Queue;
 import hx.concurrent.thread.Threads;
 
-#if threads
+
 class ThreadPool extends ServiceBase {
 
    static final _threadIDs = new AtomicInt();

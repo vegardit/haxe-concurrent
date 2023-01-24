@@ -9,24 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+### Changed
+- refactored Future API
+  - added class `CompletableFuture`
+  - renamed class `ConstantFuture` to `CompletedFuture`
+  - added function `Future.isComplete`
+  - replace field `Future.onResult` with function `Future.onCompletion`
+- refactored Executor API
+  - replace field `Executor.onResult()` with function `Executor.onCompletion()`
+  - renamed `TaskFuture.waitAndGet()` to `TaskFuture.awaitCompletion()`
+  - renamed `TaskFutureBase` to `AbstractTaskFuture`
+
 ### Fixed
-- BackgroundProcess.pid is not with Java 9+
+- `BackgroundProcess.pid` is not with Java 9+
 
 
 ## [4.1.0] - 2023-01-20
 
 ### Added
-- BackgroundProcess#awaitSuccess() now returns a boolean indicating if the process finished or is still running
+- `BackgroundProcess#awaitSuccess()` now returns a boolean indicating if the process finished or is still running
 
 ### Fixed
-- Fix "Uncaught exception Lock was aquired by another thread!"
+- Fix "Uncaught exception Lock was acquired by another thread!"
 - Prevent random premature killing of external processes run via BackgroundProcess
 
 
 ## [4.0.1] - 2023-01-17
 
 ### Fixed
-- BackgroundProcess#readAll always returns empty string
+- `BackgroundProcess#readAll` always returns empty string
 
 
 ## [4.0.0] - 2022-04-26
@@ -70,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use sys.thread API for C# on Haxe4
 
 ### Fixed
-- Haxe4.RC3 eval compilation errror: sys.thread.Thread has no field id
+- Haxe4.RC3 eval compilation error: sys.thread.Thread has no field id
 
 
 ## [2.1.2] - 2019-06-25
@@ -89,12 +100,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2019-05-09
 
 ### Added
-- class hx.concurrent.thread.BackgroundProcess
-- property Queue#length
-- method ThreadPool#awaitTermination()
-- method ThreadPool#cancelPendingTasks()
-- method ThreadPool#getExecutingTasks()
-- method ThreadPool#getPendingTasks()
+- class `hx.concurrent.thread.BackgroundProcess`
+- property `Queue#length`
+- method `ThreadPool#awaitTermination()`
+- method `ThreadPool#cancelPendingTasks()`
+- method `ThreadPool#getExecutingTasks()`
+- method `ThreadPool#getPendingTasks()`
 
 ### Changed
 - [PR-3](https://github.com/vegardit/haxe-concurrent/pull/3) Use new `sys.thread `package when possible on Haxe 4
@@ -103,20 +114,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.1] - 2018-10-23
 
 ### Fixed
-- class hx.concurrent.lock.RWLock not working on JS target
+- class `hx.concurrent.lock.RWLock` not working on JS target
 - workaround for HL on Haxe 3.4 which is missing native thread support
 
 
 ## [2.0.0] - 2018-09-20
 
 ### Added
-- interface hx.concurrent.lock.Acquirable
-- class hx.concurrent.CountDownLatch
-- class hx.concurrent.lock.RWLock (upgradeable Read Write Lock)
+- interface `hx.concurrent.lock.Acquirable`
+- class `hx.concurrent.CountDownLatch`
+- class `hx.concurrent.lock.RWLock` (upgradeable Read Write Lock)
 
 ### Changed
-- renamed methid hx.concurrent.thread.Threads#wait() to hx.concurrent.thread.Threads#await()
-- changed hx.concurrent.lock.Semaphore from abstract to class
+- renamed method `hx.concurrent.thread.Threads#wait()` to `hx.concurrent.thread.Threads#await()`
+- changed `hx.concurrent.lock.Semaphore` from abstract to class
 
 ### Fixed
 - define "threads" is now set correctly for targets supporting real threading
@@ -138,8 +149,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2018-04-15
 
 ### Added
-- field hx.concurrent.Service.ServiceState.STARTING
-- method hx.concurrent.Service.Service#start()
+- field `hx.concurrent.Service.ServiceState.STARTING`
+- method `hx.concurrent.Service.Service#start()`
 
 ### Changed
 - replaced license header by "SPDX-License-Identifier: Apache-2.0"

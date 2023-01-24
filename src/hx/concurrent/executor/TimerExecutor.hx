@@ -6,9 +6,9 @@
 package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
+import hx.concurrent.executor.Executor.AbstractTaskFuture;
 import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
-import hx.concurrent.executor.Executor.TaskFutureBase;
 import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
@@ -30,7 +30,6 @@ class TimerExecutor extends Executor {
    }
 
 
-   override
    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T>
       return _stateLock.execute(function() {
          if (state != RUNNING)
@@ -58,7 +57,8 @@ class TimerExecutor extends Executor {
 }
 
 
-private class TaskFutureImpl<T> extends TaskFutureBase<T> {
+@:access(hx.concurrent.executor.Executor)
+private class TaskFutureImpl<T> extends AbstractTaskFuture<T> {
 
    var _timer:Null<haxe.Timer>;
 
@@ -73,6 +73,7 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
       #end
       haxe.Timer.delay(this.run, initialDelay);
    }
+
 
    public function run():Void {
       if (isStopped)
@@ -90,15 +91,14 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
          _timer = t;
       }
 
-      var result:FutureResult<T> = FutureResult.NONE(this);
+      var fnResult:Either2<T, ConcurrentException>;
       try {
-         var resultValue:T = switch(_task.value) {
-            case a(fn): fn();
-            case b(fn): fn(); null;
+         fnResult = switch(_task.value) {
+            case a(functionWithReturnValue):    functionWithReturnValue();
+            case b(functionWithoutReturnValue): functionWithoutReturnValue(); null;
          }
-         result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
       } catch (ex)
-         result = FutureResult.FAILURE(ConcurrentException.capture(ex), Dates.now(), this);
+         fnResult = ConcurrentException.capture(ex);
 
       // calculate next run for FIXED_DELAY
       switch(schedule) {
@@ -107,12 +107,8 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
          default: /*nothing*/
       }
 
-      this.result = result;
-
-      final fn = this.onResult;
-      if (fn != null) try fn(result) catch (ex) trace(ex);
-      final fn = _executor.onResult;
-      if (fn != null) try fn(result) catch (ex) trace(ex);
+      complete(fnResult, true);
+      _executor.notifyResult(result);
    }
 
 

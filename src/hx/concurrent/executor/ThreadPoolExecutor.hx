@@ -5,11 +5,12 @@
  */
 package hx.concurrent.executor;
 
+#if (threads || display)
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.Queue;
+import hx.concurrent.executor.Executor.AbstractTaskFuture;
 import hx.concurrent.executor.Executor.TaskFuture;
-import hx.concurrent.executor.Executor.TaskFutureBase;
 import hx.concurrent.executor.Schedule.ScheduleTools;
 import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Either2;
@@ -17,10 +18,9 @@ import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 
 /**
- * hx.concurrent.thread.ThreadPool based executor.
+ * `hx.concurrent.thread.ThreadPool` based executor.
  * Only available on platforms supporting threads.
  */
-#if threads
 class ThreadPoolExecutor extends Executor {
 
    public inline static final SCHEDULER_RESOLUTION_MS = 10;
@@ -120,7 +120,6 @@ class ThreadPoolExecutor extends Executor {
    }
 
 
-   override
    public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T>
       return _stateLock.execute(function() {
          if (state != RUNNING)
@@ -158,7 +157,8 @@ class ThreadPoolExecutor extends Executor {
 }
 
 
-private class TaskFutureImpl<T> extends TaskFutureBase<T> {
+@:access(hx.concurrent.executor.Executor)
+private class TaskFutureImpl<T> extends AbstractTaskFuture<T> {
 
    var _nextRunAt:Float;
 
@@ -193,29 +193,24 @@ private class TaskFutureImpl<T> extends TaskFutureBase<T> {
       if (isStopped)
          return;
 
-      var result:FutureResult<T> = FutureResult.NONE(this);
+      var fnResult:Either2<T, ConcurrentException>;
       try {
-         final resultValue:T = switch(_task.value) {
-            case a(fn): fn();
-            case b(fn): fn(); null;
+         fnResult = switch(_task.value) {
+            case a(functionWithReturnValue):    functionWithReturnValue();
+            case b(functionWithoutReturnValue): functionWithoutReturnValue(); null;
          }
-         result = FutureResult.SUCCESS(resultValue, Dates.now(), this);
       } catch (ex)
-         result = FutureResult.FAILURE(ConcurrentException.capture(ex), Dates.now(), this);
+         fnResult = ConcurrentException.capture(ex);
 
       // calculate next run for FIXED_DELAY
       switch(schedule) {
-         case ONCE(_):                    isStopped = true;
+         case ONCE(_): isStopped = true;
          case FIXED_DELAY(intervalMS, _): _nextRunAt = Dates.now() + intervalMS;
          default: /*nothing*/
       }
 
-      this.result = result;
-
-      final fn = this.onResult;
-      if (fn != null) try fn(result) catch (ex) trace(ex);
-      final fn = _executor.onResult;
-      if (fn != null) try fn(result) catch (ex) trace(ex);
+      complete(fnResult, true);
+      _executor.notifyResult(result);
    }
 }
 #end

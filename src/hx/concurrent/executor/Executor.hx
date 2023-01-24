@@ -6,16 +6,21 @@
 package hx.concurrent.executor;
 
 import hx.concurrent.Future.FutureResult;
-import hx.concurrent.Future.FutureBase;
+import hx.concurrent.collection.CopyOnWriteArray;
+import hx.concurrent.Future.FutureCompletionListener;
+import hx.concurrent.Future.CompletableFuture;
 import hx.concurrent.Service.ServiceBase;
 import hx.concurrent.internal.Either2;
+
+#if threads
+import hx.concurrent.Future.FutureResult;
 import hx.concurrent.thread.Threads;
+#end
 
 /**
- * A scheduler/work manager that executes submitted tasks asynchronously or concurrently
- * based on a given schedule.
+ * A scheduler/work manager that executes submitted tasks asynchronously or concurrently based on a given schedule.
  */
-class Executor extends ServiceBase {
+abstract class Executor extends ServiceBase {
 
    static final NOW_ONCE = Schedule.ONCE(0);
 
@@ -32,19 +37,27 @@ class Executor extends ServiceBase {
       return new TimerExecutor(autostart);
    }
 
+   final completionListeners = new CopyOnWriteArray<FutureCompletionListener<Any>>();
 
-   /**
-    * Global callback function `function(result:FutureResult<T>):Void` to be executed when a
-    * new result comes available for any task.
-    *
-    * Replaces any previously registered onResult function.
-    */
-   public var onResult:FutureResult<Dynamic>->Void = function(result) {
-      switch(result) {
-         case FAILURE(ex, _): trace(ex);
+
+   function notifyResult(result:FutureResult<Any>):Void {
+      for (listener in completionListeners) {
+         try listener(result) catch (ex) trace(ex);
+      }
+      if (completionListeners.isEmpty()) switch(result) {
+         case FAILURE(ex, _, _): trace(ex);
          default:
       }
-   };
+   }
+
+
+   /**
+    * Global callback function `function(result:FutureResult<Any>):Void` to be executed when any task finishes.
+    */
+   inline
+   public function onCompletion(listener:FutureCompletionListener<Any>) {
+      completionListeners.add(listener);
+   }
 
 
    /**
@@ -55,8 +68,7 @@ class Executor extends ServiceBase {
     *
     * @throws exception if in state ServiceState#STOPPING or ServiceState#STOPPED
     */
-   public function submit<T>(task:Task<T>, ?schedule:Schedule):TaskFuture<T>
-      throw "Not implemented";
+   public abstract function submit<T>(task:Task<T>, ?schedule:Schedule):TaskFuture<T>;
 
 
    /**
@@ -67,10 +79,11 @@ class Executor extends ServiceBase {
       super.stop();
 }
 
+
 /**
  * A function with no parameters and return type Void or T
  */
-typedef Task<T> = Either2<Void->T,Void->Void>;
+typedef Task<T> = Either2<Void->T, Void->Void>;
 
 
 interface TaskFuture<T> extends Future<T> {
@@ -92,19 +105,19 @@ interface TaskFuture<T> extends Future<T> {
 
    #if threads
    /**
-    * If <code>timeoutMS</code> is set 0, the function immediatly returns.
-    * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
-    * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until a result is available.
+    * If <code>timeoutMS</code> is set 0, this function returns immediately.
+    * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until the task is complete.
+    * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until the task is complete.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
-    * @return result of the last execution
+    * @return result of the last task execution.
     */
-   function waitAndGet(timeoutMS:Int):FutureResult<T>;
+   function awaitCompletion(timeoutMS:Int):FutureResult<T>;
    #end
 }
 
 
-class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
+abstract class AbstractTaskFuture<T> extends CompletableFuture<T> implements TaskFuture<T> {
 
    public var schedule(default, null):Schedule;
    public var isStopped(default, null) = false;
@@ -127,13 +140,9 @@ class TaskFutureBase<T> extends FutureBase<T> implements TaskFuture<T> {
 
 
    #if threads
-   public function waitAndGet(timeoutMS:Int):FutureResult<T> {
-      Threads.await(() -> switch(this.result) {
-         case NONE(_): false;
-         default: true;
-      }, timeoutMS, ThreadPoolExecutor.SCHEDULER_RESOLUTION_MS);
-
-      return this.result;
+   public function awaitCompletion(timeoutMS:Int):FutureResult<T> {
+      Threads.await(() -> isComplete(), timeoutMS, ThreadPoolExecutor.SCHEDULER_RESOLUTION_MS);
+      return result;
    }
    #end
 }

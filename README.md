@@ -85,13 +85,13 @@ class Test {
       // depending on the platform either a thread-based or timer-based implementation is returned
 
       // define a function to be executed concurrently/async/scheduled (return type can also be Void)
-      var myTask=function():Date {
+      var myTask = function():Date {
          trace("Executing...");
          return Date.now();
       }
 
       // submit 10 tasks each to be executed once asynchronously/concurrently as soon as possible
-      for(i in 0...10) {
+      for (i in 0...10) {
          executor.submit(myTask);
       }
 
@@ -106,14 +106,14 @@ class Test {
       var future = executor.submit(myTask, FIXED_RATE(200));
 
       // check if a result is already available
-      switch(future.result) {
-         case SUCCESS(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
-         case FAILURE(ex, time, _):    trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
-         case NONE(_):                 trace("No result yet...");
+      switch (future.result) {
+         case VALUE(value, time, _): trace('Successfully execution at ${Date.fromTime(time)} with result: $value');
+         case FAILURE(ex, time, _):  trace('Execution failed at ${Date.fromTime(time)} with exception: $ex');
+         case PENDING(_):            trace("No result yet...");
       }
 
       // check if the task is scheduled to be executed (again) in the future
-      if(!future.isStopped) {
+      if (!future.isStopped) {
          trace('The task is scheduled for further executions with schedule: ${future.schedule}');
       }
 
@@ -173,14 +173,13 @@ class Test {
 
       asyncDispatcher.subscribe(onAsyncEvent);
 
-      future.onResult = function(result:FutureResult<Dynamic>) {
+      future.onCompletion(result -> {
          switch(result) {
-            case SUCCESS(count, _): trace('$count listeners were successfully notified');
-            case FAILURE(ex, _): trace('Event could not be delivered because of: $ex');
-            case NONE(_): trace("Nothing is happening");
+            case VALUE(count, _): trace('$count listeners were successfully notified');
+            case FAILURE(ex, _):  trace('Event could not be delivered because of: $ex');
+            case PENDING(_):      trace("Nothing is happening");
           }
-      };
-
+      });
    }
 }
 ```
