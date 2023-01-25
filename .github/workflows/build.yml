@@ -45,8 +45,8 @@ jobs:
       if: runner.os == 'Linux' && env.ACT # https://github.com/nektos/act#skipping-steps
       run: |
         if ! hash ping 2>/dev/null; then
-        apt-get update
-        apt-get -y install iputils-ping
+          apt-get update
+          apt-get -y install iputils-ping
         fi
 
     - name: Show environment variables
@@ -55,15 +55,15 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3 #https://github.com/actions/checkout
 
-    - name: "Cache: Haxelib Repository"
-      if: ${{ !env.ACT }}
-      uses: actions/cache@v3
+    - name: "Cache: Restore"
+      id: cache-restore
+      if: ${{ !env.ACT }} # https://github.com/nektos/act#skipping-steps
+      uses: actions/cache/restore@v3
       with:
-        path: ${{ runner.tool_cache }}/haxe/${{ matrix.haxe }}/x64/lib
-        # https://github.com/actions/cache/issues/342#issuecomment-673371329
-        key: ${{ runner.os }}-haxelib-${{ matrix.haxe }}-${{ github.run_id }}
-        restore-keys: |
-          ${{ runner.os }}-haxelib-${{ matrix.haxe }}-
+        path: |
+          ${{ runner.tool_cache }}/haxe/lib
+          /opt/hashlink
+        key: ${{ runner.os }}-${{ matrix.haxe }}
 
     - name: "MacOS: Update brew formulas"
       if: runner.os == 'macOS'
@@ -85,6 +85,22 @@ jobs:
           /usr/local/bin/pydoc3 \
           /usr/local/bin/python3 \
           /usr/local/bin/python3-config
+
+    - name: "Install: Hashlink"
+      if: runner.os == 'Linux'
+      run: |
+        set -euxo pipefail
+        if ! hash hl 2>/dev/null; then
+          if [ ! -e /opt/hashlink ]; then
+            if [[ -n "${{ github.token }}" ]]; then
+              authHeader='-H "Authorization: token ${{ github.token }}"'
+            fi
+            latest_url=$(eval curl -fsSL ${authHeader:-} https://api.github.com/repos/HaxeFoundation/hashlink/releases | grep -o "https://.*/download/latest/hashlink-.*-linux-amd64.tar.gz")
+            curl -sSfL $latest_url | sudo tar -xz -C /opt/
+            mv /opt/hashlink-* /opt/hashlink
+          fi
+          echo "/opt/hashlink" >> $GITHUB_PATH
+        fi
 
     - name: "Install: Java 11"
       uses: actions/setup-java@v3
@@ -113,13 +129,26 @@ jobs:
 
     - name: "Install: Haxe Libraries"
       run: |
-        set -eu
+        set -eux
+
+        case "${{runner.os}}" in
+          Windows)
+            export HAXELIB_PATH="${{ runner.tool_cache }}\\haxe\\lib"
+            HAXELIB_PATH_UNIX=$(cygpath "$HAXELIB_PATH")
+            ;;
+          *)
+            export HAXELIB_PATH="${{ runner.tool_cache }}/haxe/lib"
+            HAXELIB_PATH_UNIX=$HAXELIB_PATH
+            ;;
+        esac
+        mkdir -p "$HAXELIB_PATH_UNIX"
+        echo "HAXELIB_PATH=$HAXELIB_PATH" >> $GITHUB_ENV
 
         haxelib config
 
         for lib in haxe-doctest hx3compat; do
           echo "::group::install_$lib"
-          haxelib install $lib
+          haxelib --always install $lib
           haxelib --always update $lib || true
           echo "::endgroup::"
         done
@@ -127,7 +156,7 @@ jobs:
         # install latest travix version
         haxelib git travix https://github.com/back2dos/travix
         pushd .
-        cd $(haxelib config)travix/git
+        cd $HAXELIB_PATH_UNIX/travix/git
         haxe build-neko.hxml -lib hx3compat
         popd
 
@@ -148,7 +177,7 @@ jobs:
       run: haxelib run travix flash
 
     - name: Test [hl]
-      if: runner.os != 'Linux' # prebuild linux binary available yet
+      continue-on-error: ${{ runner.os == 'Linux' }} # Segmentation fault
       run: haxelib run travix hl
 
     - name: Test [java]
@@ -186,6 +215,28 @@ jobs:
       run: haxelib run travix cpp
 
 
+    ##################################################
+    # Cache Update
+    # See https://github.com/actions/cache/issues/342
+    ##################################################
+    - name: "Cache: Delete Previous"
+      if: ${{ steps.cache-restore.outputs.cache-hit && !env.ACT }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete ${{ runner.os }}-${{ matrix.haxe }} --confirm
+
+    - name: "Cache: Update"
+      uses: actions/cache/save@v3
+      if: ${{ always() && !env.ACT }} # save cache even fails
+      with:
+        path: |
+          ${{ runner.tool_cache }}/haxe/lib
+          /opt/hashlink
+        key: ${{ runner.os }}-${{ matrix.haxe }}
+
+
   ###########################################################
   cleanup:
   ###########################################################
@@ -195,7 +246,7 @@ jobs:
 
     steps:
     - name: "Delete intermediate build artifacts"
-      if: ${{ !env.ACT }}
+      if: ${{ !env.ACT }} # https://github.com/nektos/act#skipping-steps
       uses: geekyeggo/delete-artifact@v2 # https://github.com/GeekyEggo/delete-artifact/
       with:
         name: "*"
