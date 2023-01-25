@@ -168,8 +168,6 @@ jobs:
     ##################################################
 
     - name: Test [eval]
-      timeout-minutes: 1
-      continue-on-error: true # randomly hangs even on > 4.1 probably because if https://github.com/HaxeFoundation/haxe/issues/8525
       run: haxelib run travix interp -D eval-stack
 
     - name: Test [flash]

@@ -100,7 +100,7 @@ class Threads {
    /**
     * Puts the current thread to sleep for the given milliseconds.
     */
-   inline
+   #if !flash inline #end
    public static function sleep(timeMS:Int):Void {
       #if flash
          final cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
@@ -116,9 +116,9 @@ class Threads {
    /**
     * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.
     */
-   inline
+   #if !python inline #end
    public static function spawn(func:()->Void):Void {
-      #if (cpp || cs || eval || java || neko || hl)
+      #if (cpp || cs || (threads && eval) || java || neko || hl)
          sys.thread.Thread.create(func);
       #elseif python
          final t = new python.lib.threading.Thread({target: func});

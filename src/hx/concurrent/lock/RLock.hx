@@ -22,7 +22,7 @@ class RLock extends AbstractAcquirable {
     */
    public static inline final isSupported = #if (threads || flash) true #else false #end;
 
-   #if (cpp || cs || eval || java || neko || hl)
+   #if (cpp || cs || (threads && eval) || java || neko || hl)
    final _rlock = new sys.thread.Mutex();
    #elseif flash
       // flash.concurrent.Mutex requries swf-version >= 11.4
@@ -73,7 +73,7 @@ class RLock extends AbstractAcquirable {
     * Blocks until lock can be acquired.
     */
    public function acquire():Void {
-      #if (cpp || cs || eval || java || neko || hl || python)
+      #if (cpp || cs || (threads && eval) || java || neko || hl || python)
          _rlock.acquire();
       #elseif flash
          _cond.mutex.lock();
@@ -109,7 +109,7 @@ class RLock extends AbstractAcquirable {
 
    #if !flash inline #end
    private function tryAcquireInternal(timeoutMS = 0):Bool {
-      #if (cpp || cs || eval || java || neko || hl)
+      #if (cpp || cs || (threads && eval) || java || neko || hl)
          return Threads.await(() -> _rlock.tryAcquire(), timeoutMS);
       #elseif python
          return Threads.await(() -> _rlock.acquire(false), timeoutMS);
@@ -148,7 +148,7 @@ class RLock extends AbstractAcquirable {
       } else
          throw "Lock was not aquired by any thread!";
 
-      #if (cpp || cs || eval || java || neko || hl || python)
+      #if (cpp || cs || (threads && eval) || java || neko || hl || python)
          _rlock.release();
       #elseif flash
          _cond.notify();

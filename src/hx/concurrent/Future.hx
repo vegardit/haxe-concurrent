@@ -64,7 +64,7 @@ abstract class AbstractFuture<T> implements Future<T> {
    final completionListeners = new Array<FutureCompletionListener<T>>();
    final sync = new RLock();
 
-   #if java @:volatile #end
+   #if (java || cs) @:volatile #end
    public var result(default, null):FutureResult<T>;
 
    inline

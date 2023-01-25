@@ -13,7 +13,7 @@ import hx.concurrent.thread.Threads;
  * Unbound thread-safe first-in-first-out message queue.
  */
 class Queue<T> {
-   #if (cpp || cs || eval || java || neko || hl)
+   #if (cpp || cs || (threads && eval) || java || neko || hl)
       final _queue = new sys.thread.Deque<T>();
    #elseif python
       final _queue:Dynamic;
@@ -52,7 +52,7 @@ class Queue<T> {
          throw "[timeoutMS] must be >= -1";
 
       if (timeoutMS == 0) {
-         #if (cpp || cs || eval || java || neko || hl)
+         #if (cpp || cs || (threads && eval) || java || neko || hl)
             msg = _queue.pop(false);
          #elseif python
             msg = try _queue.pop() catch (ex) null;
@@ -63,7 +63,7 @@ class Queue<T> {
          #end
       } else {
           Threads.await(function() {
-            #if (cpp || cs || eval || java || neko || hl)
+            #if (cpp || cs || (threads && eval) || java || neko || hl)
                msg = _queue.pop(false);
             #elseif python
                msg = try _queue.pop() catch (ex) null;
@@ -98,7 +98,7 @@ class Queue<T> {
       if (msg == null)
          throw "[msg] must not be null";
 
-      #if (cpp || cs || eval || java || neko || hl)
+      #if (cpp || cs || (threads && eval) || java || neko || hl)
          _queue.push(msg);
       #elseif python
          _queue.append(msg);
@@ -120,7 +120,7 @@ class Queue<T> {
       if (msg == null)
          throw "[msg] must not be null";
 
-      #if (cpp || cs || eval || java || neko || hl)
+      #if (cpp || cs || (threads && eval) || java || neko || hl)
          _queue.add(msg);
       #elseif python
          _queue.appendleft(msg);
