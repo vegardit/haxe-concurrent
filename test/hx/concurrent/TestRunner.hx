@@ -24,7 +24,7 @@ import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 import hx.doctest.internal.Logger;
 
-@:build(hx.doctest.DocTestGenerator.generateDocTests())
+//@:build(hx.doctest.DocTestGenerator.generateDocTests())
 @:keep // prevent DCEing of manually created testXYZ() methods
 class TestRunner extends hx.doctest.DocTestRunner {
 
