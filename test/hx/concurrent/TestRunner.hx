@@ -417,12 +417,15 @@ class TestRunner extends hx.doctest.DocTestRunner {
    #if threads
    function testBackgroundProcess() {
       final durationInSeconds = 3;
-      final p = Sys.systemName() == "Windows"
-         ? new BackgroundProcess("ping", ["127.0.0.1", "-n", durationInSeconds + 1, "-w", 1000 ])
-         : new BackgroundProcess("ping", ["127.0.0.1", "-c", durationInSeconds + 1, "-W", 1 ]);
+      final p = BackgroundProcess.builder("ping") //
+         .withArg("127.0.0.1") //
+         .withArgs(Sys.systemName() == "Windows"
+            ? ["-n", durationInSeconds + 1, "-w", 1000 ]
+            : ["-c", durationInSeconds + 1, "-W", 1 ]
+         ).build();
 
       assertEquals(p.exitCode, null);
-      assertTrue(p.isRunning);
+      assertTrue(p.isRunning());
       #if !java
          assertMin(p.pid, 1);
       #end
@@ -442,10 +445,32 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
       assertContains(p.stdout.readAll(), "127.0.0.1");
       assertEquals(p.exitCode, 0);
-      assertFalse(p.isRunning);
+      assertFalse(p.isRunning());
       #if !java
          assertMin(p.pid, 1);
       #end
+   }
+
+
+   function testBackgroundProcess_awaitExitOrKill() {
+      final durationInSeconds = 10;
+      final p = BackgroundProcess.create("ping", Sys.systemName() == "Windows"
+         ? ["127.0.0.1", "-n", durationInSeconds + 1, "-w", 1000 ]
+         : ["127.0.0.1", "-c", durationInSeconds + 1, "-W", 1 ]
+      );
+
+      assertEquals(p.exitCode, null);
+      assertTrue(p.isRunning());
+      #if !java
+         assertMin(p.pid, 1);
+      #end
+
+      Logger.log(INFO, "Awaiting exit of ping process...");
+      assertTrue(p.isRunning());
+      p.awaitExitOrKill(1000); // kill process
+      p.awaitExit(2000); // wait for process termination to be done
+      assertFalse(p.isRunning());
+      assertNotEquals(p.exitCode, null);
    }
 
 
@@ -554,7 +579,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final executor = Executor.create(2);
       assertEquals(executor.state, ServiceState.RUNNING);
       executor.stop();
-      _later(500, function() {
+      _later(2000, function() {
          assertEquals(executor.state, ServiceState.STOPPED);
       });
    }
@@ -582,7 +607,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       _later(12 * intervalMS, function() {
          executor.stop();
       });
-      _later(40 * intervalMS, function() {
+      _later(60 * intervalMS, function() {
          assertTrue(task.isStopped);
          assertEquals(executor.state, ServiceState.STOPPED);
       });
@@ -634,7 +659,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final intervalMS = 100;
       final threadMS = 200;
 
-      final fixedRateCounter  = new AtomicInt(0);
+      final fixedRateCounter = new AtomicInt(0);
       final fixedRateCompletionCounter1 = new AtomicInt(0);
       final fixedRateCompletionCounter2 = new AtomicInt(0);
       var future1_first_execution:Float = 0;

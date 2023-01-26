@@ -5,27 +5,46 @@
  */
 package hx.concurrent.thread;
 
-#if threads
-
+#if (threads || display)
+import haxe.Rest;
 import haxe.ds.ReadOnlyArray;
 import haxe.io.BytesBuffer;
 import haxe.io.Eof;
 import hx.concurrent.collection.Queue;
 import hx.concurrent.internal.*;
+import hx.concurrent.internal.NullAnalysisHelper.lazyNonNull;
 import hx.concurrent.lock.RLock;
+import hx.concurrent.Future.CompletableFuture;
 import sys.io.Process;
 
+
 /**
- * Similar to sys.io.Process but with non-blocking stderr/stdout to
- * handle interactive prompts.
+ * Similar to sys.io.Process but with non-blocking stderr/stdout to handle interactive prompts.
  *
- * Per BackgroundProcess two threads are spawned to handle the underlying
- * blocking haxe.io.Input stderr/stdout streams.
+ * Per BackgroundProcess two threads are spawned to handle the underlying blocking haxe.io.Input stderr/stdout streams.
  */
+@:allow(hx.concurrent.thread.BackgroundProcessBuilder)
 class BackgroundProcess {
 
-   public final cmd:String;
-   public final args:Null<ReadOnlyArray<String>>;
+   @:access(hx.concurrent.thread.BackgroundProcessBuilder)
+   public static function builder(executable:String) {
+      if (executable == null || executable.length == 0)
+         throw "[executable] must not be null or empty";
+      return new BackgroundProcessBuilder(executable);
+   }
+
+   public static function create(executable:String, args:Array<AnyAsString>):BackgroundProcess {
+      return builder(executable).withArgs(args).build();
+   }
+
+   private static final SYNC = new RLock();
+
+   public final executable:String;
+
+   final _args = new Array<String>();
+   public final args:ReadOnlyArray<String>;
+
+   public var workDir(default, null) = Sys.getCwd();
 
    /**
     * - the exit code if the process finished, or
@@ -49,8 +68,17 @@ class BackgroundProcess {
    public final stderr = new NonBlockingInput();
    public final stdout = new NonBlockingInput();
 
-   public var isRunning(get, never): Bool;
-   function get_isRunning() {
+   var process:Process = lazyNonNull();
+
+   /**
+    * @throws an exception in case the process cannot be created
+    */
+   public function new(executable:String) {
+      this.executable = executable;
+      args = this._args;
+   }
+
+   public function isRunning(): Bool {
       if (exitCode != null)
          return false;
 
@@ -62,20 +90,24 @@ class BackgroundProcess {
       }
    }
 
-   var process:Process;
+   #if neko
+   var isKilled = false;
+   #end
 
-   /**
-    * @throws an exception in case the process cannot be created
-    */
-   @:access(sys.io.Process.proc)
-   public function new(cmd:String, ?args:Array<Any>) {
-      if (cmd == null || cmd.length == 0)
-         throw "[cmd] must not be null or empty";
-
-      this.cmd = cmd;
-      final argsAsString = args == null ? null : args.map((arg) -> Std.string(arg));
-      this.args = argsAsString;
-      process = new Process(cmd, argsAsString);
+   #if java @:access(sys.io.Process.proc) #end
+   function run() {
+      process = SYNC.execute(() -> {
+         final oldCWD = Sys.getCwd();
+         if (workDir != oldCWD) Sys.setCwd(workDir);
+         try {
+             final process = new Process(executable, _args);
+             if (workDir != oldCWD) Sys.setCwd(oldCWD);
+             return process;
+         } catch (ex) {
+            if (workDir != oldCWD) Sys.setCwd(oldCWD);
+            throw ex;
+         }
+      });
       #if java
          try {
             pid = process.getPid();
@@ -100,16 +132,16 @@ class BackgroundProcess {
          pid = process.getPid();
       #end
 
-      @:volatile
+      #if (java || cs) @:volatile #end
       var stdErrDone = false;
       Threads.spawn(() -> {
          try {
-            while (true) {
+            while (#if neko !isKilled #else true #end) {
                try {
                   stderr.bytes.push(process.stderr.readByte());
                } catch (ex:haxe.io.Eof) {
-                #if eval Sys.sleep(0.001); #end // adding a sleep here somehow prevents sporadic premature Eof exceptions on Eval target
-                break;
+                  #if eval Sys.sleep(0.001); #end // adding a sleep here somehow prevents sporadic premature Eof exceptions on Eval target
+                  break;
                }
             }
          } catch (ex) {
@@ -121,14 +153,21 @@ class BackgroundProcess {
 
       Threads.spawn(() -> {
          try {
-            while (true)
-               try stdout.bytes.push(process.stdout.readByte()) catch (ex:haxe.io.Eof) break;
+            while (#if neko !isKilled #else true #end)
+               try
+                  stdout.bytes.push(process.stdout.readByte())
+               catch (ex:haxe.io.Eof)
+                  break;
          } catch (ex) {
-             trace(ex);
+            trace(ex);
          }
 
          Threads.await(() -> stdErrDone, 5000);
-         exitCode = process.exitCode();
+         #if neko
+            exitCode = isKilled ? -1 : process.exitCode();
+         #else
+            exitCode = process.exitCode();
+         #end
          process.close();
       });
    }
@@ -145,6 +184,23 @@ class BackgroundProcess {
     */
    public function awaitExit(timeoutMS:Int):Null<Int> {
       Threads.await(() -> exitCode != null, timeoutMS);
+      return exitCode;
+   }
+
+   /**
+    * Blocks until the process exits or timeoutMS is reached.
+    *
+    * If <code>timeoutMS</code> is set 0, immediatly returns with the null or the exit code.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns either null or the exit code.
+    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+    * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+    *
+    * @return the exit code or null if the process was killed because timeout was reached.
+    */
+   public function awaitExitOrKill(timeoutMS:Int):Null<Int> {
+      final exitCode = awaitExit(timeoutMS);
+      if (isRunning())
+         kill();
       return exitCode;
    }
 
@@ -168,17 +224,64 @@ class BackgroundProcess {
          return false;
 
       if (includeStdErr)
-         throw 'Process [cmd=$cmd,pid=$pid] failed with exit code $exitCode and error message: ${stderr.readAll()}';
+         throw 'Process [exe=$executable,pid=$pid] failed with exit code $exitCode and error message: ${stderr.readAll()}';
 
-      throw 'Process [cmd=$cmd,pid=$pid] failed with exit code $exitCode';
+      throw 'Process [exe=$executable,pid=$pid] failed with exit code $exitCode';
    }
 
    /**
-    * Kills the process.
+    * Blocks until the process exits or timeoutMS is reached.
+    *
+    * If <code>timeoutMS</code> is set 0, immediatly returns.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns.
+    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+    * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
+    *
+    * @return `true` if process exited successful, `false` if process did not finish in time and thus process termination was requested
+    * @throws if exitCode != 0
     */
-   inline
+   public function awaitSuccessOrKill(timeoutMS:Int, includeStdErr = true):Bool {
+      if (!awaitSuccess(timeoutMS, includeStdErr)) {
+         kill();
+         return false;
+      }
+      return true;
+   }
+
+   /**
+    * Kills the process if it is still running.
+    *
+    * The process may not be immediately terminated once the command is issued.
+    * So it may be followed by an awaitExit() call.
+    *
+    * @return this for method chaining
+    */
+   #if java @:access(sys.io.Process.proc) #end
    public function kill():Void {
-      process.kill();
+      if (!isRunning())
+         return;
+
+      final pid = this.pid;
+      if (pid > -1) switch (OS.current) {
+         case Linux, MacOS:
+            new Process("kill", ["-STOP", '$pid']).exitCode(true); // freeze process to prevent it from spawning more children
+            new Process("pkill", ["-9", "-P", '$pid']).exitCode(true); // kill descendant processes
+            new Process("kill", ["-9", '$pid']).exitCode(true); // kill process
+            #if neko isKilled = true; #end
+            return;
+         case Windows:
+            // kill process with descendant processes
+            new Process("taskkill", ["/f", "/t", "/pid", '$pid']).exitCode(true);
+            #if neko isKilled = true; #end
+            return;
+         default:
+      }
+      #if java
+         process.proc.destroyForcibly();
+      #else
+         process.kill();
+      #end
+      #if neko isKilled = true; #end
    }
 }
 
@@ -281,6 +384,42 @@ class NonBlockingInput {
       final all = buffer.length == 0 ? linePreview : linePreview + buffer.getBytes().toString();
       linePreview = "";
       return all;
+   }
+}
+
+
+class BackgroundProcessBuilder {
+
+   final process:BackgroundProcess;
+   var isBuilt = false;
+
+   inline function new(executable:String) {
+      process = new BackgroundProcess(executable);
+   }
+
+   public function build():BackgroundProcess {
+      if (isBuilt)
+         throw "Already built!";
+
+      isBuilt = true;
+      process.run();
+      return process;
+   }
+
+   public function withArg(arg:AnyAsString):BackgroundProcessBuilder {
+      process._args.push(arg);
+      return this;
+   }
+
+   public function withArgs(args:Array<AnyAsString>):BackgroundProcessBuilder {
+      for (arg in args) process._args.push(Std.string(arg));
+
+      return this;
+   }
+
+   public function withWorkDir(path:String):BackgroundProcessBuilder {
+      process.workDir = path;
+      return this;
    }
 }
 #end

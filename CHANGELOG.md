@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
 ### Changed
 - disabled locking/thread support for eval target because of too many platform issues
 - refactored Future API
@@ -20,9 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - replace field `Executor.onResult()` with function `Executor.onCompletion()`
   - renamed `TaskFuture.waitAndGet()` to `TaskFuture.awaitCompletion()`
   - renamed `TaskFutureBase` to `AbstractTaskFuture`
+- `BackgroundProcess#kill()` now explicitly kills descendant processes if possible
 
 ### Fixed
 - `BackgroundProcess.pid` is not with Java 9+
+
+### Added
+- method `BackgroundProcess#builder(exe)`
+- method `BackgroundProcess#create(exe, args)`
+- method `BackgroundProcess#awaitExitOrKill()`
+- method `BackgroundProcess#awaitSuccessOrKill()`
 
 
 ## [4.1.0] - 2023-01-20
