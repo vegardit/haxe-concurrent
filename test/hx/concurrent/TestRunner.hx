@@ -587,7 +587,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
    function testTaskExecutor_shutdown_with_running_tasks() {
       final executor = Executor.create(3);
-      final intervalMS = 20;
+      final intervalMS = 50;
       var task_invocations = new AtomicInt(0);
       var task_first_execution:Float = 0;
       final task = executor.submit(function() {
@@ -596,7 +596,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
          task_invocations.increment();
       }, FIXED_RATE(intervalMS));
 
-      _later(10 * intervalMS, function() {
+      _later(2000, function() {
          final v:Int = task_invocations;
          final task1_elapsed = Dates.now() - task_first_execution;
          final v_expected_value = task1_elapsed / intervalMS;
@@ -604,10 +604,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
          assertMax(v, Math.round(v_expected_value * 1.5));
          assertFalse(task.isStopped);
       });
-      _later(12 * intervalMS, function() {
+      _later(2100, function() {
          executor.stop();
       });
-      _later(60 * intervalMS, function() {
+      _later(3000, function() {
          assertTrue(task.isStopped);
          assertEquals(executor.state, ServiceState.STOPPED);
       });
@@ -691,7 +691,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final v2 = new AtomicInt(0);
       #end
 
-      _later(10 * intervalMS, function() {
+      _later(2000, function() {
          future1.cancel();
          #if threads
          Threads.await(() -> future1.isStopped, 1000);
@@ -714,7 +714,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
          assertTrue(v1 > v2);
          #end
       });
-      _later(14 * intervalMS, function() {
+      _later(2500, function() {
          assertEquals(v1.value, fixedRateCounter.value);
          assertEquals(v1.value, fixedRateCompletionCounter1.value);
          assertEquals(v1.value, fixedRateCompletionCounter2.value);

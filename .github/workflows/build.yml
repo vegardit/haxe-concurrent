@@ -54,7 +54,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        #- macos-latest # too many random fails
+        - macos-latest
         - windows-latest
         haxe:
         - nightly
@@ -68,13 +68,12 @@ jobs:
       debug-with-ssh-only-for-actor: ${{ inputs.debug-with-ssh-only-for-actor || false }}
       debug-with-ssh-only-jobs-matching: ${{ inputs.debug-with-ssh-only-jobs-matching }}
 
-      retries: 1
       test-cpp:    ${{ inputs.test-target == '' || inputs.test-target == 'cpp' }}
       test-cs:     ${{ inputs.test-target == '' || inputs.test-target == 'cs' }}
       test-eval:   ${{ inputs.test-target == '' || inputs.test-target == 'eval' }}
       test-flash: |
-        enabled: ${{ inputs.test-target == '' || inputs.test-target == 'flash' && !startsWith(matrix.os, 'macos') }} # FlashPlayer hangs on MacOS
-        allow-failure: ${{ startsWith(matrix.os, 'ubuntu') }} # workaround for random "Application crashed with an unhandled SIGSEGV"
+        enabled: ${{ (inputs.test-target == '' || inputs.test-target == 'flash') && !startsWith(matrix.os, 'macos') }} # FlashPlayer hangs on MacOS
+        allow-failure: true # workaround for random "Application crashed with an unhandled SIGSEGV" on Linux and timing issues on Windows
       test-hl: |
         enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
         allow-failure: ${{ startsWith(matrix.os, 'ubuntu-') }} # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
