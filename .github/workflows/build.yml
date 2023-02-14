@@ -57,6 +57,7 @@ jobs:
         #- macos-latest # too many random fails
         - windows-latest
         haxe:
+        - nightly
         - 4.2.5
     with:
       runner-os: ${{ matrix.os }}
@@ -76,7 +77,7 @@ jobs:
         allow-failure: ${{ startsWith(matrix.os, 'ubuntu') }} # workaround for random "Application crashed with an unhandled SIGSEGV"
       test-hl: |
         enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
-        allow-failure: ${{ matrix.haxe == '4.2.5' && startsWith(matrix.os, 'ubuntu-') }} # Segmentation faults
+        allow-failure: ${{ startsWith(matrix.os, 'ubuntu-') }} # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
       test-java:   ${{ inputs.test-target == '' || inputs.test-target == 'java' }}
       test-jvm:    ${{ inputs.test-target == '' || inputs.test-target == 'jvm' }}
       test-lua:    ${{ inputs.test-target == '' || inputs.test-target == 'lua' }}
