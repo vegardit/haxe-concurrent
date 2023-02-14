@@ -1,4 +1,6 @@
-# inspired by https://github.com/alexkaratarakis/gitattributes
+# inspired by
+# - https://github.com/alexkaratarakis/gitattributes/blob/master/Java.gitattributes
+# - https://github.com/alexkaratarakis/gitattributes/blob/master/Common.gitattributes
 
 # Handle line endings automatically for files detected as text
 # and leave all files detected as binary untouched.

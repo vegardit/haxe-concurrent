@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+# SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
+# SPDX-License-Identifier: Apache-2.0
+#
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
 name: Build
 
@@ -10,26 +14,41 @@ on:
     paths-ignore:
     - '**/*.adoc'
     - '**/*.md'
+    - '.editorconfig'
+    - '.git*'
     - '.github/*.yml'
+    - 'tools'
   pull_request:
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+    inputs:
+      debug-with-ssh:
+        description: "Start an SSH session for debugging purposes after tests ran:"
+        default: never
+        type: choice
+        options: [ always, on_failure, on_failure_or_cancelled, never ]
+      debug-with-ssh-only-for-actor:
+        description: "Limit access to the SSH session to the GitHub user that triggered the job."
+        default: true
+        type: boolean
+      debug-with-ssh-only-jobs-matching:
+        description: "Only start an SSH session for jobs matching this regex pattern:"
+        default: ".*"
+        type: string
+      test-target:
+        description: "If specified only the given target will be tested"
+        default: ""
+        type: choice
+        options: [ "", cpp, cs, eval, flash, hl, java, jvm, lua, neko, node, php, python ]
 
 defaults:
   run:
     shell: bash
 
-env:
-  # https://docs.brew.sh/Manpage#environment
-  HOMEBREW_NO_ANALYTICS: 1
-  HOMEBREW_NO_AUTO_UPDATE: 1
-  HOMEBREW_NO_INSTALL_CLEANUP: 1
-  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
-
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
+    # https://github.com/vegardit/haxe-reusable-workflows/
+    uses: vegardit/haxe-reusable-workflows/.github/workflows/test-with-haxe.yml@v1
     strategy:
       fail-fast: false
       matrix:
@@ -39,213 +58,34 @@ jobs:
         - windows-latest
         haxe:
         - 4.2.5
+    with:
+      runner-os: ${{ matrix.os }}
+      haxe-version: ${{ matrix.haxe }}
+      haxe-libs: haxe-doctest hx3compat
 
-    steps:
-    - name: "ACT: Install ping"
-      if: runner.os == 'Linux' && env.ACT # https://github.com/nektos/act#skipping-steps
-      run: |
-        if ! hash ping 2>/dev/null; then
-          apt-get update
-          apt-get -y install iputils-ping
+      debug-with-ssh: ${{ inputs.debug-with-ssh || 'never' }}
+      debug-with-ssh-only-for-actor: ${{ inputs.debug-with-ssh-only-for-actor || false }}
+      debug-with-ssh-only-jobs-matching: ${{ inputs.debug-with-ssh-only-jobs-matching }}
+
+      retries: 1
+      test-cpp:    ${{ inputs.test-target == '' || inputs.test-target == 'cpp' }}
+      test-cs:     ${{ inputs.test-target == '' || inputs.test-target == 'cs' }}
+      test-eval:   ${{ inputs.test-target == '' || inputs.test-target == 'eval' }}
+      test-flash: |
+        enabled: ${{ inputs.test-target == '' || inputs.test-target == 'flash' && !startsWith(matrix.os, 'macos') }} # FlashPlayer hangs on MacOS
+        allow-failure: ${{ startsWith(matrix.os, 'ubuntu') }} # workaround for random "Application crashed with an unhandled SIGSEGV"
+      test-hl: |
+        enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
+        allow-failure: ${{ matrix.haxe == '4.2.5' && startsWith(matrix.os, 'ubuntu-') }} # Segmentation faults
+      test-java:   ${{ inputs.test-target == '' || inputs.test-target == 'java' }}
+      test-jvm:    ${{ inputs.test-target == '' || inputs.test-target == 'jvm' }}
+      test-lua:    ${{ inputs.test-target == '' || inputs.test-target == 'lua' }}
+      test-neko:   ${{ inputs.test-target == '' || inputs.test-target == 'neko' }}
+      test-node:   ${{ inputs.test-target == '' || inputs.test-target == 'node' }}
+      test-php:    ${{ inputs.test-target == '' || inputs.test-target == 'php' }}
+      test-python: ${{ inputs.test-target == '' || inputs.test-target == 'python' }}
+
+      before-tests: |
+        if [[ $OSTYPE == linux* ]] && ! hash ping &>/dev/null; then 
+          sudo apt-get install iputils-ping
         fi
-
-    - name: Show environment variables
-      run: env | sort
-
-    - name: Git Checkout
-      uses: actions/checkout@v3 #https://github.com/actions/checkout
-
-    - name: "Cache: Restore"
-      id: cache-restore
-      if: ${{ !env.ACT }} # https://github.com/nektos/act#skipping-steps
-      uses: actions/cache/restore@v3
-      with:
-        path: |
-          ${{ runner.tool_cache }}/haxe/lib
-          /opt/hashlink
-        key: ${{ runner.os }}-${{ matrix.haxe }}
-
-    - name: "MacOS: Update brew formulas"
-      if: runner.os == 'macOS'
-      run: |
-        set -eu
-
-        echo "::group::brew update" && brew update && echo "::endgroup::"
-        echo "::group::brew config" && brew config && echo "::endgroup::"
-        echo "::group::brew list" && brew list --version && echo "::endgroup::"
-
-        # workaround to prevent "Error: The `brew link` step did not complete successfully" during "brew install mono"
-        # and setup-python action, see https://github.com/actions/setup-python/issues/577
-        rm -f \
-          /usr/local/share/man/man1/* \
-          /usr/local/share/man/man5/* \
-          /usr/local/bin/idle3 \
-          /usr/local/bin/2to3 \
-          /usr/local/bin/idle3 \
-          /usr/local/bin/pydoc3 \
-          /usr/local/bin/python3 \
-          /usr/local/bin/python3-config
-
-    - name: "Install: Hashlink"
-      if: runner.os == 'Linux'
-      run: |
-        set -euxo pipefail
-        if ! hash hl 2>/dev/null; then
-          if [ ! -e /opt/hashlink ]; then
-            if [[ -n "${{ github.token }}" ]]; then
-              authHeader='-H "Authorization: token ${{ github.token }}"'
-            fi
-            latest_url=$(eval curl -fsSL ${authHeader:-} https://api.github.com/repos/HaxeFoundation/hashlink/releases | grep -o "https://.*/download/latest/hashlink-.*-linux-amd64.tar.gz")
-            curl -sSfL $latest_url | sudo tar -xz -C /opt/
-            mv /opt/hashlink-* /opt/hashlink
-          fi
-          echo "/opt/hashlink" >> $GITHUB_PATH
-        fi
-
-    - name: "Install: Java 11"
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: 11
-
-    - name: "Install: Python 3"
-      uses: actions/setup-python@v4 # https://github.com/actions/setup-python
-      with:
-        python-version: "3.10"
-
-    - name: Configure Python 3 on Windows
-      if: runner.os == 'Windows'
-      shell: cmd
-      # workaround for https://github.com/actions/setup-python/issues/123
-      run:
-        if not exist "%pythonLocation%\python.exe" (
-          mklink "%pythonLocation%\python3.exe" "%pythonLocation%\python.exe"
-        )
-
-    - name: "Install: Haxe ${{ matrix.haxe }}"
-      uses: krdlab/setup-haxe@v1 # https://github.com/krdlab/setup-haxe
-      with:
-        haxe-version: ${{ matrix.haxe }}
-
-    - name: "Install: Haxe Libraries"
-      run: |
-        set -eux
-
-        case "${{runner.os}}" in
-          Windows)
-            export HAXELIB_PATH="${{ runner.tool_cache }}\\haxe\\lib"
-            HAXELIB_PATH_UNIX=$(cygpath "$HAXELIB_PATH")
-            ;;
-          *)
-            export HAXELIB_PATH="${{ runner.tool_cache }}/haxe/lib"
-            HAXELIB_PATH_UNIX=$HAXELIB_PATH
-            ;;
-        esac
-        mkdir -p "$HAXELIB_PATH_UNIX"
-        echo "HAXELIB_PATH=$HAXELIB_PATH" >> $GITHUB_ENV
-
-        haxelib config
-
-        for lib in haxe-doctest hx3compat; do
-          echo "::group::install_$lib"
-          haxelib --always install $lib
-          haxelib --always update $lib || true
-          echo "::endgroup::"
-        done
-
-        # install latest travix version
-        haxelib git travix https://github.com/back2dos/travix
-        pushd .
-        cd $HAXELIB_PATH_UNIX/travix/git
-        haxe build-neko.hxml -lib hx3compat
-        popd
-
-        haxelib dev haxe-concurrent .
-
-
-    ##################################################
-    # Tests
-    ##################################################
-
-    - name: Test [eval]
-      run: haxelib run travix interp -D eval-stack
-
-    - name: Test [flash]
-      continue-on-error: true # fails with "Flash execution failed too many times, build failure." but test is actually ok
-      run: haxelib run travix flash
-
-    - name: Test [hl]
-      continue-on-error: ${{ runner.os == 'Linux' }} # Segmentation fault
-      run: haxelib run travix hl
-
-    - name: Test [java]
-      run: |
-        java -version
-        haxelib run travix java
-
-    - name: Test [jvm]
-      run: haxelib run travix java -D jvm
-
-    - name: Test [lua]
-      continue-on-error: ${{ runner.os != 'Linux' }}
-      run: haxelib run travix lua
-
-    - name: Test [neko]
-      run: haxelib run travix neko
-
-    - name: Test [node]
-      run: |
-        node --version
-        haxelib run travix node
-
-    - name: Test [php]
-      run: haxelib run travix php
-
-    - name: Test [python]
-      run: |
-        python --version
-        haxelib run travix python
-
-    - name: Test [cs]
-      run: haxelib run travix cs
-
-    - name: Test [cpp]
-      run: haxelib run travix cpp
-
-
-    ##################################################
-    # Cache Update
-    # See https://github.com/actions/cache/issues/342
-    ##################################################
-    - name: "Cache: Delete Previous"
-      if: ${{ steps.cache-restore.outputs.cache-hit && !env.ACT }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        gh extension install actions/gh-actions-cache
-        gh actions-cache delete ${{ runner.os }}-${{ matrix.haxe }} --confirm
-
-    - name: "Cache: Update"
-      uses: actions/cache/save@v3
-      if: ${{ always() && !env.ACT }} # save cache even fails
-      with:
-        path: |
-          ${{ runner.tool_cache }}/haxe/lib
-          /opt/hashlink
-        key: ${{ runner.os }}-${{ matrix.haxe }}
-
-
-  ###########################################################
-  cleanup:
-  ###########################################################
-    runs-on: ubuntu-latest
-    needs: 
-      - build
-
-    steps:
-    - name: "Delete intermediate build artifacts"
-      if: ${{ !env.ACT }} # https://github.com/nektos/act#skipping-steps
-      uses: geekyeggo/delete-artifact@v2 # https://github.com/GeekyEggo/delete-artifact/
-      with:
-        name: "*"
-        failOnError: false

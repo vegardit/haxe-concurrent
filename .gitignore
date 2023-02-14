@@ -2,8 +2,8 @@
 _LOCAL/
 
 # Eclipse
-.settings/
-.project
+/.project
+/.settings
 **/.*.md.html
 
 # IntelliJ
@@ -24,6 +24,11 @@ _LOCAL/
 # Vim
 *.swo
 *.swp
+
+
+# patch
+*.orig
+*.rej
 
 # Temp files
 .history
