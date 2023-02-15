@@ -261,17 +261,23 @@ class BackgroundProcess {
       if (!isRunning())
          return;
 
+      function exec(cmd:String, ...args:String):Void {
+         final p = new Process(cmd, args);
+         p.exitCode(true);
+         p.close();
+      }
+
       final pid = this.pid;
       if (pid > -1) switch (OS.current) {
          case Linux, MacOS:
-            new Process("kill", ["-STOP", '$pid']).exitCode(true); // freeze process to prevent it from spawning more children
-            new Process("pkill", ["-9", "-P", '$pid']).exitCode(true); // kill descendant processes
-            new Process("kill", ["-9", '$pid']).exitCode(true); // kill process
-            #if neko isKilled = true; #end
+            exec("kill", "-STOP", '$pid'); // freeze process to prevent it from spawning more children
+            exec("pkill", "-9", "-P", '$pid'); // kill descendant processes
+            #if neko isKilled = true; #end // must be set before the actual termination on Linux to avoid a race condition
+            exec("kill", "-9", '$pid'); // kill process
             return;
          case Windows:
             // kill process with descendant processes
-            new Process("taskkill", ["/f", "/t", "/pid", '$pid']).exitCode(true);
+            exec("taskkill", "/f", "/t", "/pid", '$pid');
             #if neko isKilled = true; #end
             return;
          default:
