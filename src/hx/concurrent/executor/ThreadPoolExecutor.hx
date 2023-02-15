@@ -5,7 +5,7 @@
  */
 package hx.concurrent.executor;
 
-#if (threads || display)
+#if threads
 import hx.concurrent.Future.FutureResult;
 import hx.concurrent.atomic.AtomicInt;
 import hx.concurrent.collection.Queue;

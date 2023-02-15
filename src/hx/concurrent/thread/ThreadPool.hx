@@ -5,7 +5,7 @@
  */
 package hx.concurrent.thread;
 
-#if (threads || display)
+#if threads
 import haxe.ds.StringMap;
 import hx.concurrent.Service.ServiceBase;
 import hx.concurrent.atomic.AtomicInt;

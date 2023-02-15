@@ -19,16 +19,19 @@ import hx.concurrent.Future.CompletedFuture;
 import hx.concurrent.lock.RLock;
 import hx.concurrent.lock.RWLock;
 import hx.concurrent.lock.Semaphore;
-import hx.concurrent.thread.BackgroundProcess;
-import hx.concurrent.thread.ThreadPool;
 import hx.concurrent.thread.Threads;
 import hx.doctest.internal.Logger;
+
+#if threads
+import hx.concurrent.thread.BackgroundProcess;
+import hx.concurrent.thread.ThreadPool;
+#end
 
 @:build(hx.doctest.DocTestGenerator.generateDocTests())
 @:keep // prevent DCEing of manually created testXYZ() methods
 class TestRunner extends hx.doctest.DocTestRunner {
 
-   #if (threads && !eval) // eval has broken multi-threading support
+   #if threads
    static final logQueue = new Queue<{level:Level, msg:String, ?pos:haxe.PosInfos}>();
    @:keep
    static final __static_init = {
@@ -657,7 +660,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       final executor = Executor.create(2);
 
       final intervalMS = 100;
-      final threadMS = 200;
+      final threadSleepMS = 200;
 
       final fixedRateCounter = new AtomicInt(0);
       final fixedRateCompletionCounter1 = new AtomicInt(0);
@@ -668,7 +671,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             future1_first_execution = Dates.now();
          fixedRateCounter.increment();
          #if threads
-         Threads.sleep(threadMS);
+         Threads.sleep(threadSleepMS);
          #end
       }, FIXED_RATE(intervalMS));
       future1.onCompletion(r -> fixedRateCompletionCounter1.increment());
@@ -684,7 +687,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
          if (future2_first_execution == 0)
             future2_first_execution = Dates.now();
          fixedDelayCounter.increment();
-         Threads.sleep(threadMS);
+         Threads.sleep(threadSleepMS);
       }, FIXED_DELAY(intervalMS));
       future2.onCompletion(r -> fixedDelayCompletionCounter1.increment());
       future2.onCompletion(r -> fixedDelayCompletionCounter2.increment());
@@ -694,7 +697,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
       _later(2000, function() {
          future1.cancel();
          #if threads
-         Threads.await(() -> future1.isStopped, 1000);
+         assertTrue(Threads.await(() -> future1.isStopped, 1000));
          #end
          final future1_elapsed = Dates.now() - future1_first_execution;
          v1.value = fixedRateCounter.value;
@@ -704,17 +707,17 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
          #if threads
          future2.cancel();
-         Threads.await(() -> future2.isStopped, 1000);
+         assertTrue(Threads.await(() -> future2.isStopped, 1000));
          final future2_elapsed = Dates.now() - future2_first_execution;
          v2.value = fixedDelayCounter.value;
-         final v2_expected_value = future2_elapsed / (intervalMS + threadMS);
+         final v2_expected_value = future2_elapsed / (intervalMS + threadSleepMS);
          assertMin(v2.value, Math.round(v2_expected_value * 0.5));
          assertMax(v2.value, Math.round(v2_expected_value * 1.5));
 
          assertTrue(v1 > v2);
          #end
       });
-      _later(2500, function() {
+      _later(3500, function() {
          assertEquals(v1.value, fixedRateCounter.value);
          assertEquals(v1.value, fixedRateCompletionCounter1.value);
          assertEquals(v1.value, fixedRateCompletionCounter2.value);
@@ -802,7 +805,7 @@ class TestRunner extends hx.doctest.DocTestRunner {
             }
 
             final exitCode = results.testsFailed == 0 ? 0 : 1;
-            #if (threads && !eval) // eval has broken multi-threading support
+            #if threads
                Threads.await(() -> logQueue.length == 0, 10000);
             #end
             #if python

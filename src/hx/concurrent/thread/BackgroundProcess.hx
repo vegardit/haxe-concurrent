@@ -5,7 +5,7 @@
  */
 package hx.concurrent.thread;
 
-#if (threads || display)
+#if threads
 import haxe.Rest;
 import haxe.ds.ReadOnlyArray;
 import haxe.io.BytesBuffer;
