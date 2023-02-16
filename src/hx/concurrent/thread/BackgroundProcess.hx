@@ -33,6 +33,9 @@ class BackgroundProcess {
       return new BackgroundProcessBuilder(executable);
    }
 
+   /**
+    * @throws an exception in case the process cannot be created
+    */
    public static function create(executable:String, args:Array<AnyAsString>):BackgroundProcess {
       return builder(executable).withArgs(args).build();
    }
@@ -43,7 +46,6 @@ class BackgroundProcess {
 
    final _args = new Array<String>();
    public final args:ReadOnlyArray<String>;
-
    public var workDir(default, null) = Sys.getCwd();
 
    /**
@@ -70,10 +72,7 @@ class BackgroundProcess {
 
    var process:Process = lazyNonNull();
 
-   /**
-    * @throws an exception in case the process cannot be created
-    */
-   public function new(executable:String) {
+   private function new(executable:String) {
       this.executable = executable;
       args = this._args;
    }
@@ -404,6 +403,9 @@ class BackgroundProcessBuilder {
       process = new BackgroundProcess(executable);
    }
 
+   /**
+    * @throws an exception in case the process cannot be created
+    */
    public function build():BackgroundProcess {
       if (isBuilt)
          throw "Already built!";
@@ -420,7 +422,6 @@ class BackgroundProcessBuilder {
 
    public function withArgs(args:Array<AnyAsString>):BackgroundProcessBuilder {
       for (arg in args) process._args.push(Std.string(arg));
-
       return this;
    }
 
