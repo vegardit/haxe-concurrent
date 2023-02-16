@@ -14,6 +14,7 @@ private typedef AB = AtomicBoolean;
 private typedef AB = AtomicBoolImpl;
 #end
 
+
 /**
  * Boolean with thread-safe atomic operations.
  */
@@ -27,7 +28,7 @@ abstract AtomicBool(AB) from AB to AB {
     * >>> (!new AtomicBool(true) == false) == true
     * </code></pre>
     */
-   inline
+   inline //
    public function new(val:Bool = false)
       this = new AB(val);
 
@@ -60,7 +61,7 @@ abstract AtomicBool(AB) from AB to AB {
     * >>> new AtomicBool(false).getAndSet(true) == false
     * </code></pre>
     */
-   inline
+   inline //
    public function getAndSet(value:Bool):Bool
       return this.getAndSet(value);
 
@@ -76,7 +77,7 @@ abstract AtomicBool(AB) from AB to AB {
       #if java
          var newVal = !this.get();
          while (!this.compareAndSet(!newVal, newVal))
-             newVal = !newVal;
+            newVal = !newVal;
          return newVal;
       #else
          return this.negate();
@@ -95,7 +96,7 @@ abstract AtomicBool(AB) from AB to AB {
       #if java
          var oldVal = this.get();
          while (!this.compareAndSet(oldVal, !oldVal))
-             oldVal = !oldVal;
+            oldVal = !oldVal;
          return oldVal;
       #else
          return this.getAndNegate();
@@ -128,7 +129,7 @@ private class AtomicBoolImpl {
    }
 
 
-   public function new(initialValue:Bool=false) {
+   public function new(initialValue:Bool = false) {
       this._value = initialValue;
    }
 
@@ -167,7 +168,7 @@ private class AtomicBoolImpl {
    }
 
 
-   inline
+   inline //
    public function toString()
       return Std.string(value);
 }

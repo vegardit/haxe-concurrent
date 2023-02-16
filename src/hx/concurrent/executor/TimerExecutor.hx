@@ -21,7 +21,7 @@ class TimerExecutor extends Executor {
    var _scheduledTasks:Array<TaskFutureImpl<Dynamic>> = [];
 
 
-   inline
+   inline //
    public function new(autostart = true) {
       super();
 
@@ -30,17 +30,18 @@ class TimerExecutor extends Executor {
    }
 
 
-   public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T>
+   public function submit<T>(task:Either2<Void->T, Void->Void>, ?schedule:Schedule):TaskFuture<T>
       return _stateLock.execute(function() {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
 
          // cleanup task list
          var i = _scheduledTasks.length;
-         while (i-- > 0) if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
+         while (i-- > 0)
+            if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
 
          final future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
-         switch(schedule) {
+         switch (schedule) {
             case ONCE(0):
             default: _scheduledTasks.push(future);
          }
@@ -48,7 +49,7 @@ class TimerExecutor extends Executor {
       });
 
 
-   override
+   override //
    function onStop() {
       for (t in _scheduledTasks)
          t.cancel();
@@ -101,7 +102,7 @@ private class TaskFutureImpl<T> extends AbstractTaskFuture<T> {
          fnResult = ConcurrentException.capture(ex);
 
       // calculate next run for FIXED_DELAY
-      switch(schedule) {
+      switch (schedule) {
          case ONCE(_): isStopped = true;
          case FIXED_DELAY(intervalMS, _): _timer = haxe.Timer.delay(this.run, intervalMS);
          default: /*nothing*/
@@ -112,10 +113,10 @@ private class TaskFutureImpl<T> extends AbstractTaskFuture<T> {
    }
 
 
-   override
+   override //
    public function cancel():Void {
       final t = _timer;
-      if(t != null) t.stop();
+      if (t != null) t.stop();
       super.cancel();
    }
 }

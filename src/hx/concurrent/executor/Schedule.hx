@@ -67,7 +67,7 @@ class ScheduleTools {
 
 
    public static function applyDefaults(schedule:Schedule):Schedule {
-       switch(schedule) {
+      switch (schedule) {
          case ONCE(initialDelayMS):
             if (initialDelayMS == null)
                return Schedule.ONCE(0);
@@ -115,7 +115,7 @@ class ScheduleTools {
    public static function assertValid(schedule:Schedule):Schedule {
       schedule = applyDefaults(schedule);
       @:nullSafety(Off)
-      switch(schedule) {
+      switch (schedule) {
          case ONCE(initialDelayMS):
             if (initialDelayMS < 0)
                throw "[Schedule.ONCE.initialDelayMS] must be >= 0";
@@ -159,7 +159,7 @@ class ScheduleTools {
 
       // validate schedule and calculate initial run
       @:nullSafety(Off)
-      switch(schedule) {
+      switch (schedule) {
          case ONCE(initialDelayMS):                    return Dates.now() + initialDelayMS;
          case FIXED_DELAY(intervalMS, initialDelayMS): return Dates.now() + initialDelayMS;
          case FIXED_RATE(intervalMS, initialDelayMS):  return Dates.now() + initialDelayMS;
@@ -171,7 +171,9 @@ class ScheduleTools {
             final runAtSecondOfHour = minute * 60 + second;
             final elapsedSecondsThisHour = now.getMinutes() * 60 + now.getSeconds();
 
-            return nowMS + (runAtSecondOfHour - elapsedSecondsThisHour) * 1000 + (elapsedSecondsThisHour > runAtSecondOfHour ? HOUR_IN_MS : 0);
+            return nowMS
+               + (runAtSecondOfHour - elapsedSecondsThisHour) * 1000
+               + (elapsedSecondsThisHour > runAtSecondOfHour ? HOUR_IN_MS : 0);
 
          case DAILY(hour, minute, second):
             final nowMS:Float = Dates.now();
@@ -180,7 +182,7 @@ class ScheduleTools {
             final runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
             final elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
-            return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000  + (elapsedSecondsToday > runAtSecondOfDay ? DAY_IN_MS : 0);
+            return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000 + (elapsedSecondsToday > runAtSecondOfDay ? DAY_IN_MS : 0);
 
 
          case WEEKLY(day, hour, minute, second):
@@ -200,4 +202,3 @@ class ScheduleTools {
       }
    }
 }
-

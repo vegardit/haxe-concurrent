@@ -32,14 +32,14 @@ class AsyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenabl
                listener(event);
                count++;
             } catch (ex) {
-                trace(ex);
+               trace(ex);
             }
          }
          return count;
       });
 
 
-   override
+   override //
    public function unsubscribeAll():Void
       super.unsubscribeAll();
 }

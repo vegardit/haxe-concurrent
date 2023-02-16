@@ -67,12 +67,12 @@ abstract class AbstractFuture<T> implements Future<T> {
    #if (java || cs) @:volatile #end
    public var result(default, null):FutureResult<T>;
 
-   inline
+   inline //
    function new()
       result = FutureResult.PENDING(this);
 
    public function isComplete():Bool {
-      return switch(result) {
+      return switch (result) {
          case PENDING(_): false;
          default: true;
       }
@@ -81,7 +81,7 @@ abstract class AbstractFuture<T> implements Future<T> {
    public function onCompletion(listener:FutureCompletionListener<T>):Void {
       sync.execute(() -> {
          // immediately invoke the listener in case a result is already present
-         switch(result) {
+         switch (result) {
             case PENDING(_):
             default: listener(result);
          }
@@ -96,7 +96,7 @@ abstract class AbstractFuture<T> implements Future<T> {
  */
 class CompletableFuture<T> extends AbstractFuture<T> {
 
-   inline
+   inline //
    public function new()
       super();
 
@@ -106,12 +106,15 @@ class CompletableFuture<T> extends AbstractFuture<T> {
    public function complete(result:Either2<T, ConcurrentException>, overwriteResult = false):Bool {
       return sync.execute(() -> {
          if (overwriteResult || !isComplete()) {
-            switch(result.value) {
+            switch (result.value) {
                case a(value): this.result = FutureResult.VALUE(value, Dates.now(), this);
                case b(ex):    this.result = FutureResult.FAILURE(ex, Dates.now(), this);
             }
             for (listener in completionListeners)
-               try listener(this.result) catch (ex) trace(ex);
+               try
+                  listener(this.result)
+               catch (ex)
+                  trace(ex);
             return true;
          }
          return false;
@@ -130,11 +133,11 @@ final class CompletedFuture<T> implements Future<T> {
    public function new(value:T)
       this.result = FutureResult.VALUE(value, Dates.now(), this);
 
-   inline
+   inline //
    public function isComplete():Bool
       return true;
 
-   inline
+   inline //
    public function onCompletion(listener:FutureCompletionListener<T>):Void
       listener(result);
 }

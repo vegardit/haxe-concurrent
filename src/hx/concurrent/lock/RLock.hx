@@ -64,7 +64,7 @@ class RLock extends AbstractAcquirable {
       return isAcquiredByAnyThread && !isAcquiredByCurrentThread;
 
 
-   inline
+   inline //
    public function new() {
    }
 

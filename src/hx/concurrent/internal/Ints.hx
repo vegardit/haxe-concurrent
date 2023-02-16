@@ -34,7 +34,7 @@ class Ints {
       #elseif eval
          2147483647;
       #else // neko, cpp, lua, js, etc.
-         Std.int(Math.pow(2,31)-1);
+         Std.int(Math.pow(2, 31) - 1);
       #end
    }
 }

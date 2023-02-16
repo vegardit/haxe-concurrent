@@ -12,6 +12,7 @@ class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable
    public function new() {
    }
 
+
    /**
     * @return the number of listeners notified successfully
     */
@@ -28,7 +29,7 @@ class SyncEventDispatcher<EVENT> extends EventListenable.AbstractEventListenable
       return new CompletedFuture(count);
    }
 
-   override
+   override //
    public function unsubscribeAll():Void
       super.unsubscribeAll();
 }

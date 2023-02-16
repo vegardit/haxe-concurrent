@@ -25,44 +25,53 @@ class Semaphore extends AbstractAcquirable {
 
    final _sem:java.util.concurrent.Semaphore;
 
-   inline
-   function get_availablePermits():Int return _sem.availablePermits();
+   inline //
+   function get_availablePermits():Int
+      return _sem.availablePermits();
 
-   inline
+
+   inline //
    public function new(initialPermits:Int) {
       _sem = new java.util.concurrent.Semaphore(initialPermits);
    }
 
 
-   inline
-   public function acquire():Void _sem.acquire();
+   inline //
+   public function acquire():Void
+      _sem.acquire();
 
-   inline
-   public function tryAcquire(timeoutMS = 0):Bool return _sem.tryAcquire(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+   inline //
+   public function tryAcquire(timeoutMS = 0):Bool
+      return _sem.tryAcquire(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
+
 
    /**
     * Increases availablePermits by one.
     */
-   inline
-   public function release():Void _sem.release();
+   inline //
+   public function release():Void
+      _sem.release();
 
 #else
    var _availablePermits:Int;
-   inline
-   function get_availablePermits():Int return _availablePermits;
+   inline //
+   function get_availablePermits():Int
+      return _availablePermits;
 
    final permitLock = new RLock();
 
 
-   inline
+   inline //
    public function new(initialPermits:Int) {
       _availablePermits = initialPermits;
    }
 
 
-   inline
+   inline //
    public function acquire():Void
-      while (tryAcquire(500) == false) { };
+      while (tryAcquire(500) == false) {
+      };
 
 
    private function tryAcquireInternal():Bool
@@ -75,7 +84,7 @@ class Semaphore extends AbstractAcquirable {
       });
 
 
-   inline
+   inline //
    public function tryAcquire(timeoutMS = 0):Bool
       #if threads
          return Threads.await(tryAcquireInternal, timeoutMS);

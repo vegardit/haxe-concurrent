@@ -16,7 +16,7 @@ abstract SynchronizedArray<T>(SynchronizedArrayImpl<T>) from SynchronizedArrayIm
     */
    public function new(?initialValues:Either3<Collection<T>, Array<T>, List<T>>) {
       this = new SynchronizedArrayImpl();
-      if(initialValues != null)
+      if (initialValues != null)
          this.addAll(initialValues);
    }
 
@@ -86,7 +86,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
       return _sync.execute(() -> _items.length);
 
 
-   inline
+   inline //
    public function new() {
    }
 
@@ -103,7 +103,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public function addIfAbsent(item:T):Bool
       return _sync.execute(function() {
-         if (_items.indexOf(item) >-1)
+         if (_items.indexOf(item) > -1)
             return false;
          _items.push(item);
          return true;
@@ -112,7 +112,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
 
    public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void
       _sync.execute(function() {
-         switch(coll.value) {
+         switch (coll.value) {
             case a(coll): for (i in coll.iterator()) _items.push(i);
             case b(arr):  for (i in arr) _items.push(i);
             case c(list): for (i in list) _items.push(i);
@@ -151,7 +151,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray([1]).removeAt(1, true) throws ~/Index out of range/
     * </code></pre>
     */
-   public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>
+   public function removeAt(idx:Int, throwIfOutOfRange:Bool = false):Null<T>
       return _sync.execute(function() {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
@@ -172,7 +172,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public function removeFirst(throwIfEmpty:Bool = false):Null<T>
       return _sync.execute(function() {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -191,7 +191,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     */
    public function removeLast(throwIfEmpty:Bool = false):Null<T>
       return _sync.execute(function() {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -201,7 +201,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
       });
 
 
-   inline
+   inline //
    public function copy():SynchronizedArray<T>
       return _sync.execute(() -> new SynchronizedArray<T>(_items.copy()));
 
@@ -213,7 +213,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().contains(1)      == false
     * </code></pre>
     */
-   inline
+   inline //
    public function contains(x:T):Bool
       return indexOf(x) > -1;
 
@@ -254,7 +254,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().indexOf(1)           == -1
     * </code></pre>
     */
-   inline
+   inline //
    public function indexOf(x:T, startAt:Int = 0):Int
       return _sync.execute(() -> _items.indexOf(x, startAt));
 
@@ -267,10 +267,10 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().lastIndexOf(1)           == -1
     * </code></pre>
     */
-   inline
+   inline //
    public function lastIndexOf(x:T, ?startAt:Int):Int
       return _sync.execute(function() {
-         #if (flash||js)
+         #if (flash || js)
             return _items.lastIndexOf(x, startAt == null ? _items.length - 1 : startAt);
          #else
             return _items.lastIndexOf(x, startAt);
@@ -283,7 +283,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray([1,2,1]).filter((x) -> x == 1).toArray() == [1, 1]
     * </code></pre>
     */
-   inline
+   inline //
    public function filter(fn:T->Bool):SynchronizedArray<T>
       return _sync.execute(() -> new SynchronizedArray(_items.filter(fn)));
 
@@ -293,7 +293,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray([1,2,1]).map((x) -> Std.string(x)).toArray() == ["1", "2", "1"]
     * </code></pre>
     */
-   inline
+   inline //
    public function map<X>(fn:T->X):SynchronizedArray<X>
       return _sync.execute(() -> new SynchronizedArray(_items.map(fn)));
 
@@ -305,7 +305,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().join("_")      == ""
     * </code></pre>
     */
-   inline
+   inline //
    public function join(sep:String):String
       return _sync.execute(() -> _items.join(sep));
 
@@ -317,7 +317,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().iterator().hasNext()      == false
     * </code></pre>
     */
-   inline
+   inline //
    public function iterator():Iterator<T>
       return _sync.execute(() -> _items.iterator());
 
@@ -329,7 +329,7 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().toArray()      == []
     * </code></pre>
     */
-   inline
+   inline //
    public function toArray():Array<T>
       return _sync.execute(() -> _items.copy());
 
@@ -341,10 +341,10 @@ private class SynchronizedArrayImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedArray().toString()      == "[]"
     * </code></pre>
     */
-   inline
+   inline //
    public function toString():String
       return _sync.execute(function() {
-         #if (flash||js)
+         #if (flash || js)
             return "[" + _items.toString() + "]";
          #else
             return _items.toString();

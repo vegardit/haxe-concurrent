@@ -57,8 +57,8 @@ abstract class ServiceBase implements Service<Int> {
    public function start():Void {
       _stateLock.execute(function() {
          switch(state) {
-            case STARTING:  {/*nothing to do*/};
-            case RUNNING:  {/*nothing to do*/};
+            case STARTING: {/*nothing to do*/};
+            case RUNNING: {/*nothing to do*/};
             case STOPPING: throw 'Service [$this] is currently stopping!';
             case STOPPED:  {
                state = STARTING;
@@ -71,7 +71,7 @@ abstract class ServiceBase implements Service<Int> {
 
 
    function onStart():Void {
-       // override if required
+      // override if required
    }
 
 

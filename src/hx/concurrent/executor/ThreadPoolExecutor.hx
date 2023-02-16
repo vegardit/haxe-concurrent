@@ -45,7 +45,7 @@ class ThreadPoolExecutor extends Executor {
    }
 
 
-   override
+   override //
    function onStart() {
 
       state = RUNNING;
@@ -145,7 +145,7 @@ class ThreadPoolExecutor extends Executor {
       });
 
 
-   override
+   override //
    public function stop()
       _stateLock.execute(function() {
          if (state == RUNNING) {

@@ -24,10 +24,11 @@ class Dates {
       static final initializedStampSecs = haxe.Timer.stamp();
    #end
 
+
    /**
     * @return the current time in milli-seconds
     */
-   inline
+   inline //
    public static function now():Float {
       #if cs
          return cast(cs.system.DateTime.UtcNow.Ticks - epochTicks, Float) / ticksPerMS;
@@ -50,7 +51,7 @@ class Dates {
     *
     * @param time in milli-seconds
     */
-   inline
+   inline //
    public static function toDate(time:Float):Date
       return Date.fromTime(time);
 }

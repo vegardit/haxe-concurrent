@@ -12,32 +12,32 @@ package hx.concurrent.internal;
 @:noCompletion
 abstract Either3<A, B, C>(_Either3<A, B, C>) {
 
-   inline
+   inline //
    public function new(value:_Either3<A, B, C>)
       this = value;
 
 
-   public var value(get,never):_Either3<A, B, C>;
-   inline
+   public var value(get, never):_Either3<A, B, C>;
+   inline //
    function get_value():_Either3<A, B, C>
       return this;
 
 
    @:from
-   inline
-   static function fromA<A,B,C>(value:A):Either3<A, B, C>
+   inline //
+   static function fromA<A, B, C>(value:A):Either3<A, B, C>
       return new Either3(a(value));
 
 
    @:from
-   inline
-   static function fromB<A,B,C>(value:B):Either3<A, B, C>
+   inline //
+   static function fromB<A, B, C>(value:B):Either3<A, B, C>
       return new Either3(b(value));
 
 
    @:from
-   inline
-   static function fromC<A,B,C>(value:C):Either3<A, B, C>
+   inline //
+   static function fromC<A, B, C>(value:C):Either3<A, B, C>
       return new Either3(c(value));
 }
 

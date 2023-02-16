@@ -15,7 +15,7 @@ class ConcurrentException {
    static inline final INDENT = #if java "\t" #else "  " #end;
 
 
-   inline
+   inline //
    public static function capture(ex:Dynamic) {
       return new ConcurrentException(ex);
    }
@@ -34,9 +34,9 @@ class ConcurrentException {
    #if (!python) inline #end
    public function rethrow() {
       #if neko
-         neko.Lib.rethrow(cause);  // Neko has proper support
+         neko.Lib.rethrow(cause); // Neko has proper support
       #elseif python
-         //python.Syntax.pythonCode("raise"); // rethrows the last but not necessarily the captured exception
+         // python.Syntax.pythonCode("raise"); // rethrows the last but not necessarily the captured exception
          python.Syntax.code('raise Exception(self.toString()) from None');
       #else
          // cpp.Lib.rethrow(cause);  // swallows stacktrace

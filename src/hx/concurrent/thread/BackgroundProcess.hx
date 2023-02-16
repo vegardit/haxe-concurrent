@@ -298,14 +298,15 @@ class NonBlockingInput {
    var linePreview = "";
 
 
-   inline
-   function new() { }
+   inline //
+   function new() {
+   }
 
 
    private function readLineInteral(maxWaitMS:Int):BytesBuffer {
       final buffer = new BytesBuffer();
       final waitUntil = Dates.now() + maxWaitMS;
-      while(true) {
+      while (true) {
          final byte = bytes.pop(0);
          if (byte == null) {
             if (Dates.now() > waitUntil)

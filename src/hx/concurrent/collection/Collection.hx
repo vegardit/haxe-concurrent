@@ -32,4 +32,3 @@ interface Collection<T> {
    function toString():String;
    function join(sep:String):String;
 }
-

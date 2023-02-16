@@ -12,26 +12,26 @@ package hx.concurrent.internal;
 @:noCompletion
 abstract Either2<A, B>(_Either2<A, B>) {
 
-   inline
+   inline //
    public function new(value:_Either2<A, B>)
-       this = value;
+      this = value;
 
 
-   public var value(get,never):_Either2<A, B>;
-   inline
+   public var value(get, never):_Either2<A, B>;
+   inline //
    function get_value():_Either2<A, B>
-       return this;
+      return this;
 
 
    @:from
-   inline
-   static function fromA<A,B>(value:A):Either2<A, B>
+   inline //
+   static function fromA<A, B>(value:A):Either2<A, B>
       return new Either2(a(value));
 
 
    @:from
-   inline
-   static function fromB<A,B>(value:B):Either2<A, B>
+   inline //
+   static function fromB<A, B>(value:B):Either2<A, B>
       return new Either2(b(value));
 }
 

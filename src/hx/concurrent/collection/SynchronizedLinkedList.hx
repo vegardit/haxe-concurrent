@@ -9,14 +9,14 @@ import hx.concurrent.internal.Either3;
 import hx.concurrent.lock.RLock;
 
 @:forward
-abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from SynchronizedLinkedListImpl<T> to SynchronizedLinkedListImpl<T>{
+abstract SynchronizedLinkedList<T>(SynchronizedLinkedListImpl<T>) from SynchronizedLinkedListImpl<T> to SynchronizedLinkedListImpl<T> {
 
    /**
     * @param initialValues either a hx.concurrent.collection.Collection<T>, an Array<T> or a List<T>.
     */
    public function new(?initialValues:Either3<Collection<T>, Array<T>, List<T>>) {
       this = new SynchronizedLinkedListImpl();
-      if(initialValues != null)
+      if (initialValues != null)
          this.addAll(initialValues);
    }
 
@@ -69,14 +69,14 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
    public var length(get, never):Int;
    function get_length():Int
       return _sync.execute(function() {
-          var len = 0;
-          for (item in _items)
-              len++;
-          return len;
+         var len = 0;
+         for (item in _items)
+            len++;
+         return len;
       });
 
 
-   inline
+   inline //
    public function new() {
    }
 
@@ -102,7 +102,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
    public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void
       _sync.execute(function() {
-         switch(coll.value) {
+         switch (coll.value) {
             case a(coll): for (i in coll.iterator()) _items.add(i);
             case b(arr):  for (i in arr) _items.add(i);
             case c(list): for (i in list) _items.add(i);
@@ -140,7 +140,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
          if (!inserted)
             items.add(x);
          _items = items;
-     });
+      });
 
 
    /**
@@ -166,7 +166,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedLinkedList([1]).removeAt(1, true) throws ~/Index out of range/
     * </code></pre>
     */
-   public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T>
+   public function removeAt(idx:Int, throwIfOutOfRange:Bool = false):Null<T>
       return _sync.execute(function():Null<T> {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
@@ -198,7 +198,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public function removeFirst(throwIfEmpty:Bool = false):Null<T>
       return _sync.execute(function() {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -217,7 +217,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public function removeLast(throwIfEmpty:Bool = false):Null<T>
       return _sync.execute(function():Null<T> {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -225,11 +225,11 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
 
          final it = _items.iterator();
          _items = new List<T>();
-         while(true) {
+         while (true) {
             final item = it.next();
             if (it.hasNext())
                _items.add(item);
-             else
+            else
                return item;
          }
       });
@@ -251,7 +251,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedLinkedList().contains(1)      == false
     * </code></pre>
     */
-   inline
+   inline //
    public function contains(x:T):Bool
       return indexOf(x) > -1;
 
@@ -301,13 +301,13 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     */
    public function indexOf(x:T, startAt:Int = 0):Int
       return _sync.execute(function() {
-          var i = 0;
-          for (item in _items) {
-              if (i >= startAt && item == x)
-                  return i;
-              i++;
-          }
-          return -1;
+         var i = 0;
+         for (item in _items) {
+            if (i >= startAt && item == x)
+               return i;
+            i++;
+         }
+         return -1;
       });
 
 
@@ -319,7 +319,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
     * >>> new SynchronizedLinkedList().lastIndexOf(1)           == -1
     * </code></pre>
     */
-   inline
+   inline //
    public function lastIndexOf(x:T, ?startAt:Int):Int
       return _sync.execute(function() {
          var i = 0;

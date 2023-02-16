@@ -20,6 +20,7 @@ interface EventListenable<EVENT> {
    function unsubscribe(listener:EVENT->Void):Bool;
 }
 
+
 abstract class AbstractEventListenable<EVENT> implements EventListenable<EVENT> {
 
    /* explicitly specifying type of variable to prevent on Haxe 4.2+:

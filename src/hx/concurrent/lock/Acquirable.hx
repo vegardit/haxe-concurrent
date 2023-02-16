@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
+
 interface Acquirable {
 
    var availablePermits(get, never):Int;
@@ -35,6 +36,7 @@ interface Acquirable {
     */
    function execute<T>(func:Void->T, swallowExceptions:Bool = false):T;
 }
+
 
 abstract class AbstractAcquirable implements Acquirable {
 

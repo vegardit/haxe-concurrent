@@ -16,7 +16,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
     */
    public function new(?initialValues:Either3<Collection<T>, Array<T>, List<T>>) {
       this = new CopyOnWriteArrayImpl();
-      if(initialValues != null)
+      if (initialValues != null)
          this.addAll(initialValues);
    }
 
@@ -41,10 +41,12 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
    }
 }
 
+
 private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
    var _items = new Array<T>();
    final _sync = new RLock();
+
 
    @:allow(hx.concurrent.collection.CopyOnWriteArray)
    function _set(idx:Int, x:T):Void {
@@ -90,10 +92,10 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     */
    public var length(get, never):Int;
    inline function get_length():Int
-       return _items.length;
+      return _items.length;
 
 
-   inline
+   inline //
    public function new() {
    }
 
@@ -129,11 +131,11 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
    public function addAll(coll:Either3<Collection<T>, Array<T>, List<T>>):Void {
       _sync.execute(function() {
          var items:Null<Array<T>> = null;
-         switch(coll.value) {
+         switch (coll.value) {
             case a(coll):
                items = _items.copy();
                for (i in coll.iterator())
-                 items.push(i);
+                  items.push(i);
             case b(arr):
                items = _items.concat(arr);
             case c(list):
@@ -146,7 +148,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
    }
 
 
-   inline
+   inline //
    public function clear():Void
       _items = [];
 
@@ -187,7 +189,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray([1]).removeAt(1, true) throws ~/Index out of range/
     * </code></pre>
     */
-   public function removeAt(idx:Int, throwIfOutOfRange:Bool=false):Null<T> {
+   public function removeAt(idx:Int, throwIfOutOfRange:Bool = false):Null<T> {
       return _sync.execute(function() {
          if (idx < 0 || idx >= _items.length) {
             if (throwIfOutOfRange)
@@ -211,7 +213,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     */
    public function removeFirst(throwIfEmpty:Bool = false):Null<T> {
       return _sync.execute(function() {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -234,7 +236,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     */
    public function removeLast(throwIfEmpty:Bool = false):Null<T> {
       return _sync.execute(function() {
-         if(_items.length == 0) {
+         if (_items.length == 0) {
             if (throwIfEmpty)
                throw "This collection is empty.";
             return null;
@@ -248,7 +250,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
    }
 
 
-   inline
+   inline //
    public function copy():CopyOnWriteArray<T>
       return new CopyOnWriteArray(_items.copy());
 
@@ -260,7 +262,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().contains(1)      == false
     * </code></pre>
     */
-   inline
+   inline //
    public function contains(x:T):Bool
       return indexOf(x) > -1;
 
@@ -271,7 +273,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().isEmpty()    == true
     * </code></pre>
     */
-   inline
+   inline //
    public function isEmpty():Bool
       return _items.length == 0;
 
@@ -302,9 +304,9 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().indexOf(1)           == -1
     * </code></pre>
     */
-   inline
-   public function indexOf(x:T, startAt:Int=0):Int
-       return _items.indexOf(x, startAt);
+   inline //
+   public function indexOf(x:T, startAt:Int = 0):Int
+      return _items.indexOf(x, startAt);
 
 
    /**
@@ -315,9 +317,9 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().lastIndexOf(1)           == -1
     * </code></pre>
     */
-   inline
+   inline //
    public function lastIndexOf(x:T, ?startAt:Int):Int {
-      #if (flash||js)
+      #if (flash || js)
          final items = _items;
          return items.lastIndexOf(x, startAt == null ? items.length - 1 : startAt);
       #else
@@ -331,7 +333,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray([1,2,1]).filter((x) -> x == 1).toArray() == [1, 1]
     * </code></pre>
     */
-   inline
+   inline //
    public function filter(fn:T->Bool):CopyOnWriteArray<T>
       return new CopyOnWriteArray(_items.filter(fn));
 
@@ -341,7 +343,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray([1,2,1]).map((x) -> Std.string(x)).toArray() == ["1", "2", "1"]
     * </code></pre>
     */
-   inline
+   inline //
    public function map<X>(fn:T->X):CopyOnWriteArray<X>
       return new CopyOnWriteArray(_items.map(fn));
 
@@ -353,7 +355,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().join("_")      == ""
     * </code></pre>
     */
-   inline
+   inline //
    public function join(sep:String):String
       return _items.join(sep);
 
@@ -365,7 +367,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().iterator().hasNext()      == false
     * </code></pre>
     */
-   inline
+   inline //
    public function iterator():Iterator<T>
       return _items.iterator();
 
@@ -377,9 +379,9 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().toArray()      == []
     * </code></pre>
     */
-   inline
+   inline //
    public function toArray():Array<T>
-       return _items.copy();
+      return _items.copy();
 
 
    /**
@@ -389,13 +391,12 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
     * >>> new CopyOnWriteArray().toString()      == "[]"
     * </code></pre>
     */
-   inline
+   inline //
    public function toString():String {
-      #if (flash||js)
+      #if (flash || js)
          return "[" + _items.toString() + "]";
       #else
          return _items.toString();
       #end
    }
 }
-

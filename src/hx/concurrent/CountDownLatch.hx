@@ -17,23 +17,23 @@ abstract CountDownLatch(java.util.concurrent.CountDownLatch) {
       return haxe.Int64.toInt(this.getCount());
 
 
-   inline
+   inline //
    public function new(count:Int) {
       this = new java.util.concurrent.CountDownLatch(count);
    }
 
 
-   inline
+   inline //
    public function countDown():Void
       this.countDown();
 
 
-   inline
+   inline //
    public function await():Void
       this.await();
 
 
-   inline
+   inline //
    public function tryAwait(timeoutMS:Int):Bool
       return this.await(timeoutMS, java.util.concurrent.TimeUnit.MILLISECONDS);
 }
@@ -47,13 +47,13 @@ class CountDownLatch {
    var _count:AtomicInt;
 
 
-   inline
+   inline //
    public function new(count:Int) {
       _count = new AtomicInt(count);
    }
 
 
-   inline
+   inline //
    public function countDown():Void
       _count--;
 

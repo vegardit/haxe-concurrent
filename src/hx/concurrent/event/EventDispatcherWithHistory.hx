@@ -9,6 +9,7 @@ import hx.concurrent.Future;
 import hx.concurrent.lock.RLock;
 
 class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
+
    var _eventHistory = new Array<EVENT>();
    final _eventHistoryLock = new RLock();
    final _wrapped:EventDispatcher<EVENT>;

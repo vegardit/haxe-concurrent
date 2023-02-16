@@ -75,6 +75,7 @@ abstract SynchronizedMap<K, V>(SynchronizedMapImpl<K, V>) from SynchronizedMapIm
       this = new SynchronizedMapImpl<K, V>(initialValues.copy());
    }
 
+
    /**
     * <pre><code>
     * >>> SynchronizedMap.from([100 => 50])[100] == 50
@@ -93,14 +94,18 @@ abstract SynchronizedMap<K, V>(SynchronizedMapImpl<K, V>) from SynchronizedMapIm
    }
 }
 
+
 private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
 
    final _items:IMap<K, V>;
    final _sync = new RLock();
 
-   inline public function new(items:IMap<K, V>) {
+
+   inline //
+   public function new(items:IMap<K, V>) {
       this._items = items;
    }
+
 
    /**
     * <pre><code>
@@ -119,6 +124,7 @@ private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
          return len;
       });
 
+
    /**
     * <pre><code>
     * >>> SynchronizedMap.from([100 => 50])            .isEmpty == false
@@ -130,6 +136,7 @@ private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
 
    function get_isEmpty():Bool
       return _sync.execute(() -> !_items.iterator().hasNext());
+
 
    /**
     * <pre><code>
@@ -143,6 +150,7 @@ private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
 
    inline public function set(k:K, v:V):Void
       _sync.execute(() -> return _items.set(k, v));
+
 
    /**
     * <pre><code>
@@ -191,11 +199,14 @@ private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
    inline public function keyValueIterator():KeyValueIterator<K, V>
       return _sync.execute(() -> new SynchronizedMapIterator<{key:K, value:V}>(_sync, _items.keyValueIterator()));
 
+
    inline public function copy():SynchronizedMap<K, V>
       return _sync.execute(() -> SynchronizedMap.from(_items.copy()));
 
+
    inline public function toString():String
       return _sync.execute(() -> Std.string(_items));
+
 
    inline public function clear():Void
       _sync.execute(() -> _items.clear());
@@ -207,17 +218,21 @@ private final class SynchronizedMapIterator<T> {
    final _sync:RLock;
    final _it:Iterator<T>;
 
+
    inline public function new(sync:RLock, it:Iterator<T>) {
       _sync = sync;
       _it = it;
    }
 
+
    inline public function hasNext():Bool
       return _sync.execute(() -> _it.hasNext());
+
 
    inline public function next():T
       return _sync.execute(() -> _it.next());
 }
+
 
 /**
  * workaround for haxe.ds.HashMap not implementing IMap interface
@@ -225,6 +240,7 @@ private final class SynchronizedMapIterator<T> {
 private final class HashMapDelegate<K:{function hashCode():Int;}, V> implements IMap<K, V> {
 
    final map = new HashMap<K, V>();
+
 
    inline public function new(?from:HashMap<K, V>) {
       if (from != null) {
@@ -235,36 +251,46 @@ private final class HashMapDelegate<K:{function hashCode():Int;}, V> implements 
       }
    }
 
+
    #if (php || lua) @:nullSafety(Off) #end
    inline public function get(k:K):Null<V>
       return map.get(k);
+
 
    #if neko @:nullSafety(Off) #end
    inline public function set(k:K, v:V):Void
       map.set(k, v);
 
+
    #if neko @:nullSafety(Off) #end
    inline public function exists(k:K):Bool
       return map.exists(k);
+
 
    #if neko @:nullSafety(Off) #end
    inline public function remove(k:K):Bool
       return map.remove(k);
 
+
    inline public function keys():Iterator<K>
       return map.keys();
+
 
    inline public function iterator():Iterator<V>
       return map.iterator();
 
+
    inline public function keyValueIterator():KeyValueIterator<K, V>
       return map.keyValueIterator();
+
 
    inline public function copy():IMap<K, V>
       return new HashMapDelegate(map);
 
+
    inline public function toString():String
       return Std.string(map);
+
 
    inline public function clear():Void
       map.clear();

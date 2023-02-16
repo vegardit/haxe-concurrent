@@ -76,7 +76,7 @@ class ThreadPool extends ServiceBase {
    }
 
 
-   override
+   override //
    function onStart() {
 
       state = RUNNING;
@@ -138,7 +138,7 @@ class ThreadPool extends ServiceBase {
    /**
     * Initiates a graceful shutdown of this executor canceling execution of all queued tasks.
     */
-   override
+   override //
    public function stop():Void
       _stateLock.execute(function() {
          if (state == RUNNING) {
@@ -158,7 +158,7 @@ class ThreadContext {
    public final id:Int;
    public final vars = new StringMap<Dynamic>();
 
-   inline
+   inline //
    public function new(id:Int) {
       this.id = id;
    }

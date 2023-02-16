@@ -24,6 +24,7 @@ abstract class Executor extends ServiceBase {
 
    static final NOW_ONCE = Schedule.ONCE(0);
 
+
    /**
     * Creates a new target specific task executor instance.
     *
@@ -42,9 +43,12 @@ abstract class Executor extends ServiceBase {
 
    function notifyResult(result:FutureResult<Any>):Void {
       for (listener in completionListeners) {
-         try listener(result) catch (ex) trace(ex);
+         try
+            listener(result)
+         catch (ex)
+            trace(ex);
       }
-      if (completionListeners.isEmpty()) switch(result) {
+      if (completionListeners.isEmpty()) switch (result) {
          case FAILURE(ex, _, _): trace(ex);
          default:
       }
@@ -54,7 +58,7 @@ abstract class Executor extends ServiceBase {
    /**
     * Global callback function `function(result:FutureResult<Any>):Void` to be executed when any task finishes.
     */
-   inline
+   inline //
    public function onCompletion(listener:FutureCompletionListener<Any>) {
       completionListeners.add(listener);
    }
@@ -74,7 +78,7 @@ abstract class Executor extends ServiceBase {
    /**
     * Initiates a graceful shutdown of this executor canceling execution of all queued and scheduled tasks.
     */
-   override
+   override //
    public function stop()
       super.stop();
 }
@@ -121,6 +125,7 @@ abstract class AbstractTaskFuture<T> extends CompletableFuture<T> implements Tas
 
    public var schedule(default, null):Schedule;
    public var isStopped(default, null) = false;
+
 
    final _executor:Executor;
    final _task:Task<T>;

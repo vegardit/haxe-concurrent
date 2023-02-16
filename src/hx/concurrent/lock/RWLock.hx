@@ -27,7 +27,7 @@ class RWLock {
 
    final sync = new RLock();
 
-   inline
+   inline //
    public function new() {
       readLock = new ReadLock(this);
       writeLock = new WriteLock(this);
@@ -85,9 +85,9 @@ class ReadLock extends AbstractAcquirable {
    final holders = new Array<Dynamic>();
 
 
-   inline
+   inline //
    function new(rwLock:RWLock) {
-       this.rwLock = rwLock;
+      this.rwLock = rwLock;
    }
 
 
@@ -105,7 +105,7 @@ class ReadLock extends AbstractAcquirable {
       final startAt = Dates.now();
       while (true) {
          if (rwLock.sync.execute(function() {
-            if(rwLock.writeLock.isAcquiredByOtherThread)
+            if (rwLock.writeLock.isAcquiredByOtherThread)
                return false;
 
             holders.push(requestor);
@@ -134,12 +134,15 @@ class WriteLock extends RLock {
 
    final rwLock:RWLock;
 
-   inline function new(rwLock:RWLock) {
+
+   inline //
+   function new(rwLock:RWLock) {
       super();
       this.rwLock = rwLock;
    }
 
-   override
+
+   override //
    function get_availablePermits():Int {
       if (isAcquiredByAnyThread)
          return 0;
@@ -161,7 +164,7 @@ class WriteLock extends RLock {
    }
 
 
-   override
+   override //
    public function acquire():Void {
       while (true) {
          if (tryAcquire(Ints.MAX_VALUE))
@@ -170,12 +173,12 @@ class WriteLock extends RLock {
    }
 
 
-   override
+   override //
    public function tryAcquire(timeoutMS = 0):Bool {
       final requestor = Threads.current;
       final readLockHolders = rwLock.readLock.holders;
 
-      #if (flash||sys)
+      #if (flash || sys)
       return Threads.await(function() {
          return rwLock.sync.execute(function() {
       #end
@@ -187,18 +190,22 @@ class WriteLock extends RLock {
                }
             }
             return super_tryAcquire(50);
-      #if (flash||sys)
+      #if (flash || sys)
          });
       }, timeoutMS);
       #end
    }
 
 
-   override
+   override //
    public function release():Void
       rwLock.sync.execute(() -> super_release());
 
 
-   function super_tryAcquire(timeoutMS = 0):Bool return super.tryAcquire(timeoutMS);
-   function super_release():Void return super.release();
+   function super_tryAcquire(timeoutMS = 0):Bool
+      return super.tryAcquire(timeoutMS);
+
+
+   function super_release():Void
+      return super.release();
 }

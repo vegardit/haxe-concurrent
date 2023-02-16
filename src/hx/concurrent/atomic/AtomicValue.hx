@@ -14,6 +14,7 @@ class AtomicValue<T> {
 
    final _lock = new RLock();
 
+
    /**
     * <pre><code>
     * >>> new AtomicValue(null).value   == null
@@ -63,7 +64,7 @@ class AtomicValue<T> {
     * >>> new AtomicValue(false).toString() == "false"
     * </code></pre>
     */
-   inline
+   inline //
    public function toString()
       return Std.string(value);
 }
