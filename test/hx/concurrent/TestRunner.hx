@@ -458,8 +458,8 @@ class TestRunner extends hx.doctest.DocTestRunner {
    function testBackgroundProcess_awaitExitOrKill() {
       final durationInSeconds = 10;
       final p = BackgroundProcess.create("ping", Sys.systemName() == "Windows"
-         ? ["127.0.0.1", "-n", durationInSeconds + 1, "-w", 1000 ]
-         : ["127.0.0.1", "-c", durationInSeconds + 1, "-W", 1 ]
+         ? ["127.0.0.1", "-n", durationInSeconds + 1, "-w", 1000]
+         : ["127.0.0.1", "-c", durationInSeconds + 1, "-W", 1]
       );
 
       assertEquals(p.exitCode, null);

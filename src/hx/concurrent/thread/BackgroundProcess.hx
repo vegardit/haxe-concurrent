@@ -36,7 +36,7 @@ class BackgroundProcess {
    /**
     * @throws an exception in case the process cannot be created
     */
-   public static function create(executable:String, args:Array<AnyAsString>):BackgroundProcess {
+   public static function create(executable:String, ...args:Dynamic):BackgroundProcess {
       return builder(executable).withArgs(args).build();
    }
 
@@ -415,13 +415,19 @@ class BackgroundProcessBuilder {
       return process;
    }
 
-   public function withArg(arg:AnyAsString):BackgroundProcessBuilder {
-      process._args.push(arg);
+   public function withArg(...arg:Any):BackgroundProcessBuilder {
+      withArgs(arg);
       return this;
    }
 
-   public function withArgs(args:Array<AnyAsString>):BackgroundProcessBuilder {
-      for (arg in args) process._args.push(Std.string(arg));
+   // instead of Array<Any> using Array<Dynamic> which allows arrays of mixed content
+   public function withArgs(args:Array<Dynamic>):BackgroundProcessBuilder {
+      for (arg in args) {
+         if (arg is Array)
+            withArgs(arg);
+         else
+            process._args.push(Std.string(arg));
+      }
       return this;
    }
 
