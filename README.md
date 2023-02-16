@@ -260,18 +260,6 @@ haxelib git haxe-concurrent https://github.com/vegardit/haxe-concurrent main D:\
     haxelib dev haxe-concurrent D:\haxe-projects\haxe-concurrent
     ```
 
-###  Using Subversion
-
-1. check-out the trunk
-    ```
-    svn checkout https://github.com/vegardit/haxe-concurrent/trunk D:\haxe-projects\haxe-concurrent
-    ```
-
-2. register the development release with haxe
-    ```
-    haxelib dev haxe-concurrent D:\haxe-projects\haxe-concurrent
-    ```
-
 
 ## <a name="license"></a>License
 
