@@ -48,7 +48,7 @@ defaults:
 jobs:
   build:
     # https://github.com/vegardit/haxe-reusable-workflows/
-    uses: vegardit/haxe-reusable-workflows/.github/workflows/test-with-haxe.yml@v1
+    uses: vegardit/haxe-reusable-workflows/.github/workflows/test-with-haxe.yml@dev
     strategy:
       fail-fast: false
       matrix:
@@ -60,6 +60,8 @@ jobs:
         - nightly
         - 4.2.5
     with:
+      haxe-reusable-workflows-version: dev
+
       runner-os: ${{ matrix.os }}
       haxe-version: ${{ matrix.haxe }}
       haxe-libs: haxe-doctest hx3compat
@@ -86,6 +88,6 @@ jobs:
       test-python: ${{ inputs.test-target == '' || inputs.test-target == 'python' }}
 
       before-tests: |
-        if [[ $OSTYPE == linux* ]] && ! hash ping &>/dev/null; then 
+        if [[ $OSTYPE == linux* ]] && ! hash ping &>/dev/null; then
           sudo apt-get install iputils-ping
         fi
