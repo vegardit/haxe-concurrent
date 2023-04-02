@@ -14,26 +14,27 @@ import hx.concurrent.thread.Threads;
 
 
 class ThreadPool extends ServiceBase {
+   /**
+    * The default amount of time a worker sleeps waiting for work
+    */
+   public static final DEFAULT_POLL_PERIOD = 0.001;
 
    static final _threadIDs = new AtomicInt();
 
    var _spawnedThreadCount = new AtomicInt(0);
    var _workingThreadCount = new AtomicInt(0);
    final _workQueue = new Queue<Task>();
-   var _pollPeriod = DEFAULT_POLL_PERIOD;
 
    public final threadCount:Int;
 
    /**
     * The amount of time a worker sleeps waiting for work
     */
-   public static var DEFAULT_POLL_PERIOD = 0.001;
-   public var pollPeriod(get, set):Float;
-   inline function get_pollPeriod():Float return _pollPeriod;
+   public var pollPeriod(default, set):Float = DEFAULT_POLL_PERIOD;
    inline function set_pollPeriod(value:Float) {
       if (value <= 0)
          throw "[value] must be >= 0";
-      return _pollPeriod = value;
+      return pollPeriod = value;
    }
 
    /**
@@ -60,7 +61,6 @@ class ThreadPool extends ServiceBase {
          start();
    }
 
-   
 
    /**
     * Waits for all submitted tasks being executed.
