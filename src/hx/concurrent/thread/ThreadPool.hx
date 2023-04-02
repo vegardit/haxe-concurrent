@@ -20,8 +20,21 @@ class ThreadPool extends ServiceBase {
    var _spawnedThreadCount = new AtomicInt(0);
    var _workingThreadCount = new AtomicInt(0);
    final _workQueue = new Queue<Task>();
+   var _pollPeriod = DEFAULT_POLL_PERIOD;
 
    public final threadCount:Int;
+
+   /**
+    * The amount of time a worker sleeps waiting for work
+    */
+   public static var DEFAULT_POLL_PERIOD = 0.001;
+   public var pollPeriod(get, set):Float;
+   inline function get_pollPeriod():Float return _pollPeriod;
+   inline function set_pollPeriod(value:Float) {
+      if (value <= 0)
+         throw "[value] must be >= 0";
+      return _pollPeriod = value;
+   }
 
    /**
     * Number of tasks currently executed in parallel.
@@ -47,6 +60,7 @@ class ThreadPool extends ServiceBase {
          start();
    }
 
+   
 
    /**
     * Waits for all submitted tasks being executed.
@@ -97,7 +111,7 @@ class ThreadPool extends ServiceBase {
                if (task == null) {
                   if(state != RUNNING)
                      break;
-                  Sys.sleep(0.001);
+                  Sys.sleep(_pollPeriod);
                } else {
                   try {
                      _workingThreadCount++;
