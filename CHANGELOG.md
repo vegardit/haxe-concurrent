@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [5.1.0] - 2023-04-02
+
+### Added
+- [PR#26](https://github.com/vegardit/haxe-concurrent/pull/26) add `ThreadPool.pollPeriod` (thanks to [onehundredfeet](https://github.com/onehundredfeet))
+
+
 ## [5.0.3] - 2023-02-17
 
 ### Changed
