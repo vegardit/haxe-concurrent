@@ -111,7 +111,7 @@ class ThreadPool extends ServiceBase {
                if (task == null) {
                   if(state != RUNNING)
                      break;
-                  Sys.sleep(_pollPeriod);
+                  Sys.sleep(pollPeriod);
                } else {
                   try {
                      _workingThreadCount++;
