@@ -11,9 +11,9 @@ if %errorlevel% neq 0 (
    exit /b 1
 )
 
-where wget.exe /Q
+where curl.exe /Q
 if %errorlevel% neq 0 (
-   echo Required command 'wget' not found. Download from https://eternallybored.org/misc/wget/
+   echo Required command 'curl' not found. Download from https://curl.se/windows/
    exit /b 1
 )
 
@@ -76,7 +76,7 @@ echo Creating GitHub release https://github.com/%REPO_NAME%/releases/tag/v%PROJE
    echo "prerelease":%PREPRELEASE%
    echo }
 )>target\github_release.json
-curl -sSf -H "Authorization: token %GITHUB_ACCESS_TOKEN%" -d @target/github_release.json "https://api.github.com/repos/%REPO_NAME%/releases" || exit /B 1
+curl -sSfL --header "Authorization: token %GITHUB_ACCESS_TOKEN%" -d @target/github_release.json "https://api.github.com/repos/%REPO_NAME%/releases" || goto :eof
 
 REM submit haxelib release
 echo Submitting haxelib release...
