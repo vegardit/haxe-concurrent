@@ -47,7 +47,7 @@ enum Schedule {
 }
 
 
-@:enum
+#if (haxe_ver < 4.3) @:enum #else enum #end
 abstract ScheduleWeekday(Int) from Int to Int {
    public var SUNDAY = 0;
    public var MONDAY = 1;

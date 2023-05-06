@@ -92,7 +92,7 @@ abstract class ServiceBase implements Service<Int> {
 
 
    public function toString():String {
-      #if js @:nullSafety(Off) #end
+      @:nullSafety(Off)
       return Type.getClassName(Type.getClass(this)) + "#" + id;
    }
 }
