@@ -79,7 +79,7 @@ jobs:
         allow-failure: true # workaround for random "Application crashed with an unhandled SIGSEGV" on Linux and timing issues on Windows
       test-hl: |
         enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
-        allow-failure: ${{ startsWith(matrix.os, 'ubuntu-') }} # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
+        allow-failure: true # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
       test-java:   ${{ inputs.test-target == '' || inputs.test-target == 'java' }}
       test-jvm:    ${{ inputs.test-target == '' || inputs.test-target == 'jvm' }}
       test-lua:    ${{ inputs.test-target == '' || inputs.test-target == 'lua' }}
