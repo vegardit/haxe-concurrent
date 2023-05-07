@@ -120,13 +120,11 @@ class ThreadPoolExecutor extends Executor {
    }
 
 
-   public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T>
+   public function submit<T>(task:Either2<Void->T,Void->Void>, ?schedule:Schedule):TaskFuture<T> {
+      final schedule:Schedule = schedule == null ? Executor.NOW_ONCE : schedule;
       return _stateLock.execute(function() {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
-
-         if (schedule == null)
-            schedule = Executor.NOW_ONCE;
 
          final future = new TaskFutureImpl<T>(this, task, schedule);
 
@@ -143,6 +141,7 @@ class ThreadPoolExecutor extends Executor {
          _newScheduledTasks.push(future);
          return future;
       });
+   }
 
 
    override //

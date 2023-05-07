@@ -5,7 +5,6 @@
  */
 package hx.concurrent.executor;
 
-import hx.concurrent.Future.FutureResult;
 import hx.concurrent.executor.Executor.AbstractTaskFuture;
 import hx.concurrent.executor.Executor.Task;
 import hx.concurrent.executor.Executor.TaskFuture;
@@ -30,7 +29,8 @@ class TimerExecutor extends Executor {
    }
 
 
-   public function submit<T>(task:Either2<Void->T, Void->Void>, ?schedule:Schedule):TaskFuture<T>
+   public function submit<T>(task:Either2<Void->T, Void->Void>, ?schedule:Schedule):TaskFuture<T> {
+      final schedule:Schedule = schedule == null ? Executor.NOW_ONCE : schedule;
       return _stateLock.execute(function() {
          if (state != RUNNING)
             throw 'Cannot accept new tasks. Executor is not in state [RUNNING] but [$state].';
@@ -40,14 +40,14 @@ class TimerExecutor extends Executor {
          while (i-- > 0)
             if (_scheduledTasks[i].isStopped) _scheduledTasks.splice(i, 1);
 
-         final future = new TaskFutureImpl<T>(this, task, schedule == null ? Executor.NOW_ONCE : schedule);
+         final future = new TaskFutureImpl<T>(this, task, schedule);
          switch (schedule) {
             case ONCE(0):
             default: _scheduledTasks.push(future);
          }
          return future;
       });
-
+   }
 
    override //
    function onStop() {

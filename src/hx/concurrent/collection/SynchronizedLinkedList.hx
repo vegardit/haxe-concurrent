@@ -325,6 +325,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
          var i = 0;
          var foundAt = -1;
          for (item in _items) {
+            #if (haxe_ver >= 4.3) @:nullSafety(Off) #end
             if (startAt != null && i > startAt)
                break;
             if (item == x)
