@@ -90,6 +90,12 @@ abstract class Executor extends ServiceBase {
 typedef Task<T> = Either2<Void->T, Void->Void>;
 
 
+/* TODO For some reason adding @:keep here prevents the following exception on JVM target with full DCE enabled:
+ * Exception in thread "main" java.lang.ClassCastException: 
+ *   class hx.concurrent.thread.ThreadPool$Closure_onStart_0 cannot be cast to class java.lang.Runnable 
+ *   (hx.concurrent.thread.ThreadPool$Closure_onStart_0 is in unnamed module of loader 'app'; java.lang.Runnable is in module java.base of loader 'bootstrap')
+ */
+#if (haxe_ver >= 4.3 && jvm) @:keep #end
 interface TaskFuture<T> extends Future<T> {
 
    /**
