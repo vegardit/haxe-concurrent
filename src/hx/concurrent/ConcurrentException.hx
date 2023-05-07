@@ -38,6 +38,8 @@ class ConcurrentException {
       #elseif python
          // python.Syntax.pythonCode("raise"); // rethrows the last but not necessarily the captured exception
          python.Syntax.code('raise Exception(self.toString()) from None');
+      #elseif java
+         throw cause;
       #else
          // cpp.Lib.rethrow(cause);  // swallows stacktrace
          // cs.Lib.rethrow(this);    // throw/rethrow swallows complete stacktrace
