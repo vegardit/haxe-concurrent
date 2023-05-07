@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [5.1.3] - 2023-05-07
+
+### Fixed
+- null analysis issues with Haxe 4.3.x
+- ClassCastException with Haxe 4.3.x on JVM target
+
+
 ## [5.1.2] - 2023-05-06
 
 ### Fixed
