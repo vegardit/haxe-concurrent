@@ -17,6 +17,7 @@ on:
     - '.editorconfig'
     - '.git*'
     - '.github/*.yml'
+    - '.github/workflows/stale.yml'
     - 'tools'
   pull_request:
   workflow_dispatch:
