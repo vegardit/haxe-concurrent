@@ -28,6 +28,7 @@ class Macros {
           def.exists("hl") ||
           // def.exists("eval") || // locking/threading in eval is currently broken https://github.com/HaxeFoundation/haxe/issues/8525
           def.exists("java") ||
+          def.exists("jvm") ||
           def.exists("neko") ||
           def.exists("python")
       ) {
