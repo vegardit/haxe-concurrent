@@ -88,6 +88,8 @@ jobs:
       test-php:    ${{ inputs.test-target == '' || inputs.test-target == 'php' }}
       test-python: ${{ inputs.test-target == '' || inputs.test-target == 'python' }}
 
+      allow-failure: ${{ matrix.haxe == 'nightly' }}
+
       before-tests: |
         if [[ $OSTYPE == linux* ]] && ! hash ping &>/dev/null; then
           sudo apt-get install iputils-ping
