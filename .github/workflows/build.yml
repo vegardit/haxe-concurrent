@@ -58,7 +58,7 @@ jobs:
         - windows-latest
         haxe:
         - nightly
-        - 4.3.1
+        - 4.3.4
         - 4.2.5
     with:
       haxe-reusable-workflows-version: dev
@@ -72,7 +72,7 @@ jobs:
       debug-with-ssh-only-jobs-matching: ${{ inputs.debug-with-ssh-only-jobs-matching }}
 
       test-cpp:    ${{ inputs.test-target == '' || inputs.test-target == 'cpp' }}
-      test-cs:     ${{ inputs.test-target == '' || inputs.test-target == 'cs' }}
+      test-cs:     ${{ (inputs.test-target == '' || inputs.test-target == 'cs') && matrix.haxe != 'nightly'}}  # Haxe 5 drops C# Support
       test-eval:   ${{ inputs.test-target == '' || inputs.test-target == 'eval' }}
       test-flash: |
         enabled: ${{ (inputs.test-target == '' || inputs.test-target == 'flash') && !startsWith(matrix.os, 'macos') }} # FlashPlayer hangs on MacOS
@@ -80,7 +80,7 @@ jobs:
       test-hl: |
         enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
         allow-failure: true # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
-      test-java:   ${{ inputs.test-target == '' || inputs.test-target == 'java' }}
+      test-java:   ${{ (inputs.test-target == '' || inputs.test-target == 'java') && matrix.haxe != 'nightly' }} # Haxe 5 drops Java Support
       test-jvm:    ${{ inputs.test-target == '' || inputs.test-target == 'jvm' }}
       test-lua:    ${{ inputs.test-target == '' || inputs.test-target == 'lua' }}
       test-neko:   ${{ inputs.test-target == '' || inputs.test-target == 'neko' }}
