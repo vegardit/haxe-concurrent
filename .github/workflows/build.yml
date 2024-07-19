@@ -58,7 +58,7 @@ jobs:
         - windows-latest
         haxe:
         - nightly
-        - 4.3.4
+        - 4.3.5
         - 4.2.5
     with:
       haxe-reusable-workflows-version: dev
