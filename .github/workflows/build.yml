@@ -58,11 +58,11 @@ jobs:
         - windows-latest
         haxe:
         - nightly
-        - 4.3.5
+        - 4.3.6
         - 4.2.5
         include:
         - os: macos-latest # ARM
-          haxe: 4.3.5
+          haxe: 4.3.6
     with:
       haxe-reusable-workflows-version: dev
 
