@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [5.1.4] - 2024-12-19
+
+### Added
+- support threads on `jvm` target
+
+
 ## [5.1.3] - 2023-05-07
 
 ### Fixed
