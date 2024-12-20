@@ -2,14 +2,16 @@
 # SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
 # SPDX-License-Identifier: Apache-2.0
 #
-# https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 name: Build
 
 on:
+  schedule:
+    - cron: '0 15 1 * *'
   push:
-    branches:
-    - '**'
-    tags-ignore:
+    branches-ignore:  # build all branches except:
+    - 'dependabot/**'  # prevent GHA triggered twice (once for commit to the branch and once for opening/syncing the PR)
+    tags-ignore:  # don't build tags
     - '**'
     paths-ignore:
     - '**/*.adoc'
@@ -17,13 +19,21 @@ on:
     - '.editorconfig'
     - '.git*'
     - '.github/*.yml'
+    - '.github/workflows/stale.yml'
     - 'tools'
   pull_request:
+    paths-ignore:
+    - '**/*.adoc'
+    - '**/*.md'
+    - '.editorconfig'
+    - '.git*'
+    - '.github/*.yml'
+    - 'tools'
   workflow_dispatch:
     # https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
     inputs:
       debug-with-ssh:
-        description: "Start an SSH session for debugging purposes after tests ran:"
+        description: "Start an SSH session for debugging purposes at the end of the build:"
         default: never
         type: choice
         options: [ always, on_failure, on_failure_or_cancelled, never ]
@@ -41,23 +51,29 @@ on:
         type: choice
         options: [ "", cpp, cs, eval, flash, hl, java, jvm, lua, neko, node, php, python ]
 
+
 defaults:
   run:
     shell: bash
 
+
 jobs:
+
+  ###########################################################
   build:
+  ###########################################################
     # https://github.com/vegardit/haxe-reusable-workflows/
     uses: vegardit/haxe-reusable-workflows/.github/workflows/test-with-haxe.yml@dev
     strategy:
       fail-fast: false
       matrix:
-        os:
+        os:  # https://github.com/actions/runner-images#available-images
         - ubuntu-latest
         - macos-13 # Intel
         - windows-latest
         haxe:
         - nightly
+        - latest
         - 4.3.6
         - 4.2.5
         include:
@@ -78,12 +94,12 @@ jobs:
       test-cs:     ${{ (inputs.test-target == '' || inputs.test-target == 'cs') && matrix.haxe != 'nightly'}}  # Haxe 5 drops C# Support
       test-eval:   ${{ inputs.test-target == '' || inputs.test-target == 'eval' }}
       test-flash: |
-        enabled: ${{ (inputs.test-target == '' || inputs.test-target == 'flash') && !startsWith(matrix.os, 'macos') }} # FlashPlayer hangs on MacOS
+        enabled: ${{ (inputs.test-target == '' || inputs.test-target == 'flash') && !startsWith(matrix.os, 'macos') }}  # FlashPlayer hangs on MacOS
         allow-failure: true # workaround for random "Application crashed with an unhandled SIGSEGV" on Linux and timing issues on Windows
       test-hl: |
         enabled: ${{ inputs.test-target == '' || inputs.test-target == 'hl' }}
         allow-failure: true # Segmentation faults https://github.com/HaxeFoundation/hashlink/issues/579
-      test-java:   ${{ (inputs.test-target == '' || inputs.test-target == 'java') && matrix.haxe != 'nightly' }} # Haxe 5 drops Java Support
+      test-java:   ${{ (inputs.test-target == '' || inputs.test-target == 'java') && matrix.haxe != 'nightly' }}  # Haxe 5 drops Java Support
       test-jvm:    ${{ inputs.test-target == '' || inputs.test-target == 'jvm' }}
       test-lua:    ${{ inputs.test-target == '' || inputs.test-target == 'lua' }}
       test-neko:   ${{ inputs.test-target == '' || inputs.test-target == 'neko' }}
@@ -92,6 +108,7 @@ jobs:
       test-python: ${{ inputs.test-target == '' || inputs.test-target == 'python' }}
 
       allow-failure: ${{ matrix.haxe == 'nightly' }}
+      retries: 2
 
       before-tests: |
         if [[ $OSTYPE == linux* ]] && ! hash ping &>/dev/null; then
