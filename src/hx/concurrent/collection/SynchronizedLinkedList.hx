@@ -125,6 +125,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
          }
          if (idx == 0) {
             items.push(x);
+            _items = items;
             return;
          }
 
@@ -133,8 +134,10 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
          for (item in _items) {
             i++;
 
-            if (i == idx)
+            if (i == idx) {
                items.add(x);
+               inserted = true;
+            }
             items.add(item);
          }
          if (!inserted)
@@ -181,7 +184,7 @@ private class SynchronizedLinkedListImpl<T> implements OrderedCollection<T> {
             if(i == idx)
                removed = item;
             else
-               _items.add(item);
+               items.add(item);
             i++;
          }
          _items = items;
