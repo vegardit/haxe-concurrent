@@ -106,6 +106,10 @@ private final class SynchronizedMapImpl<K, V> implements IMap<K, V> {
       this._items = items;
    }
 
+   #if (haxe_ver >= 4.99)
+   inline //
+   public function size():Int return length;
+   #end
 
    /**
     * <pre><code>
@@ -252,6 +256,10 @@ private final class HashMapDelegate<K:{function hashCode():Int;}, V> implements 
    }
 
 
+   #if (haxe_ver >= 4.99)
+   inline public function size():Int return map.size();
+   #end
+   
    #if (php || lua) @:nullSafety(Off) #end
    inline public function get(k:K):Null<V>
       return map.get(k);
