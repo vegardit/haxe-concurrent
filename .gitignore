@@ -3,8 +3,7 @@ _LOCAL/
 
 # Eclipse
 /.project
-/.settings
-**/.*.md.html
+/.settings/
 
 # IntelliJ
 .idea
@@ -25,7 +24,6 @@ _LOCAL/
 *.swo
 *.swp
 
-
 # patch
 *.orig
 *.rej
@@ -34,6 +32,7 @@ _LOCAL/
 .history
 *.tmp
 *.bak
+*.swp
 /dump
 /target
 /tools/dump

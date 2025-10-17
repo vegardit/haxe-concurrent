@@ -12,5 +12,5 @@
    "contributors": ["vegardit"],
    "releasenote": "See https://github.com/vegardit/haxe-concurrent/blob/main/CHANGELOG.md",
    "version": "5.1.4",
-   "dependencies": { }
+   "dependencies": {}
 }

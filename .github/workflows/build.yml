@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-ArtifactOfProjectHomePage: https://github.com/vegardit/haxe-concurrent
 #
-# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
 name: Build
 
-on:  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
+on:  # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
   schedule:
-    # https://docs.github.com/en/actions/reference/choosing-when-your-workflow-runs/events-that-trigger-workflows
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
     - cron: '0 15 1 * *'
   push:
     branches-ignore:  # build all branches except:
@@ -21,6 +21,7 @@ on:  # https://docs.github.com/en/actions/reference/events-that-trigger-workflow
     - '.editorconfig'
     - '.git*'
     - '.github/*.yml'
+    - '.github/ISSUE_TEMPLATE/*'
     - '.github/workflows/stale.yml'
     - 'tools'
   pull_request:
@@ -33,7 +34,7 @@ on:  # https://docs.github.com/en/actions/reference/events-that-trigger-workflow
     - '.github/workflows/stale.yml'
     - 'tools'
   workflow_dispatch:
-    # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch
     inputs:
       debug-with-ssh:
         description: "Start an SSH session for debugging purposes at the end of the build:"
@@ -72,7 +73,7 @@ jobs:
       matrix:
         os:  # https://github.com/actions/runner-images#available-images
         - ubuntu-latest
-        - macos-13  # Intel
+        - macos-15-intel
         - windows-latest
         haxe:
         - nightly
