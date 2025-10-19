@@ -55,7 +55,7 @@ class Queue<T> {
          #if (cpp || cs || (threads && eval) || java || neko || hl)
             msg = _queue.pop(false);
          #elseif python
-            msg = try _queue.pop() catch (ex) null;
+            msg = try _queue.popleft() catch (ex) null;
          #else
             _queueLock.acquire();
             msg = _queue.pop();
@@ -66,7 +66,7 @@ class Queue<T> {
             #if (cpp || cs || (threads && eval) || java || neko || hl)
                msg = _queue.pop(false);
             #elseif python
-               msg = try _queue.pop() catch (ex) null;
+               msg = try _queue.popleft() catch (ex) null;
             #else
                _queueLock.acquire();
                msg = _queue.pop();
@@ -101,7 +101,7 @@ class Queue<T> {
       #if (cpp || cs || (threads && eval) || java || neko || hl)
          _queue.push(msg);
       #elseif python
-         _queue.append(msg);
+         _queue.appendleft(msg);
       #else
          _queueLock.acquire();
          _queue.push(msg);
@@ -123,7 +123,7 @@ class Queue<T> {
       #if (cpp || cs || (threads && eval) || java || neko || hl)
          _queue.add(msg);
       #elseif python
-         _queue.appendleft(msg);
+         _queue.append(msg);
       #else
          _queueLock.acquire();
          _queue.add(msg);
