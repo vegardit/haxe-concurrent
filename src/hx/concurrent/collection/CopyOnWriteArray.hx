@@ -44,7 +44,7 @@ abstract CopyOnWriteArray<T>(CopyOnWriteArrayImpl<T>) from CopyOnWriteArrayImpl<
 
 private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
-   var _items = new Array<T>();
+   #if (java || cs) @:volatile #end var _items = new Array<T>();
    final _sync = new RLock();
 
 
@@ -150,7 +150,7 @@ private class CopyOnWriteArrayImpl<T> implements OrderedCollection<T> {
 
    inline //
    public function clear():Void
-      _items = [];
+         _items = [];
 
 
    public function insertAt(idx:Int, x:T):Void {
