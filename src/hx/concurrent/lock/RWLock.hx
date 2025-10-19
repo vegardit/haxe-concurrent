@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 package hx.concurrent.lock;
-
-import hx.concurrent.internal.Dates;
 import hx.concurrent.internal.Ints;
 import hx.concurrent.lock.Acquirable.AbstractAcquirable;
 import hx.concurrent.thread.Threads;
@@ -92,31 +90,35 @@ class ReadLock extends AbstractAcquirable {
 
 
    public function acquire():Void {
-      while (true) {
-         if (tryAcquire(Ints.MAX_VALUE))
-            return;
-      }
+      #if (flash || sys)
+         Threads.await(() -> tryAcquire(0), -1);
+      #else
+         // Non-flash/sys targets are single-threaded; contention cannot progress without this thread.
+         // Perform a single attempt which should succeed or throw if logically impossible.
+         if (!tryAcquire(0))
+            while (!tryAcquire(0)) {}
+      #end
    }
 
 
    public function tryAcquire(timeoutMS:Int = 0):Bool {
       final requestor = Threads.current;
 
-      final startAt = Dates.now();
-      while (true) {
-         if (rwLock.sync.execute(function() {
+      inline function attempt():Bool {
+         return rwLock.sync.execute(function() {
             if (rwLock.writeLock.isAcquiredByOtherThread)
                return false;
-
             holders.push(requestor);
             return true;
-         }))
-            return true;
-
-         final elapsedMS = Dates.now() - startAt;
-         if (elapsedMS >= timeoutMS)
-            return false;
+         });
       }
+
+      #if (flash || sys)
+         return Threads.await(() -> attempt(), timeoutMS);
+      #else
+         // Non-flash/sys targets: perform a single non-blocking attempt
+         return attempt();
+      #end
    }
 
 
@@ -166,10 +168,12 @@ class WriteLock extends RLock {
 
    override //
    public function acquire():Void {
-      while (true) {
-         if (tryAcquire(Ints.MAX_VALUE))
-            return;
-      }
+      #if (flash || sys)
+         Threads.await(() -> tryAcquire(0), -1);
+      #else
+         if (!tryAcquire(0))
+            while (!tryAcquire(0)) {}
+      #end
    }
 
 

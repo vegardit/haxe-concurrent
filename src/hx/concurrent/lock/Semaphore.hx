@@ -5,8 +5,6 @@
  */
 package hx.concurrent.lock;
 
-import hx.concurrent.ConcurrentException;
-import hx.concurrent.internal.Dates;
 import hx.concurrent.lock.RLock;
 import hx.concurrent.lock.Acquirable.AbstractAcquirable;
 import hx.concurrent.thread.Threads;
@@ -69,9 +67,13 @@ class Semaphore extends AbstractAcquirable {
 
 
    inline //
-   public function acquire():Void
-      while (tryAcquire(500) == false) {
-      };
+   public function acquire():Void {
+      #if threads
+         Threads.await(tryAcquireInternal, -1);
+      #else
+         while (!tryAcquireInternal()) {}
+      #end
+   }
 
 
    private function tryAcquireInternal():Bool

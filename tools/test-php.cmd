@@ -12,4 +12,4 @@ popd
 if not %rc% == 0 exit /b %rc%
 
 echo Testing...
-%PHP7_HOME%\php "%~dp0..\target\php\index.php"
+php "%~dp0..\target\php\index.php"

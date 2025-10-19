@@ -59,8 +59,7 @@ class CountDownLatch {
 
 
    public function await():Void
-      while(_count > 0)
-         Threads.sleep(10);
+      Threads.await(() -> _count <= 0, -1);
 
 
    public function tryAwait(timeoutMS:Int):Bool
