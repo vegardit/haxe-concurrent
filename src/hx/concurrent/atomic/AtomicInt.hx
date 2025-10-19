@@ -100,7 +100,10 @@ private class AtomicIntImpl {
 #elseif cs
    var _value:Int;
    function get_value():Int return untyped __cs__("System.Threading.Volatile.Read(ref _value)");
-   inline function set_value(val:Int):Int { cs.system.threading.Interlocked.Exchange(_value, val); return val; }
+   function set_value(val:Int):Int {
+      untyped __cs__("System.Threading.Interlocked.Exchange(ref {0}, {1})", _value, val);
+      return val;
+   }
 
    inline public function new(initialValue:Int = 0) this._value = initialValue;
 
