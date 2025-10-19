@@ -126,7 +126,7 @@ class Test {
 
 ## <a name="event-package"></a>The `hx.concurrent.event` package
 
-The [hx.current.event](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
+The [hx.concurrent.event](https://github.com/vegardit/haxe-concurrent/blob/main/src/hx/concurrent/event) package contains classes for type-safe event dispatching.
 
 ```haxe
 import hx.concurrent.event.AsyncEventDispatcher;
