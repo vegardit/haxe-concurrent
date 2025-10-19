@@ -37,12 +37,20 @@ class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
       if (listener == null)
          throw "[listener] must not be null";
 
-      if (_wrapped.subscribe(listener)) {
-         for (event in _eventHistory)
+      // Take a snapshot and subscribe while holding the history lock to avoid
+      // losing events that might be fired between snapshot and subscription.
+      var history:Array<EVENT>;
+      var added = false;
+      _eventHistoryLock.execute(() -> {
+         history = _eventHistory.copy();
+         added = _wrapped.subscribe(listener);
+      });
+
+      if (added) {
+         for (event in history)
             listener(event);
          return true;
       }
-
       return false;
    }
 
