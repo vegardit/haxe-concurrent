@@ -192,13 +192,15 @@ class ScheduleTools {
             final runAtSecondOfDay = hour * 60 * 60 + minute * 60 + second;
             final elapsedSecondsToday = now.getHours() * 60 * 60 + now.getMinutes() * 60 + now.getSeconds();
 
-            final dayIndex:Int = day;
-            if (dayIndex == now.getDay())
-               return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000 + (elapsedSecondsToday > runAtSecondOfDay ? WEEK_IN_MS : 0);
-            else if (now.getDate() < dayIndex)
-               return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000 + (DAY_IN_MS * (dayIndex - now.getDate()));
-            else
-               return nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000 + (DAY_IN_MS * (7 - (dayIndex - now.getDate())));
+            // 0=Sunday .. 6=Saturday
+            final targetWeekday:Int = day;
+            final currentWeekday = now.getDay();
+            final daysUntil = ((targetWeekday - currentWeekday) + 7) % 7;
+
+            final baseMS = nowMS + (runAtSecondOfDay - elapsedSecondsToday) * 1000;
+            if (daysUntil == 0)
+               return baseMS + (elapsedSecondsToday > runAtSecondOfDay ? WEEK_IN_MS : 0);
+            return baseMS + daysUntil * DAY_IN_MS;
       }
    }
 }

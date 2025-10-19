@@ -226,6 +226,10 @@ class TestRunner extends hx.doctest.DocTestRunner {
 
       final runInMS = Std.int(ScheduleTools.firstRunAt(WEEKLY(in2sDate.getDay(), in2sDate.getHours(), in2sDate.getMinutes(), in2sDate.getSeconds())) - now);
       assertInRange(runInMS, 1000, 3000);
+
+      // Next weekday at same time should be roughly one day ahead
+      final runInMS = Std.int(ScheduleTools.firstRunAt(WEEKLY((Date.fromTime(now).getDay() + 1) % 7, Date.fromTime(now).getHours(), Date.fromTime(now).getMinutes(), Date.fromTime(now).getSeconds())) - now);
+      assertInRange(runInMS, 12 * 60 * 60 * 1000, 48 * 60 * 60 * 1000);
    }
 
 
