@@ -133,18 +133,18 @@ class ScheduleTools {
                throw "[Schedule.FIXED_RATE.initialDelayMS] must be >= 0";
 
          case HOURLY(minute, second):
-            if (minute == null || minute < 0) throw "[Schedule.HOURLY.minute] must be between >= 0 and <= 59";
-            if (second == null || second < 0) throw "[Schedule.HOURLY.second] must be between >= 0 and <= 59";
+            if (minute == null || minute < 0 || minute > 59) throw "[Schedule.HOURLY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0 || second > 59) throw "[Schedule.HOURLY.second] must be between >= 0 and <= 59";
 
          case DAILY(hour, minute, second):
-            if (hour   == null || hour   < 0) throw "[Schedule.DAILY.hour] must be between >= 0 and <= 23";
-            if (minute == null || minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
-            if (second == null || second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
+            if (hour   == null || hour   < 0 || hour > 23)   throw "[Schedule.DAILY.hour] must be between >= 0 and <= 23";
+            if (minute == null || minute < 0 || minute > 59) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0 || second > 59) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
 
          case WEEKLY(day, hour, minute, second):
-            if (hour   == null || hour   < 0) throw "[Schedule.WEEKLY.hour] must be between >= 0 and <= 23";
-            if (minute == null || minute < 0) throw "[Schedule.WEEKLY.minute] must be between >= 0 and <= 59";
-            if (second == null || second < 0) throw "[Schedule.WEEKLY.second] must be between >= 0 and <= 59";
+            if (hour   == null || hour   < 0 || hour > 23)   throw "[Schedule.WEEKLY.hour] must be between >= 0 and <= 23";
+            if (minute == null || minute < 0 || minute > 59) throw "[Schedule.WEEKLY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0 || second > 59) throw "[Schedule.WEEKLY.second] must be between >= 0 and <= 59";
       }
       return schedule;
    }
