@@ -23,8 +23,8 @@ import hx.concurrent.thread.Threads;
  */
 class ThreadPoolExecutor extends Executor {
 
-   public inline static final SCHEDULER_RESOLUTION_MS = 10;
-   public inline static final SCHEDULER_RESOLUTION_SEC = SCHEDULER_RESOLUTION_MS / 1000;
+   public inline static final SCHEDULER_RESOLUTION_MS:Int = 10;
+   public inline static final SCHEDULER_RESOLUTION_SEC:Float = SCHEDULER_RESOLUTION_MS / 1000.0;
 
    final _threadPool:ThreadPool;
 
