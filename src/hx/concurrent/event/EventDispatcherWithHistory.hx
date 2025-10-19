@@ -31,7 +31,7 @@ class EventDispatcherWithHistory<EVENT> implements EventDispatcher<EVENT> {
 
 
    /**
-    * If the listener was not subscribed already, all recorded events will be send to the given listeners.
+    * If the listener was not subscribed already, all recorded events will be sent to the given listeners.
     */
    public function subscribeAndReplayHistory(listener:EVENT->Void):Bool {
       if (listener == null)

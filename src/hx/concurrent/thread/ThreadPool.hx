@@ -65,7 +65,7 @@ class ThreadPool extends ServiceBase {
    /**
     * Waits for all submitted tasks being executed.
     *
-    * If <code>timeoutMS</code> is set 0, the function immediatly returns.
+    * If <code>timeoutMS</code> is set 0, the function immediately returns.
     * If <code>timeoutMS</code> is set to value > 0, this function waits for the given time until a result is available.
     * If <code>timeoutMS</code> is set to `-1`, this function waits indefinitely until a result is available.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
@@ -143,7 +143,7 @@ class ThreadPool extends ServiceBase {
 
       _stateLock.execute(function() {
          if (state != RUNNING)
-            throw 'ThreadPool is not in requried state [RUNNING] but [$state]';
+            throw 'ThreadPool is not in required state [RUNNING] but [$state]';
          _workQueue.push(task);
       });
    }

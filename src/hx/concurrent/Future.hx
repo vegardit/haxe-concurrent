@@ -47,7 +47,7 @@ enum FutureResult<T> {
    /**
     * Indicates the future completed with an error.
     *
-    * @param time when the failure occured
+    * @param time when the failure occurred
     */
    FAILURE(ex:ConcurrentException, time:Float, future:Future<T>);
 

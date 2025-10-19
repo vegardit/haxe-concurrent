@@ -15,7 +15,7 @@ enum Schedule {
    ONCE(?initialDelayMS:Int);
 
    /**
-    * @param initialDelayMS time to wait until first executio, default is 0.
+    * @param initialDelayMS time to wait until first execution, default is 0.
     */
    FIXED_DELAY(intervalMS:Int, ?initialDelayMS:Int);
 
@@ -133,8 +133,8 @@ class ScheduleTools {
                throw "[Schedule.FIXED_RATE.initialDelayMS] must be >= 0";
 
          case HOURLY(minute, second):
-            if (minute == null || minute < 0) throw "[Schedule.DAILY.minute] must be between >= 0 and <= 59";
-            if (second == null || second < 0) throw "[Schedule.DAILY.second] must be between >= 0 and <= 59";
+            if (minute == null || minute < 0) throw "[Schedule.HOURLY.minute] must be between >= 0 and <= 59";
+            if (second == null || second < 0) throw "[Schedule.HOURLY.second] must be between >= 0 and <= 59";
 
          case DAILY(hour, minute, second):
             if (hour   == null || hour   < 0) throw "[Schedule.DAILY.hour] must be between >= 0 and <= 23";

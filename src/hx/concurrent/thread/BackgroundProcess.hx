@@ -174,9 +174,9 @@ class BackgroundProcess {
    /**
     * Blocks until the process exits or timeoutMS is reached.
     *
-    * If <code>timeoutMS</code> is set 0, immediatly returns with the null or the exit code.
-    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns either null or the exit code.
-    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+    * If <code>timeoutMS</code> is set 0, immediately returns with null or the exit code.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given time span for the process to exit and returns either null or the exit code.
+    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exits.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
     * @return the exit code or null
@@ -189,9 +189,9 @@ class BackgroundProcess {
    /**
     * Blocks until the process exits or timeoutMS is reached.
     *
-    * If <code>timeoutMS</code> is set 0, immediatly returns with the null or the exit code.
-    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns either null or the exit code.
-    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+    * If <code>timeoutMS</code> is set 0, immediately returns with null or the exit code.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given time span for the process to exit and returns either null or the exit code.
+    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exits.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
     * @return the exit code or null if the process was killed because timeout was reached.
@@ -206,12 +206,12 @@ class BackgroundProcess {
    /**
     * Blocks until the process exits or timeoutMS is reached.
     *
-    * If <code>timeoutMS</code> is set 0, immediatly returns.
-    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns.
-    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
+    * If <code>timeoutMS</code> is set 0, immediately returns.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given time span for the process to exit and returns.
+    * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exits.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
-    * @return `true` if process exited successful, `false` if process is still running
+    * @return `true` if process exited successfully, `false` if process is still running
     * @throws if exitCode != 0
     */
    public function awaitSuccess(timeoutMS:Int, includeStdErr = true):Bool {
@@ -231,12 +231,12 @@ class BackgroundProcess {
    /**
     * Blocks until the process exits or timeoutMS is reached.
     *
-    * If <code>timeoutMS</code> is set 0, immediatly returns.
-    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exists and returns.
+    * If <code>timeoutMS</code> is set 0, immediately returns.
+    * If <code>timeoutMS</code> is set to value > 0, waits up to the given timespan for the process exits and returns.
     * If <code>timeoutMS</code> is set to `-1`, waits indefinitely until the process exists.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
     *
-    * @return `true` if process exited successful, `false` if process did not finish in time and thus process termination was requested
+    * @return `true` if process exited successfully, `false` if process did not finish in time and thus process termination was requested
     * @throws if exitCode != 0
     */
    public function awaitSuccessOrKill(timeoutMS:Int, includeStdErr = true):Bool {
@@ -302,7 +302,7 @@ class NonBlockingInput {
    }
 
 
-   private function readLineInteral(maxWaitMS:Int):BytesBuffer {
+   private function readLineInternal(maxWaitMS:Int):BytesBuffer {
       final buffer = new BytesBuffer();
       final waitUntil = Dates.now() + maxWaitMS;
       while (true) {
@@ -333,7 +333,7 @@ class NonBlockingInput {
       if (StringTools.endsWith(linePreview, "\n"))
          return linePreview;
 
-      final buffer = readLineInteral(maxWaitMS);
+      final buffer = readLineInternal(maxWaitMS);
       if (buffer.length == 0)
          return linePreview;
 
@@ -352,7 +352,7 @@ class NonBlockingInput {
          return line;
       }
 
-      final buffer = readLineInteral(maxWaitMS);
+      final buffer = readLineInternal(maxWaitMS);
 
       if (linePreview.length == 0) {
          if (buffer.length == 0)
@@ -368,7 +368,7 @@ class NonBlockingInput {
 
 
    /**
-    * @return all currently available ouput or an empty string if no data.
+    * @return all currently available output or an empty string if no data.
     */
    public function readAll():String {
       final buffer = new BytesBuffer();

@@ -15,9 +15,9 @@ interface Acquirable {
    function acquire():Void;
 
    /**
-    * By default this call is non-blocking, meaning if the object cannot be aqcuired currently `false` is returned immediately.
+    * By default this call is non-blocking, meaning if the object cannot be acquired currently `false` is returned immediately.
     *
-    * If <code>timeoutMS</code> is set to value > 0, results in blocking for the given time to aqcuire the object.
+    * If <code>timeoutMS</code> is set to value > 0, results in blocking for the given time to acquire the object.
     * If <code>timeoutMS</code> is set to value lower than 0, results in an exception.
     *
     * @return `false` if lock could not be acquired

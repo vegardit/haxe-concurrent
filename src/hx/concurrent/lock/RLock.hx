@@ -25,8 +25,8 @@ class RLock extends AbstractAcquirable {
    #if (cpp || cs || (threads && eval) || java || neko || hl)
    final _rlock = new sys.thread.Mutex();
    #elseif flash
-      // flash.concurrent.Mutex requries swf-version >= 11.4
-      // flash.concurrent.Condition requries swf-version >= 11.5
+      // flash.concurrent.Mutex requires swf-version >= 11.4
+      // flash.concurrent.Condition requires swf-version >= 11.5
       final _cond = new flash.concurrent.Condition(new flash.concurrent.Mutex());
    #elseif python
       final _rlock = new python.lib.threading.RLock();
@@ -89,7 +89,7 @@ class RLock extends AbstractAcquirable {
    /**
     * By default this call is non-blocking, meaning if the lock cannot be acquired `false` is returned immediately.
     *
-    * If <code>timeoutMS</code> is set to value > 0, results in blocking for the given time to aqcuire the lock.
+    * If <code>timeoutMS</code> is set to value > 0, results in blocking for the given time to acquire the lock.
     * If <code>timeoutMS</code> is set to value lower than -0, results in an exception.
     *
     * @return `false` if lock could not be acquired
@@ -144,9 +144,9 @@ class RLock extends AbstractAcquirable {
          if (_holderEntranceCount == 0)
             _holder = null;
       } else if (isAcquiredByOtherThread) {
-         throw "Lock was aquired by another thread!";
+         throw "Lock was acquired by another thread!";
       } else
-         throw "Lock was not aquired by any thread!";
+         throw "Lock was not acquired by any thread!";
 
       #if (cpp || cs || (threads && eval) || java || neko || hl || python)
          _rlock.release();

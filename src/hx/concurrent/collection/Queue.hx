@@ -90,7 +90,7 @@ class Queue<T> {
 
 
    /**
-    * Skips the quue and adds the given message to the head of the queue.
+    * Skips the queue and adds the given message to the head of the queue.
     *
     * @throws exception if given msg is null
     */

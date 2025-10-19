@@ -61,7 +61,7 @@ class Threads {
    /**
     * Blocks the current thread until `condition` returns `true`.
     *
-    * If <code>timeoutMS</code> is set 0, the function immediatly returns with the value returned by `condition`.
+    * If <code>timeoutMS</code> is set 0, the function immediately returns with the value returned by `condition`.
     * If <code>timeoutMS</code> is set to value > 0, the function waits up to the given timespan for a new message.
     * If <code>timeoutMS</code> is set to `-1`, the function waits indefinitely until a new message is available.
     * If <code>timeoutMS</code> is set to value lower than -1, results in an exception.
@@ -114,7 +114,7 @@ class Threads {
 
    #if threads
    /**
-    * Spawns a new deamon thread (i.e. terminates with the main thread) to execute the given function.
+    * Spawns a new daemon thread (i.e. terminates with the main thread) to execute the given function.
     */
    #if !python inline #end
    public static function spawn(func:() -> Void):Void {
