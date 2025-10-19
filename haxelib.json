@@ -11,6 +11,6 @@
    "description": "A haxelib with cross-platform concurrency functions and classes (thread-pool, task executor/scheduler, re-entrant lock, semaphore, atomic int/bool, thread-safe collections/queues)",
    "contributors": ["vegardit"],
    "releasenote": "See https://github.com/vegardit/haxe-concurrent/blob/main/CHANGELOG.md",
-   "version": "5.1.4",
+   "version": "5.1.5",
    "dependencies": {}
 }

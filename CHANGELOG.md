@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [5.1.5] - 2025-10-19
+
+### Fixed
+- improve Haxe 5 compatibility
+- potential scheduler busy-spin in `ThreadPoolExecutor`
+- `Schedule.WEEKLY` wrongly uses day-of-month instead of weekday
+- race condition in `EventDispatcherWithHistory.subscribeAndReplayHistory` can cause duplicate or lost events
+- `ScheduleTools.assertValid` accepts out-of-range values (hour > 23, minute/second > 59) despite error messages claiming strict bounds
+- `AtomicInt.set_value` on the C# target may not be atomic due to missing by-ref Interlocked.Exchange 
+
+### Changed
+- perf: replace busy-wait loops with `Threads.await` to reduce CPU usage
+- perf: avoid retaining post-completion Future listeners
+
+
 ## [5.1.4] - 2024-12-19
 
 ### Added
@@ -140,7 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.2] - 2019-06-25
 
 ### Fixed
-- [Issue #4](https://github.com/vegardit/haxe-concurrent/issues/4) [haxe4+hl] "Lock was aquired by another thread!"
+- [Issue #4](https://github.com/vegardit/haxe-concurrent/issues/4) [haxe4+hl] "Lock was acquired by another thread!"
 - [haxe4+hl] ScheduleTools.firstRunAt() returns wrong values
 
 
