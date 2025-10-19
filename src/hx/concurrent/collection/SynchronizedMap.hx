@@ -47,7 +47,7 @@ abstract SynchronizedMap<K, V>(SynchronizedMapImpl<K, V>) from SynchronizedMapIm
     * >>> SynchronizedMap.newStringMap().isEmpty == true
     * </code></pre>
     */
-   inline public static function newStringMap<String, V>() {
+   inline public static function newStringMap<V>() {
       return new SynchronizedMap<String, V>(new StringMap<V>());
    }
 
